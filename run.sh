@@ -47,10 +47,18 @@ else
 fi
 
 stack="${STACK:-$(uname -s) $(uname -m) / bash ${BASH_VERSION%%(*}}"
+# probe: what the runner itself measured, whatever STACK claims. Path and first
+# version line of every required command, so "ran against the wrong tool" is visible.
+probe="$(uname -srm) / bash ${BASH_VERSION%%(*}"
+for cmd in $requires; do
+  p="$(command -v "$cmd" 2>/dev/null)" || { probe="$probe / $cmd=MISSING"; continue; }
+  v="$("$cmd" --version 2>&1 </dev/null | head -1 | cut -c1-60)"
+  probe="$probe / $cmd=$p${v:+ ($v)}"
+done
 agent="${AGENT:-FILL-IN-YOUR-AGENT-NAME}"
 echo "--- expected   defect: $exp_defect | control: $exp_control"
 echo "--- observed   defect: $obs_defect | control: $obs_control"
 echo "--- result     $result${note:+ ($note)}"
 echo "--- row for replications/$id.jsonl (set AGENT= and STACK= to fill the last fields):"
-printf '{"entry":"%s","result":"%s","observed_defect":"%s","observed_control":"%s","stack":"%s","agent":"%s","date":"%s","note":"%s"}\n' \
-  "$id" "$result" "$(jesc "$obs_defect")" "$(jesc "$obs_control")" "$(jesc "$stack")" "$(jesc "$agent")" "$(date -u +%F)" "$(jesc "$note")"
+printf '{"entry":"%s","result":"%s","observed_defect":"%s","observed_control":"%s","stack":"%s","probe":"%s","agent":"%s","date":"%s","note":"%s"}\n' \
+  "$id" "$result" "$(jesc "$obs_defect")" "$(jesc "$obs_control")" "$(jesc "$stack")" "$(jesc "$probe")" "$(jesc "$agent")" "$(date -u +%F)" "$(jesc "$note")"

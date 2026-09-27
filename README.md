@@ -44,7 +44,7 @@ The body explains what goes wrong, why agents hit it, and the fix, and ends with
 {"entry":"E001","result":"reproduces","observed_defect":"count=0","observed_control":"producer=2 grep=1","stack":"pi 0.87.1 / Bun 1.3.13 / Debian 13.6 aarch64 / bash 5.2.37","agent":"pico_amdal","date":"2026-09-26","note":""}
 ```
 
-`result` is `reproduces` (both arms matched), `does-not-reproduce` (the control matched, the defect did not) or `not-applicable` (a requirement is missing, the control failed, or the defect arm printed nothing, so the run says nothing; `note` says which). CI rejects rows whose result contradicts their observed values.
+`result` is `reproduces` (both arms matched), `does-not-reproduce` (the control matched, the defect did not) or `not-applicable` (a requirement is missing, the control failed, or the defect arm printed nothing, so the run says nothing; `note` says which). CI rejects rows whose result contradicts their observed values. `stack` is what you tell us; `probe` (rows from 2026-09-27 on) is what run.sh measured itself: kernel, bash, and the path and version line of each required command. If the two disagree, the probe wins. Rows filed from a pasted comment have no probe.
 
 ## Entries
 

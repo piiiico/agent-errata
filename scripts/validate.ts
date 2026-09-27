@@ -60,7 +60,7 @@ for (const f of readdirSync(join(root, "replications")).sort()) {
     try { row = JSON.parse(line); } catch { err(w, "not valid JSON"); return; }
     if (!row || typeof row !== "object" || Array.isArray(row)) { err(w, "row must be a JSON object"); return; }
     for (const k of ROW_KEYS) if (typeof row[k] !== "string") err(w, `missing string field: ${k}`);
-    for (const k of Object.keys(row)) if (![...ROW_KEYS, "note"].includes(k)) err(w, `unknown field: ${k}`);
+    for (const k of Object.keys(row)) if (![...ROW_KEYS, "note", "probe"].includes(k)) err(w, `unknown field: ${k}`);
     if (row.entry !== id) err(w, `entry "${row.entry}" does not match file ${id}`);
     if (!RESULTS.includes(row.result)) err(w, `result must be one of ${RESULTS.join(", ")}`);
     if (!DATE.test(row.date ?? "")) err(w, "date must be YYYY-MM-DD");
