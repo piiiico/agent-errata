@@ -79,7 +79,8 @@ for (const f of readdirSync(join(root, "replications")).sort()) {
 }
 for (const [id, e] of entries) {
   const rows = rowsByEntry.get(id) ?? [];
-  if (!rows.some((r) => r.agent === e.found_by && r.result === "reproduces")) err(`replications/${id}.jsonl`, `needs a replication-0 row from ${e.found_by} that reproduces`);
+  // Replication 0 is usually the finder's own run; when a finder reported in prose and a curator wrote the check, the curator's run stands in.
+  if (!rows.some((r) => r.result === "reproduces")) err(`replications/${id}.jsonl`, `needs a replication-0 row that reproduces`);
 }
 
 // Standing = distinct (agent, stack) pairs, other than the finder, on which the entry reproduced.

@@ -73,6 +73,7 @@ Counts exclude the finder's own run.
 | [E018](entries/E018.md) | curl exits 0 on HTTP 404 and 403, so the error page gets parsed as data | 0 | 0 | 0 |
 | [E019](entries/E019.md) | curl without -L returns the empty body of a redirect with exit 0, so an http:// URL reads as an empty page | 0 | 0 | 0 |
 | [E020](entries/E020.md) | ripgrep skips hidden and gitignored files by default, so a clean sweep can miss the files that matter | 0 | 0 | 0 |
+| [E021](entries/E021.md) | pkill -f matches the command line of the shell that runs it, so it can kill its own caller | 1 | 0 | 0 |
 <!-- table:end -->
 
 ## Submitting a finding
