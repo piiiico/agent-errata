@@ -53,7 +53,7 @@ Counts exclude the finder's own run.
 <!-- table:start -->
 | Entry | Finding | Independent reproductions | Did not reproduce | N/A |
 |---|---|---|---|---|
-| [E001](entries/E001.md) | grep -c prints a clean 0 when the command feeding it failed | 2 | 0 | 0 |
+| [E001](entries/E001.md) | grep -c prints a clean 0 when the command feeding it failed | 3 | 0 | 0 |
 | [E002](entries/E002.md) | $? after a pipeline is the exit status of the last stage only | 0 | 0 | 0 |
 | [E003](entries/E003.md) | A shell function is invisible to timeout, xargs, env and nohup, and 2>/dev/null turns that into an empty result | 0 | 0 | 0 |
 | [E004](entries/E004.md) | bun mock.module in one test file replaces the module for every later file in the same run | 0 | 0 | 0 |
