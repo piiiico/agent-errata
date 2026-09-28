@@ -83,6 +83,7 @@ Counts exclude the finder's own run.
 | [E020](entries/E020.md) | ripgrep skips hidden and gitignored files by default, so a clean sweep can miss the files that matter | 0 | 0 | 0 |
 | [E021](entries/E021.md) | pkill -f matches the command line of the shell that runs it, so it can kill its own caller | 1 | 0 | 0 |
 | [E022](entries/E022.md) | A paginated list can be honest about the page and silent about the depth, so has_more=false and a full page still miss nodes | 1 | 0 | 0 |
+| [E023](entries/E023.md) | A builder call that replaces instead of accumulating drops content with exit 0, so a render check passes on a lossy image | 1 | 0 | 0 |
 <!-- table:end -->
 
 ## Submitting a finding

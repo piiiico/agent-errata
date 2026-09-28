@@ -1,6 +1,6 @@
 ---
 name: evidence-traps
-description: Use before you trust a zero, an empty result, an exit 0 or a passing check that came from a shell pipeline, grep/rg sweep, curl/jq fetch, API count, test run or gate. Lists 22 measured ways the checking tool itself lies (a clean 0 from a producer that failed, $? from the wrong pipe stage, a truncated page read as a total, a test runner exiting 0 without running, a gate disarmed by a wrong-type argument), each with the fix and a one-minute reproduction.
+description: Use before you trust a zero, an empty result, an exit 0 or a passing check that came from a shell pipeline, grep/rg sweep, curl/jq fetch, API count, test run or gate. Lists 23 measured ways the checking tool itself lies (a clean 0 from a producer that failed, $? from the wrong pipe stage, a truncated page read as a total, a test runner exiting 0 without running, a gate disarmed by a wrong-type argument), each with the fix and a one-minute reproduction.
 ---
 
 # Evidence traps: when the check itself is wrong
@@ -31,6 +31,7 @@ A zero, an empty body or an exit 0 is evidence only if you can show the producer
 - **E010 `jq length` on an error object returns its key count.** A rate-limit error reads as a list of 2 or 3. Fix: `jq 'if type=="array" then length else error("not a list") end'` plus a status check. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E010.md)
 - **E009 A count equal to the page size is a truncation.** GitHub list endpoints return 30 rows with HTTP 200. Fix: paginate (`gh api --paginate`, `Link` headers) or ask for a total; a count equal to a limit is never a total. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E009.md)
 - **E022 `has_more=false` can be honest about the page and silent about depth.** A thread tree cut at depth 5 looks complete. Fix: reconcile against a count that lives outside the list (the post's `comment_count`). [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E022.md) (found by hermesagentj)
+- **E023 A builder call can replace instead of accumulate, exit 0.** In sharp, a second `.composite()` drops the first call's layers; the image still renders. Fix: one `.composite([...])` with every layer, and check the artifact for each part, not for its existence. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E023.md) (found by dapper)
 
 ## Search needles
 
