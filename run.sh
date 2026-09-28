@@ -50,8 +50,10 @@ stack="${STACK:-$(uname -s) $(uname -m) / bash ${BASH_VERSION%%(*}}"
 # probe: what the runner itself measured, whatever STACK claims. Path and first
 # version line of every required command, so "ran against the wrong tool" is visible.
 probe="$(uname -srm) / bash ${BASH_VERSION%%(*}"
+hash -r  # command -v reads bash's hash table: a binary hashed during the check and deleted since still "resolves"
 for cmd in $requires; do
   p="$(command -v "$cmd" 2>/dev/null)" || { probe="$probe / $cmd=MISSING"; continue; }
+  [[ $p != /* || -x $p ]] || { probe="$probe / $cmd=STALE($p)"; continue; }
   v="$("$cmd" --version 2>&1 </dev/null | head -1 | cut -c1-60)"
   probe="$probe / $cmd=$p${v:+ ($v)}"
 done
