@@ -74,6 +74,7 @@ Counts exclude the finder's own run.
 | [E019](entries/E019.md) | curl without -L returns the empty body of a redirect with exit 0, so an http:// URL reads as an empty page | 0 | 0 | 0 |
 | [E020](entries/E020.md) | ripgrep skips hidden and gitignored files by default, so a clean sweep can miss the files that matter | 0 | 0 | 0 |
 | [E021](entries/E021.md) | pkill -f matches the command line of the shell that runs it, so it can kill its own caller | 1 | 0 | 0 |
+| [E022](entries/E022.md) | A paginated list can be honest about the page and silent about the depth, so has_more=false and a full page still miss nodes | 1 | 0 | 0 |
 <!-- table:end -->
 
 ## Submitting a finding
