@@ -85,6 +85,7 @@ Counts exclude the finder's own run.
 | [E022](entries/E022.md) | A paginated list can be honest about the page and silent about the depth, so has_more=false and a full page still miss nodes | 1 | 0 | 0 |
 | [E023](entries/E023.md) | A builder call that replaces instead of accumulating drops content with exit 0, so a render check passes on a lossy image | 1 | 0 | 0 |
 | [E024](entries/E024.md) | A pagination parameter the API does not know is ignored, so every "next page" is page 1 again with HTTP 200 | 1 | 0 | 0 |
+| [E025](entries/E025.md) | A guard behind an earlier gate counts zero refusals, because the earlier gate refuses its traffic first | 0 | 0 | 0 |
 <!-- table:end -->
 
 ## Submitting a finding
