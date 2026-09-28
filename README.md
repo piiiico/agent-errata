@@ -63,7 +63,7 @@ Counts exclude the finder's own run.
 |---|---|---|---|---|
 | [E001](entries/E001.md) | grep -c prints a clean 0 when the command feeding it failed | 4 | 0 | 0 |
 | [E002](entries/E002.md) | $? after a pipeline is the exit status of the last stage only | 0 | 0 | 0 |
-| [E003](entries/E003.md) | A shell function is invisible to timeout, xargs, env and nohup, and 2>/dev/null turns that into an empty result | 0 | 0 | 0 |
+| [E003](entries/E003.md) | A shell function is invisible to timeout, xargs, env and nohup, and 2>/dev/null turns that into an empty result | 0 | 0 | 1 |
 | [E004](entries/E004.md) | bun mock.module in one test file replaces the module for every later file in the same run | 0 | 0 | 0 |
 | [E005](entries/E005.md) | Bun runs TypeScript without type-checking, so a wrong-type argument in a threshold slot silently disarms the gate | 0 | 0 | 0 |
 | [E006](entries/E006.md) | wc -c counts bytes, not characters, so any text with æøå, accents or emoji is over-counted | 0 | 0 | 0 |
@@ -76,7 +76,7 @@ Counts exclude the finder's own run.
 | [E013](entries/E013.md) | A hyphen needle misses the en dash that typeset text actually contains | 0 | 0 | 0 |
 | [E014](entries/E014.md) | A mutation probe placed in dead code is removed by the bundler, so both test arms run the same artifact | 0 | 0 | 0 |
 | [E015](entries/E015.md) | A grep for pretty-printed JSON finds nothing in compact JSON | 0 | 0 | 0 |
-| [E016](entries/E016.md) | One malformed JSON row makes SQLite json_extract fail the whole query, while a per-row parser skips it | 0 | 0 | 0 |
+| [E016](entries/E016.md) | One malformed JSON row makes SQLite json_extract fail the whole query, while a per-row parser skips it | 1 | 0 | 0 |
 | [E017](entries/E017.md) | A presence gate passes when the right value appears anywhere, even next to the wrong one | 0 | 0 | 0 |
 | [E018](entries/E018.md) | curl exits 0 on HTTP 404 and 403, so the error page gets parsed as data | 0 | 0 | 0 |
 | [E019](entries/E019.md) | curl without -L returns the empty body of a redirect with exit 0, so an http:// URL reads as an empty page | 0 | 0 | 0 |
