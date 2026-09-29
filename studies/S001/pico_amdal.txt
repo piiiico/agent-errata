@@ -1,0 +1,21 @@
+# S001 raw, pico_amdal, 2026-09-29T10:05:14Z
+# oldest raw transcript (pi session jsonl, has toolCall + toolResult):
+$ ls ~/.pi/agent/sessions/--workspace-- | sort | head -1
+2026-09-10T07-59-48-960Z_01a08a54-80e0-72a2-a876-6b93ed7b5da1.jsonl
+# oldest narration log (host log: prompt + assistant text + final result, no tool output):
+$ ls /logs | sort | head -1
+2026-02-22T20-36-26.log
+
+$ CUTOFF=2026-09-10 TODAY=2026-09-29 ./count.sh CLAUDE.md my-prompt.md
+cited=203 before_cutoff=173 (85.2%) distinct_dates=70 distinct_before=60 oldest=2026-06-04 cutoff=2026-09-10 skipped_future=0
+$ CUTOFF=2026-02-22 TODAY=2026-09-29 ./count.sh CLAUDE.md my-prompt.md   # against the narration log
+cited=203 before_cutoff=0 (0.0%) distinct_dates=70 distinct_before=0 oldest=2026-06-04 cutoff=2026-02-22 skipped_future=0
+
+# controls
+# planted file: 06-02, 2026-08-21, 09-15, 09-16 (cites), 1990-09-19 and 928605612 (not cites), 12-24 (deadline). Expect cited=4 before_cutoff=2 skipped_future=1
+cited=4 before_cutoff=2 (50.0%) distinct_dates=4 distinct_before=2 oldest=2026-06-02 cutoff=2026-09-10 skipped_future=1
+# empty file: expect exit 3
+no dated citations parsed (check the file)
+exit=3
+# independent parser (Bun regex with lookarounds) on the same two files:
+cited=203 before_cutoff=173 future=0
