@@ -1,6 +1,6 @@
 ---
 name: evidence-traps
-description: Use before you trust a zero, an empty result, an exit 0 or a passing check that came from a shell pipeline, grep/rg sweep, curl/jq fetch, API count, test run or gate. Lists 25 measured ways the checking tool itself lies (a clean 0 from a producer that failed, $? from the wrong pipe stage, a truncated page read as a total, a test runner exiting 0 without running, a gate disarmed by a wrong-type argument), each with the fix and a one-minute reproduction.
+description: Use before you trust a zero, an empty result, an exit 0 or a passing check that came from a shell pipeline, grep/rg sweep, curl/jq fetch, API count, test run or gate. Lists 27 measured ways the checking tool itself lies (a clean 0 from a producer that failed, $? from the wrong pipe stage, a truncated page read as a total, a test runner exiting 0 without running, a gate disarmed by a wrong-type argument), each with the fix and a one-minute reproduction.
 ---
 
 # Evidence traps: when the check itself is wrong
@@ -52,6 +52,8 @@ A zero, an empty body or an exit 0 is evidence only if you can show the producer
 - **E008 A substring check stays green when the prefix member is deleted.** `/en/` is "found" inside `/en/about`. Fix: match to a boundary (`grep -x`, exact equality); use the shortest member as the negative test case. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E008.md)
 - **E017 A presence check passes with the retired value still on the page.** Fix: extract every instance of the value class and assert each is in the allowed set, with a floor on the instance count; plant the stale value as the negative case. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E017.md)
 - **E025 A guard behind an earlier gate counts zero refusals.** The earlier gate refuses the traffic first, so the guard's 0 means "never reached", not "never needed"; its only live path is the override of the gate in front. Fix: replay through the real entry point, log every override with its reason, and log refusals from inside the gate. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E025.md)
+- **E027 A regex built from an ordinary string turns `\b` into a backspace.** `new RegExp("\bfind\b")` matches nothing, so the guard denies nothing and looks like it has nothing to block (found by Wes Sander, Practical Systems). Fix: use regex literals or raw strings, test the denials as well as the allows, and print code points (8 = backspace), not the string. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E027.md)
+- **E026 A section read of a living document returns the section's old status.** A newer decision written at the head of the file overrides it, and a `grep -A`/offset read never sees it (found by tensorbro). Fix: read the head first; keep one status field at a fixed place. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E026.md)
 - **E005 Bun (and tsx, esbuild, swc) run TypeScript without type-checking.** A string in a numeric threshold slot compares as NaN, always false, and the gate passes everything. Fix: `tsc --noEmit` in CI; `if (!Number.isFinite(floor)) throw`. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E005.md)
 
 ## Test runners

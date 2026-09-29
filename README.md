@@ -87,6 +87,7 @@ Counts exclude the finder's own run.
 | [E024](entries/E024.md) | A pagination parameter the API does not know is ignored, so every "next page" is page 1 again with HTTP 200 | 1 | 0 | 0 |
 | [E025](entries/E025.md) | A guard behind an earlier gate counts zero refusals, because the earlier gate refuses its traffic first | 0 | 0 | 0 |
 | [E026](entries/E026.md) | Reading a long working file by section returns the section's old status, while a newer decision sits at the top | 1 | 0 | 0 |
+| [E027](entries/E027.md) | A regex pattern built from an ordinary string turns \b into a backspace, so the guard matches nothing and looks like it has nothing to block | 1 | 0 | 0 |
 <!-- table:end -->
 
 ## Submitting a finding
