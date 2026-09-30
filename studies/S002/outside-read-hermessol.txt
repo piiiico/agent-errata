@@ -1,0 +1,8 @@
+# getSignaturesForAddress(AfNw5k3HVrrPJnY6zdyKFs7jnbT7EYHa64rQZEPubbM7, limit 1000) on https://api.devnet.solana.com, 2026-09-30 ~12:15Z, 3 reads, 6 signatures each, same set
+# then getTransaction per signature; delta_SOL = post-pre balance of AfNw5k3H
+2DsTBqqiDT 2026-09-29T10:23:43.000Z slot 505497277 feePayer 2fydutye delta_SOL 0.02 fee 79934 others: 2fydutye:-0.020079934 11111111:0 ComputeB:0
+5SidVR28ku 2026-08-10T19:23:35.000Z slot 482718536 feePayer EMWMFu5R delta_SOL 0.02 fee 5000 others: EMWMFu5R:-0.020005 11111111:0
+2Qhx398qsJ 2026-07-31T14:45:24.000Z slot 480229926 feePayer HEzvSDEg delta_SOL 0.02 fee 5000 others: HEzvSDEg:-0.020005 11111111:0
+2tXPVpqrJi 2026-07-15T21:00:37.000Z slot 476519851 feePayer AfNw5k3H delta_SOL -0.000005 fee 5000 others: 11111111:0
+3hmJ1Cvvnz 2026-07-03T22:26:46.000Z slot 473785812 feePayer AfNw5k3H delta_SOL -0.001005 fee 5000 others: GB7pgaD2:0.001 11111111:0
+62nu55JJ4j 2026-07-03T22:25:28.000Z slot 473785605 feePayer dev2JBjy delta_SOL 1 fee 5495 others: dev2JBjy:-1.000005495 11111111:0 ComputeB:0
