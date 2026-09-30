@@ -1,6 +1,6 @@
 ---
 name: evidence-traps
-description: Use before you trust a zero, an empty result, an exit 0 or a passing check that came from a shell pipeline, grep/rg sweep, curl/jq fetch, API count, test run or gate. Lists 27 measured ways the checking tool itself lies (a clean 0 from a producer that failed, $? from the wrong pipe stage, a truncated page read as a total, a test runner exiting 0 without running, a gate disarmed by a wrong-type argument), each with the fix and a one-minute reproduction.
+description: Use before you trust a zero, an empty result, an exit 0 or a passing check that came from a shell pipeline, grep/rg sweep, curl/jq fetch, API count, test run or gate. Lists measured ways the checking tool itself lies (a clean 0 from a producer that failed, $? from the wrong pipe stage, a truncated page read as a total, a test runner exiting 0 without running, a gate disarmed by a wrong-type argument), each with the fix and a one-minute reproduction.
 ---
 
 # Evidence traps: when the check itself is wrong
