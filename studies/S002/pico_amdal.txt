@@ -1,0 +1,59 @@
+# S002 raw, pico_amdal, 2026-09-30T07:48:56Z
+## derive (tmp/s002/derive.ts, viem privateKeyToAccount / solana Keypair.fromSeed)
+main derived == stated: 0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+test derived == stated: 0x6900AB78C26c519cda924e796B0410E6b974C0BC
+sol  derived == stated: FisZ7PEqmNU2thwXP9dwitffkJ4jLWXP8WqpMSx7kUTt
+## repos: 53 public non-fork repos under github.com/piiiico, shallow clones
+MINE  repos/agentlair/packages/worker/src/routes/trust.batch.test.ts:120:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/packages/worker/src/x402.ts:19:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/packages/worker/src/x402.ts:866:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/packages/worker/src/well-known-x402.test.ts:35:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/packages/worker/src/well-known-x402.test.ts:77:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/packages/worker/src/well-known-extras.ts:68:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/packages/worker/src/index.ts:471:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/packages/worker/.pipeline/x402-spec-v2-fix-followup-20260605-060620/deploy-output.md:33:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/rfcs/RFC-001-ADDENDUM-phase1-scope-additions.md:103:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair/apps/web/src/content/blog/trust-mcp-v0-2-0-x402-payment.md:81:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/keeperguard/src/guard.test.ts:16:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+OTHER repos/keeperguard/bin/mcp-demo.ts:35:0x0bdf11fd28778dd46a1f65d87f9cf65f6662dfbd
+MINE  repos/keeperguard/bin/demo.ts:32:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+OTHER repos/agentlair-mpp-identity-bridge/src/demo.ts:38:0x742d35Cc6634c0532925a3b844bC9e7595F8fE00
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/scripts/fetch-common-contracts.js:30:0xEFC2c1444eBCC4Db75e7613d20C6a62fF67A167C
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/scripts/fetch-common-contracts.js:32:0x449ED7C3e6Fee6a97311d4b55475DF59C44AdD33
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/crosschain/BridgeERC721.behavior.js:165:ERC7786RecipientUnauthorizedGateway
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/crosschain/BridgeERC721.behavior.js:177:ERC7786RecipientUnauthorizedGateway
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/crosschain/ERC7786Recipient.test.js:52:ERC7786RecipientUnauthorizedGateway
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/crosschain/BridgeERC1155.behavior.js:280:ERC7786RecipientUnauthorizedGateway
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/crosschain/BridgeERC1155.behavior.js:292:ERC7786RecipientUnauthorizedGateway
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/crosschain/BridgeERC20.behavior.js:93:ERC7786RecipientUnauthorizedGateway
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/crosschain/BridgeERC20.behavior.js:105:ERC7786RecipientUnauthorizedGateway
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/utils/RelayedCall.test.js:99:0x7859821024E633C5dC8a4FcF86fC52e7720Ce525
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/utils/RelayedCall.test.js:112:0x7859821024E633C5dC8a4FcF86fC52e7720Ce525
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/utils/RelayedCall.test.js:198:0x7859821024E633C5dC8a4FcF86fC52e7720Ce525
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/test/utils/RelayedCall.test.js:211:0x7859821024E633C5dC8a4FcF86fC52e7720Ce525
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/docs/modules/ROOT/pages/account-abstraction.adoc:37:0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/docs/modules/ROOT/pages/eoa-delegation.adoc:81:0x0000000000000000000000000000000000000000
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/lib/forge-std/src/Base.sol:22:0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
+OTHER repos/proof-of-commitment/contracts/lib/openzeppelin-contracts/lib/forge-std/src/StdConstants.sol:19:0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
+OTHER repos/proof-of-commitment/contracts/lib/forge-std/src/Base.sol:22:0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
+OTHER repos/proof-of-commitment/contracts/lib/forge-std/src/StdConstants.sol:19:0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
+OTHER repos/keeperhub-headless-starter/README.md:28:0xf9537b78d013384795a57f0687260252f76734f9
+OTHER repos/keeperhub-headless-starter/README.md:28:0x1811688A09c3616C2c0E3B51654e2a1F50739Cae
+OTHER repos/keeperhub-headless-starter/README.md:155:0x8e5d57f515fb7151624cbd294fd460e3cd34d0bd
+MINE  repos/agentlair-primitives/packages/mcp-server/src/client.test.ts:60:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  repos/agentlair-primitives/packages/mcp-server/src/client.test.ts:315:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+files=3137 pay_line_addresses=38 mine=14 other=24
+## live: agentlair.dev/.well-known/x402 + /.well-known/bazaar.json
+MINE  live-767.txt:15:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  live-6521.txt:8:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  live-6521.txt:20:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  live-6521.txt:62:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  live-6521.txt:104:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  live-6521.txt:153:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+MINE  live-6521.txt:201:0x90EE1EbcCFA2021711C595E1410e22401570B4AC
+files=2 pay_line_addresses=7 mine=7 other=0
+## live 402 bodies (single-line JSON >400 chars, so read with grep): POST /v1/trust/batch, GET /v1/agents/lookup, POST /v1/auth/verify
+"payTo":"0x90EE1EbcCFA2021711C595E1410e22401570B4AC"
+"payTo":"0x90EE1EbcCFA2021711C595E1410e22401570B4AC"
+"payTo":"0x90EE1EbcCFA2021711C595E1410e22401570B4AC"
+## Base balances 2026-09-30 ~08:10Z (mainnet.base.org): 0x8e5d57f5 ETH 0 USDC 0; 0xf9537b78 ETH 0 USDC 0; 0x0bdf11fd ETH 0.00012 (EIP-7702 delegated EOA)
