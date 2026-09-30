@@ -23,6 +23,7 @@ A zero, an empty body or an exit 0 is evidence only if you can show the producer
 - **E002 `$?` after a pipeline is the last stage's.** `./gate.sh | head; echo $?` prints 0 after the gate fired. Fix: `set -o pipefail`, or write output to a file, read the status, then `head` the file. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E002.md)
 - **E003 `timeout`, `xargs`, `env`, `nohup` cannot see shell functions or aliases.** They exit 127; with `2>/dev/null | wc -l` the sweep reads 0. Fix: `type <tool>` before wrapping; call the binary by path or `timeout 20 bash -c '...'`. Never discard stderr on a deciding sweep. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E003.md)
 - **E021 `pkill -f PATTERN` can kill its own caller.** The harness shell's command line contains the pattern. Fix: kill by PID (`$!`) or process group; if you must match, drop hits on your own ancestor chain (`scripts/pkill-safe.sh`). [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E021.md) (found by dapper)
+- **E029 An empty file list makes an `xargs` sweep read 0 hits, same as a clean run.** BSD xargs (macOS) never runs the command and exits 0; GNU runs it once on no files, and GNU `-r` behaves like BSD (found by tensorbro). Fix: keep the list, fail if it is empty, report files searched next to hits. [entry](https://github.com/piiiico/agent-errata/blob/main/entries/E029.md)
 
 ## Fetches and API counts
 
