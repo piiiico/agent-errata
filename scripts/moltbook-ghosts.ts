@@ -1,7 +1,9 @@
 // Classify every Moltbook notification that points at a comment:
-//   served     - the comment is in the post's comment tree
+//   served     - the comment is in the post's comment tree, live
 //   pending    - verificationStatus != verified: the author never solved the challenge, never published
-//   deleted    - isDeleted, or the notification no longer carries the comment
+//   deleted    - isDeleted, or the notification no longer carries the comment. Moltbook keeps a deleted comment in
+//                the tree as a tombstone (is_deleted=true, content "Deleted comment"), so tree membership alone reads it as served (E028)
+//   spam       - verified but isSpam=true: counted in the post's comment_count and filtered out of every sort
 //   below-cap  - verified, not deleted, parent sits at depth >= 4, so the comment is past the depth-5 tree cap
 //   unexplained- none of the above: this is the one to report
 // Usage: MOLTBOOK_API_KEY=... bun scripts/moltbook-ghosts.ts   (read-only, www.moltbook.com only)
@@ -15,11 +17,11 @@ const api = async (p: string) => {
 const notes = (await api("/notifications?limit=50")).notifications ?? [];
 const withComment = notes.filter((n: any) => n.relatedCommentId);
 if (!withComment.length) { console.error(`0 of ${notes.length} notifications point at a comment; nothing classified`); process.exit(2); }
-const trees = new Map<string, Map<string, number>>();
+const trees = new Map<string, Map<string, { depth: number; deleted: boolean }>>();
 const tree = async (post: string) => {
   if (!trees.has(post)) {
-    const m = new Map<string, number>();
-    const walk = (cs: any[]) => { for (const c of cs ?? []) { m.set(c.id, c.depth); walk(c.replies); } };
+    const m = new Map<string, { depth: number; deleted: boolean }>();
+    const walk = (cs: any[]) => { for (const c of cs ?? []) { m.set(c.id, { depth: c.depth, deleted: c.is_deleted === true }); walk(c.replies); } };
     for (const sort of ["new", "top", "old"]) walk((await api(`/posts/${post}/comments?sort=${sort}&limit=200`)).comments);
     trees.set(post, m);
   }
@@ -29,11 +31,14 @@ const counts: Record<string, number> = {};
 for (const n of withComment) {
   const c = n.comment, t = await tree(n.relatedPostId);
   let cls: string, why = "";
-  if (t.has(n.relatedCommentId)) { cls = "served"; why = `depth ${t.get(n.relatedCommentId)}`; }
+  const node = t.get(n.relatedCommentId);
+  if (node?.deleted) { cls = "deleted"; why = "tombstone in tree"; }
+  else if (node) { cls = "served"; why = `depth ${node.depth}`; }
   else if (!c || c.isDeleted) cls = "deleted";
+  else if (c.isSpam === true) { cls = "spam"; why = "isSpam=true: counted in comment_count, never served"; }
   else if (c.verificationStatus !== "verified") { cls = "pending"; why = `verificationStatus=${c.verificationStatus}`; }
-  else if (c.parentId && (t.get(c.parentId) ?? -1) >= 4) { cls = "below-cap"; why = `parent depth ${t.get(c.parentId)}`; }
-  else { cls = "unexplained"; why = c.parentId ? `parent ${t.has(c.parentId) ? "depth " + t.get(c.parentId) : "not in tree either"}` : "top-level"; }
+  else if (c.parentId && (t.get(c.parentId)?.depth ?? -1) >= 4) { cls = "below-cap"; why = `parent depth ${t.get(c.parentId)!.depth}`; }
+  else { cls = "unexplained"; why = c.parentId ? `parent ${t.has(c.parentId) ? "depth " + t.get(c.parentId)!.depth : "not in tree either"}` : "top-level"; }
   counts[cls] = (counts[cls] ?? 0) + 1;
   console.log(`${cls.padEnd(11)} ${n.relatedCommentId} ${n.type} ${n.createdAt}${why ? "  (" + why + ")" : ""}`);
 }

@@ -60,7 +60,7 @@ for (const f of readdirSync(join(root, "replications")).sort()) {
     try { row = JSON.parse(line); } catch { err(w, "not valid JSON"); return; }
     if (!row || typeof row !== "object" || Array.isArray(row)) { err(w, "row must be a JSON object"); return; }
     for (const k of ROW_KEYS) if (typeof row[k] !== "string") err(w, `missing string field: ${k}`);
-    for (const k of Object.keys(row)) if (![...ROW_KEYS, "note", "probe"].includes(k)) err(w, `unknown field: ${k}`);
+    for (const k of Object.keys(row)) if (![...ROW_KEYS, "note", "probe", "source"].includes(k)) err(w, `unknown field: ${k}`);
     if (row.entry !== id) err(w, `entry "${row.entry}" does not match file ${id}`);
     if (!RESULTS.includes(row.result)) err(w, `result must be one of ${RESULTS.join(", ")}`);
     if (!DATE.test(row.date ?? "")) err(w, "date must be YYYY-MM-DD");
@@ -72,6 +72,9 @@ for (const f of readdirSync(join(root, "replications")).sort()) {
       err(w, "result 'does-not-reproduce' requires the control to match and the defect not to");
     if (row.result === "does-not-reproduce" && !String(row.observed_defect ?? "").trim())
       err(w, "result 'does-not-reproduce' needs an observed defect value; an empty defect arm is not-applicable");
+    // source: where the replicator published this row on an account it controls. It has to outlive this repo, so a link into it does not count.
+    if (row.source !== undefined && (!/^https:\/\/\S+$/.test(row.source) || /github\.com\/piiiico\/agent-errata/i.test(row.source)))
+      err(w, "source must be one https URL outside this repository");
     if (row.result === "not-applicable" && !row.note?.trim()) err(w, "result 'not-applicable' needs a note saying why");
     rows.push(row);
   });
@@ -83,12 +86,14 @@ for (const [id, e] of entries) {
   if (!rows.some((r) => r.result === "reproduces")) err(`replications/${id}.jsonl`, `needs a replication-0 row that reproduces`);
 }
 
-// Standing = distinct (agent, stack) pairs, other than the finder, on which the entry reproduced.
-const table = ["| Entry | Finding | Independent reproductions | Did not reproduce | N/A |", "|---|---|---|---|---|"];
+// Standing = distinct agents, other than the finder and the repo's operator, on which the entry reproduced.
+// The operator writes most checks and runs replication 0 on entries others found; those runs are custody, not independence.
+const OPERATOR = "pico_amdal";
+const table = ["| Entry | Finding | Independent reproductions | Held outside this repo | Did not reproduce | N/A |", "|---|---|---|---|---|---|"];
 for (const [id, e] of entries) {
-  const rows = (rowsByEntry.get(id) ?? []).filter((r) => r.agent !== e.found_by);
-  const distinct = (res: string) => new Set(rows.filter((r) => r.result === res).map((r) => `${r.agent}|${r.stack}`)).size;
-  table.push(`| [${id}](entries/${id}.md) | ${e.title.replace(/\|/g, "\\|")} | ${distinct("reproduces")} | ${distinct("does-not-reproduce")} | ${distinct("not-applicable")} |`);
+  const rows = (rowsByEntry.get(id) ?? []).filter((r) => r.agent !== e.found_by && r.agent !== OPERATOR);
+  const distinct = (res: string, pred = (_: Row) => true) => new Set(rows.filter((r) => r.result === res && pred(r)).map((r) => r.agent)).size;
+  table.push(`| [${id}](entries/${id}.md) | ${e.title.replace(/\|/g, "\\|")} | ${distinct("reproduces")} | ${distinct("reproduces", (r) => !!r.source)} | ${distinct("does-not-reproduce")} | ${distinct("not-applicable")} |`);
 }
 const readmePath = join(root, "README.md");
 if (existsSync(readmePath)) {
