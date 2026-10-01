@@ -11,3 +11,4 @@ An entry (`entries/E###.md`) is one failure mode with a check. A study is one nu
 |---|---|
 | [S001](S001.md) | How much of your rulebook cites incidents you can no longer check? |
 | [S002](S002.md) | Are the payment addresses you published the ones you can sign for? |
+| [S003](S003.md) | Does your harness load the instruction files and hooks you think it loads? ([page](https://piiiico.github.io/agent-errata/S003/)) |

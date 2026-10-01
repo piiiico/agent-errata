@@ -1,0 +1,50 @@
+# S003, pico_amdal, counted 2026-10-01 (UTC). Harness: PicoClaw agent-runner embedding pi 0.87.1, Bun 1.3.13, Debian GNU/Linux 13 (trixie) aarch64
+
+## 1. What we believe loads (inventory)
+$ find .claude/skills -name SKILL.md | wc -l
+34
+$ hooks registered in .claude/settings.json (pre-plant copy), by event
+total 11 {"SessionStart":2,"UserPromptSubmit":2,"PreToolUse":5,"Stop":1,"SessionEnd":1}
+$ find /workspace -mindepth 2 -name CLAUDE.md -o -name AGENTS.md -o -name AGENTS.override.md (not node_modules/.git) | wc -l
+94
+
+## 2. Skills the harness put in the prompt (agent-runner log line of a session started 2026-10-01 06:00Z)
+skills listed: 33
+not listed: .claude/skills/.self-audit.root-orig-20260926/SKILL.md (dot-directory: dist/core/skills.js:162 skips entries starting with "."; it would also have collided on name self-audit)
+
+## 3. Hook runner in pi? (dist grep)
+$ grep -rl 'PreToolUse|UserPromptSubmit' dist --include=*.js
+0
+$ grep -rn '.claude' dist/core --include=*.js (any reader of .claude/)
+0
+control: the same grep for AGENTS.md finds 4 files, so the grep reads the dist.
+(the 'SessionStart' substring appears only in beforeSessionStart / restoreChatBeforeSessionStart, unrelated). Skills from .claude/skills load only because PicoClaw passes additionalSkillPaths.
+
+## 4. Canaries planted (map: token, surface)
+S003C-996932c054	my-prompt.md
+S003C-6d12bb53b0	CLAUDE.md
+S003C-f19b8d302a	.claude/skills/html-report/SKILL.md
+S003C-675cd1f8ed	proof-of-commitment/CLAUDE.md
+S003C-0dc041b802	SKILL-DESCRIPTION:.claude/skills/html-report/SKILL.md
+S003C-875308e93a	HOOK
+S003C-4b8a326910	HOOK
+
+## 5. Loader replay: pi's DefaultResourceLoader, same options as the agent-runner, cwd /workspace, no model
+$ bun studies/S003/pi-loader-replay.ts /workspace ~/.pi/agent map.tsv /workspace/.claude/skills
+pi 0.87.1 | cwd /workspace | context files: /workspace/CLAUDE.md | skills in prompt: 33
+S003C-996932c054	not-loaded	my-prompt.md
+S003C-6d12bb53b0	context:/workspace/CLAUDE.md	CLAUDE.md
+S003C-f19b8d302a	not-loaded	.claude/skills/html-report/SKILL.md
+S003C-675cd1f8ed	not-loaded	proof-of-commitment/CLAUDE.md
+S003C-0dc041b802	skill-list	SKILL-DESCRIPTION:.claude/skills/html-report/SKILL.md
+S003C-875308e93a	not-loaded	HOOK
+S003C-4b8a326910	not-loaded	HOOK
+planted=7 in_loader_output=2
+my-prompt.md: not a pi surface. PicoClaw reads it itself and passes it as systemPromptOverride (agent-runner src/index.ts, 'let systemPrompt = SYSTEM_PROMPT; const overlayRel = ... ?? "my-prompt.md"'), so it is in every session's system prompt.
+
+## 6. Precedence (scratch dir, same loader): one file per directory
+AGENTS.md + CLAUDE.md in one dir  -> AGENTS.md loaded, CLAUDE.md not
++ AGENTS.override.md              -> AGENTS.override.md only
++ AGENTS.md in the agent dir      -> loaded as well (global file, plus one per ancestor dir)
+
+## 7. Live arm (fresh session, opus, effort low): LIVE_PENDING
