@@ -1,0 +1,29 @@
+{
+  "study": "S003",
+  "harness": "pi 1.0.0",
+  "arm": "b",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T01:39:44.866Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 6198
+    }
+  ],
+  "main_request": "req-000_v1_chat_completions.json",
+  "main_request_bytes": 6198,
+  "tool_count": 4,
+  "system_prompt_chars": 2937,
+  "tokens_in_main_request": [
+    "S003C-B-AGENTSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-B-AGENTSMD"
+  ],
+  "canary_context": {
+    "S003C-B-AGENTSMD": "uctions path=\\\"/tmp/s003fx/pi1/b/repo/AGENTS.md\\\">\\nCanary: S003C-B-AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}
