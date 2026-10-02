@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from "fs";
 const dir = process.argv[2];
 const files = readdirSync(dir).filter((f) => f.startsWith("req-")).sort();
 const PROMPT_NEEDLE = "list every token starting with";
-const tokRe = /S003C-[ABCD]-[A-Z_]+/g;
+const tokRe = /S003C-[A-F]-[A-Z_]+/g;
 let first: string | null = null; let firstAny: string | null = null;
 const union = new Set<string>();
 for (const f of files) {

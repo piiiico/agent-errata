@@ -1,0 +1,38 @@
+{
+  "study": "S003",
+  "harness": "opencode (symlink arm)",
+  "arm": "f",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T01:48:28.541Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 2567
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 30996
+    }
+  ],
+  "main_request": "req-001_v1_chat_completions.json",
+  "main_request_bytes": 30996,
+  "tool_count": 10,
+  "system_prompt_chars": 9709,
+  "tokens_in_main_request": [
+    "S003C-F-CLAUDEMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-F-CLAUDEMD"
+  ],
+  "token_occurrences_in_main_request": {
+    "S003C-F-CLAUDEMD": 1
+  },
+  "canary_context": {
+    "S003C-F-CLAUDEMD": "ructions from: /tmp/sefx/opencode/f/repo/AGENTS.md\\nCanary: S003C-F-CLAUDEMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

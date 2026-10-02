@@ -3,15 +3,17 @@
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 const [dir, outFile, label, arm] = process.argv.slice(2);
 const score = JSON.parse(Bun.spawnSync(["bun", `${import.meta.dir}/score.ts`, dir]).stdout.toString());
-const tokRe = /S003C-[ABCD]-[A-Z_]+/g;
+const tokRe = /S003C-[A-F]-[A-Z_]+/g;
 const index = readFileSync(`${dir}/index.log`, "utf8").trim().split("\n").map((l) => {
   const [n, method, path, bytes] = l.split("\t");
   return { n: Number(n), method, path: path.replace(/key=[^&]+/g, "key=REDACTED"), bytes: Number(bytes) };
 });
 const canary_lines: Record<string, string> = {};
+const occurrences: Record<string, number> = {};
 if (score.first) {
   const body = readFileSync(`${dir}/${score.first}`, "utf8");
   for (const m of body.matchAll(tokRe)) {
+    occurrences[m[0]] = (occurrences[m[0]] ?? 0) + 1;
     if (canary_lines[m[0]]) continue;
     // short quote: the canary line itself plus up to 60 chars before it (shows how the harness labels the file)
     const s = Math.max(0, m.index! - 60);
@@ -24,6 +26,7 @@ const out = {
   requests: index, main_request: score.first, main_request_bytes: score.bytes,
   tool_count: score.tools, system_prompt_chars: score.system_chars,
   tokens_in_main_request: score.tokens_first, tokens_in_any_request: score.tokens_any_request,
+  token_occurrences_in_main_request: occurrences,
   canary_context: canary_lines,
   note: "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept).",
 };

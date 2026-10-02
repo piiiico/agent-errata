@@ -19,7 +19,11 @@ plant)
   mkdir -p "$STATE/orig"
   for f in "$@"; do
     [ -f "$f" ] || { echo "skip (no such file): $f" >&2; continue; }
-    if grep -q 'S003C-' "$f"; then echo "skip (already planted): $f" >&2; continue; fi
+    if grep -q 'S003C-' "$f"; then
+      if [ -L "$f" ]; then echo "skip (symlink to $(readlink "$f"), planted there already; a session reading either name sees the same token): $f" >&2
+      else echo "skip (already planted): $f" >&2; fi
+      continue
+    fi
     t=$(tok)
     key=$(printf '%s' "$f" | od -An -tx1 | tr -d ' \n' | cut -c1-80)
     cp -p "$f" "$STATE/orig/$key"

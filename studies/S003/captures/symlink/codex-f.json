@@ -1,0 +1,32 @@
+{
+  "study": "S003",
+  "harness": "codex (symlink arm)",
+  "arm": "f",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T01:48:27.969Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/responses",
+      "bytes": 39529
+    }
+  ],
+  "main_request": "req-000_v1_responses.json",
+  "main_request_bytes": 39673,
+  "tool_count": 9,
+  "system_prompt_chars": 19283,
+  "tokens_in_main_request": [
+    "S003C-F-CLAUDEMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-F-CLAUDEMD"
+  ],
+  "token_occurrences_in_main_request": {
+    "S003C-F-CLAUDEMD": 1
+  },
+  "canary_context": {
+    "S003C-F-CLAUDEMD": "tions for /tmp/sefx/codex/f/repo\\n\\n<INSTRUCTIONS>\\nCanary: S003C-F-CLAUDEMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

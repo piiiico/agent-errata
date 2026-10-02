@@ -1,0 +1,38 @@
+{
+  "study": "S003",
+  "harness": "crush (symlink arm)",
+  "arm": "e",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T01:48:28.038Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 891
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 48738
+    }
+  ],
+  "main_request": "req-001_v1_chat_completions.json",
+  "main_request_bytes": 48806,
+  "tool_count": 26,
+  "system_prompt_chars": 22282,
+  "tokens_in_main_request": [
+    "S003C-E-AGENTSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-E-AGENTSMD"
+  ],
+  "token_occurrences_in_main_request": {
+    "S003C-E-AGENTSMD": 2
+  },
+  "canary_context": {
+    "S003C-E-AGENTSMD": "\\n<file path=\\\"/tmp/sefx/crush/e/repo/AGENTS.md\\\">\\nCanary: S003C-E-AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}
