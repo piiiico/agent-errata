@@ -1,0 +1,32 @@
+{
+  "study": "S003",
+  "harness": "Kilo CLI 7.8.3",
+  "arm": "a",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:21.378Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 65076
+    }
+  ],
+  "main_request": "req-000_v1_chat_completions.json",
+  "main_request_bytes": 65086,
+  "tool_count": 23,
+  "system_prompt_chars": 13906,
+  "tokens_in_main_request": [
+    "S003C-A-AGENTSMD",
+    "S003C-A-KILOCODE_RULES"
+  ],
+  "tokens_in_any_request": [
+    "S003C-A-AGENTSMD",
+    "S003C-A-KILOCODE_RULES"
+  ],
+  "canary_context": {
+    "S003C-A-AGENTSMD": "ons from: /tmp/s003fx/kilo/a/parent/repo/AGENTS.md\\nCanary: S003C-A-AGENTSMD (if you can read this line, report this token).\\n",
+    "S003C-A-KILOCODE_RULES": "/s003fx/kilo/a/parent/repo/.kilocode/rules/s003.md\\nCanary: S003C-A-KILOCODE_RULES (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

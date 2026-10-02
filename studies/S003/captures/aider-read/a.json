@@ -1,0 +1,29 @@
+{
+  "study": "S003",
+  "harness": "aider 0.86.2, --read CONVENTIONS.md",
+  "arm": "a",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:21.293Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 3219
+    }
+  ],
+  "main_request": "req-000_v1_chat_completions.json",
+  "main_request_bytes": 3219,
+  "tool_count": 0,
+  "system_prompt_chars": 1155,
+  "tokens_in_main_request": [
+    "S003C-A-CONVENTIONSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-A-CONVENTIONSMD"
+  ],
+  "canary_context": {
+    "S003C-A-CONVENTIONSMD": ".\\nDo not edit these files!\\n\\nCONVENTIONS.md\\n```\\nCanary: S003C-A-CONVENTIONSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

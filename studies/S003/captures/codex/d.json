@@ -1,0 +1,29 @@
+{
+  "study": "S003",
+  "harness": "Codex CLI 0.160.0",
+  "arm": "d",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:19.437Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/responses",
+      "bytes": 39554
+    }
+  ],
+  "main_request": "req-000_v1_responses.json",
+  "main_request_bytes": 39698,
+  "tool_count": 9,
+  "system_prompt_chars": 19301,
+  "tokens_in_main_request": [
+    "S003C-D-AGENTSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-D-AGENTSMD"
+  ],
+  "canary_context": {
+    "S003C-D-AGENTSMD": "ons for /tmp/s003fx/codex/d/repo\\n\\n<INSTRUCTIONS>\\nCanary: S003C-D-AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

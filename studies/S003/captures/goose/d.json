@@ -1,0 +1,41 @@
+{
+  "study": "S003",
+  "harness": "goose 1.52.0",
+  "arm": "d",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:21.986Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "GET",
+      "path": "/v1/models",
+      "bytes": 0
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 2049
+    },
+    {
+      "n": 2,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 18298
+    }
+  ],
+  "main_request": "req-002_v1_chat_completions.json",
+  "main_request_bytes": 18338,
+  "tool_count": 17,
+  "system_prompt_chars": 4468,
+  "tokens_in_main_request": [
+    "S003C-D-AGENTSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-D-AGENTSMD"
+  ],
+  "canary_context": {
+    "S003C-D-AGENTSMD": "ints for working on the project in this directory.\\nCanary: S003C-D-AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

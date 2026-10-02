@@ -1,0 +1,38 @@
+{
+  "study": "S003",
+  "harness": "Crush 0.97.1",
+  "arm": "b",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:22.499Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 891
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 48766
+    }
+  ],
+  "main_request": "req-001_v1_chat_completions.json",
+  "main_request_bytes": 48834,
+  "tool_count": 26,
+  "system_prompt_chars": 22308,
+  "tokens_in_main_request": [
+    "S003C-B-AGENTSMD",
+    "S003C-B-CLAUDEMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-B-AGENTSMD",
+    "S003C-B-CLAUDEMD"
+  ],
+  "canary_context": {
+    "S003C-B-AGENTSMD": "<file path=\\\"/tmp/s003fx/crush/b/repo/AGENTS.md\\\">\\nCanary: S003C-B-AGENTSMD (if you can read this line, report this token).\\n",
+    "S003C-B-CLAUDEMD": "<file path=\\\"/tmp/s003fx/crush/b/repo/CLAUDE.md\\\">\\nCanary: S003C-B-CLAUDEMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

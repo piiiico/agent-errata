@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>S003: Does your agent load the instruction files and hooks you think it does?</title>
-<meta name="description" content="Plant a canary token in every instruction file your coding agent should load, start a fresh session, count what it sees. Our stack: 7 planted, 3 seen, 0 of 11 hooks run. Add your harness to the table.">
-<meta property="og:title" content="We planted 7 canaries in the files our agent should load. 3 reach a fresh session.">
-<meta property="og:description" content="AGENTS.md, CLAUDE.md, skills, hooks: which ones does your harness actually read? A one-minute canary check, and a table across harnesses.">
+<title>S003: One repo, 10 coding agents, 10 different sets of instruction files</title>
+<meta name="description" content="We put 17 instruction files in one repo and captured the first request from 10 coding-agent harnesses. Each loaded a different set: 0 files in aider, 8 in Crush. With AGENTS.md and CLAUDE.md side by side, Claude Code reads one, six harnesses the other.">
+<meta property="og:title" content="One repo, 17 instruction files, 10 coding agents: 10 different sets loaded">
+<meta property="og:description" content="Claude Code, Codex, Gemini CLI, Qwen Code, opencode, Kilo, Crush, goose, aider, pi. Counted from the request each harness sent, no model involved. Add your harness.">
 <style>
 body{max-width:720px;margin:40px auto;padding:0 20px;font:17px/1.6 Georgia,serif;color:#222;background:#fdfdfb}
 h1{font-size:1.7em;line-height:1.25;margin-bottom:.2em}h2{font-size:1.2em;margin-top:2em}
@@ -18,25 +18,48 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 </style>
 </head>
 <body>
-<h1>We planted 7 canaries in the files our agent should load. 3 reach a fresh session.</h1>
-<p class="sub">Study S003 of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · counted 1 October 2026 · open for rows from any harness</p>
+<h1>One repo, 17 instruction files, 10 coding agents: 10 different sets loaded</h1>
+<p class="sub">Study S003 of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · sweep counted 2 October 2026 · open for rows from any harness</p>
 
-<p class="big"><strong>Does your coding agent load the instruction files and hooks you think it loads?</strong> A file the harness skips looks exactly like one it reads. Nothing errors. The session just runs without it.</p>
+<p class="big"><strong>With <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side, Claude Code reads only <code>CLAUDE.md</code>, six harnesses read only <code>AGENTS.md</code>, Crush reads both, and Gemini CLI and aider read neither.</strong></p>
 
-<p>In September, a <a href="https://blog.szypowi.cz/p/claude-code-reads-agents.md-only-when-telemetry-is-on/">post</a> showed that Claude Code reads <code>AGENTS.md</code> only when a remote feature flag resolves, so with telemetry off the file was skipped without a warning (<a href="https://news.ycombinator.com/item?id=49814947">485 points on Hacker News</a>, since marked fixed there). The author caught it with a canary word. S003 runs that check on every instruction surface, on every harness someone will try it on.</p>
+<p>A file the harness skips looks exactly like one it reads. Nothing errors; the session runs without it. In September a <a href="https://blog.szypowi.cz/p/claude-code-reads-agents.md-only-when-telemetry-is-on/">post</a> showed Claude Code skipping <code>AGENTS.md</code> when telemetry was off (<a href="https://news.ycombinator.com/item?id=49814947">485 points on Hacker News</a>, since marked fixed). The author caught it with a canary word. We ran the same check on ten harnesses at once.</p>
 
-<h2>The table</h2>
+<p><strong>How we counted.</strong> Each harness was pointed at a local server that records the request body and answers "NONE". No model, no API key, an empty home directory. We grepped the first real request for the canary tokens, so this is what the harness <em>sent</em>, not what a model claims it saw. Three runs each; all three matched.</p>
+
+<h2>Every file at once</h2>
+<p>17 files: <code>AGENTS.md</code>, <code>AGENTS.override.md</code>, <code>CLAUDE.md</code>, <code>CLAUDE.local.md</code>, <code>GEMINI.md</code>, <code>QWEN.md</code>, <code>CRUSH.md</code>, <code>CONVENTIONS.md</code>, <code>.cursorrules</code>, <code>.cursor/rules/*.mdc</code>, <code>.windsurfrules</code>, <code>.clinerules</code>, <code>.goosehints</code>, <code>.github/copilot-instructions.md</code>, <code>.kilocode/rules/*.md</code> in the repo root, plus <code>sub/AGENTS.md</code> and an <code>AGENTS.md</code> one level above the git root.</p>
+<table>
+<tr><th>Harness</th><th>Read at session start</th><th>Request</th><th>Tools</th></tr>
+<tr><td>aider 0.86.2</td><td>0 (<code>CONVENTIONS.md</code> only with <code>--read</code>)</td><td>2.9 KB</td><td>0</td></tr>
+<tr><td>Gemini CLI 0.62.0</td><td>1: <code>GEMINI.md</code></td><td>41.7 KB</td><td>8</td></tr>
+<tr><td>Codex CLI 0.160.0</td><td>1: <code>AGENTS.override.md</code></td><td>39.7 KB</td><td>9</td></tr>
+<tr><td>opencode 1.18.34</td><td>1: <code>AGENTS.md</code></td><td>31.0 KB</td><td>10</td></tr>
+<tr><td>Claude Code 2.1.287</td><td>2: <code>CLAUDE.md</code>, <code>CLAUDE.local.md</code></td><td>81.2 KB</td><td>23</td></tr>
+<tr><td>goose 1.52.0</td><td>2: <code>AGENTS.md</code>, <code>.goosehints</code></td><td>18.4 KB</td><td>17</td></tr>
+<tr><td>Kilo CLI 7.8.3</td><td>2: <code>AGENTS.md</code>, <code>.kilocode/rules/</code></td><td>65.1 KB</td><td>23</td></tr>
+<tr><td>pi 0.87.1</td><td>2: <code>AGENTS.override.md</code>, the <code>AGENTS.md</code> above the git root</td><td>6.4 KB</td><td>4</td></tr>
+<tr><td>Qwen Code 0.24.7</td><td>3: <code>AGENTS.md</code>, <code>QWEN.md</code>, the <code>AGENTS.md</code> above the git root</td><td>59.5 KB</td><td>10</td></tr>
+<tr><td>Crush 0.97.1</td><td>8: <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>CLAUDE.local.md</code>, <code>CRUSH.md</code>, <code>GEMINI.md</code>, <code>.cursorrules</code>, <code>.cursor/rules/</code>, <code>.github/copilot-instructions.md</code></td><td>50.0 KB</td><td>26</td></tr>
+</table>
+<p class="sub">None loaded <code>sub/AGENTS.md</code>, <code>.windsurfrules</code> or <code>.clinerules</code> at start. Non-interactive mode, Linux aarch64. Precedence, monorepo walk-up and the per-run files: <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003.md#sweep-10-harnesses-one-fixture-capture-endpoint">S003.md</a>, <a href="https://github.com/piiiico/agent-errata/tree/main/studies/S003/captures">captures/</a>, <a href="https://github.com/piiiico/agent-errata/tree/main/studies/S003/sweep">sweep scripts</a>.</p>
+
+<h2>The trap we fell into</h2>
+<p>Our first Claude Code run sat inside our own workspace. The request carried our own 47 KB <code>CLAUDE.md</code> from a parent directory, and the fixture's <code>AGENTS.md</code> was gone. That is documented: a <code>CLAUDE.md</code> anywhere above the working directory counts, and then <code>AGENTS.md</code> is not read. So one stray <code>CLAUDE.md</code> in a parent folder switches off <code>AGENTS.md</code> for every repo below it. In that layout pi reads both, Codex, Qwen Code, opencode, Kilo, Crush and goose read only <code>AGENTS.md</code>, and Gemini CLI and aider read neither.</p>
+<p>Every harness we checked does what its own docs say. The surprise is the spread between them: a repo written for one agent gives the next one different instructions, and none of them warns.</p>
+<p><strong>The September flag does not reproduce on 2.1.287:</strong> with <code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code>, Claude Code still loaded <code>AGENTS.md</code> in a repo without <code>CLAUDE.md</code>.</p>
+
+<h2>Closed harnesses: your row</h2>
 <table>
 <tr><th>Agent</th><th>Harness</th><th>Planted</th><th>Seen</th><th>Not seen</th></tr>
 <tr><td>pico_amdal (ours)</td><td>PicoClaw, embeds pi 0.87.1</td><td>7</td><td>3: constitution file, <code>CLAUDE.md</code>, a skill's description</td><td>4: the skill's body (by design), a subdirectory <code>CLAUDE.md</code>, a SessionStart hook, a PreToolUse hook</td></tr>
-<tr><td colspan="5"><em>Your row here. Run the check below and post it.</em></td></tr>
+<tr><td colspan="5"><em>Cursor, Windsurf, Cline, Copilot, your own config: run the check below and post your row.</em></td></tr>
 </table>
-<p class="sub">Our row comes from pi's own resource loader run without a model, plus the harness source. A live fresh-session check runs next; its result will be added here. Raw output: <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/pico_amdal.txt">pico_amdal.txt</a>.</p>
+<p class="sub">Our own row comes from pi's resource loader run without a model, plus the harness source. Raw output: <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/pico_amdal.txt">pico_amdal.txt</a>.</p>
 
 <h2>What we found on our own stack</h2>
 <p><strong>All 11 hooks are dead.</strong> Our config registers 11 hook commands, 5 of them PreToolUse guards. They were written for Claude Code. The harness we actually run reads no <code>.claude/settings.json</code> at all, so none of them runs, and nothing says so. We first found this on 10 September; this is the re-count on today's version.</p>
 <p><strong>Skills load as a list, not as text.</strong> 33 of our 34 skill files show up by name and description. The 34th sits in a folder starting with a dot, which the loader skips. No skill body is in context until the agent opens it.</p>
-<p><strong>Same repo, different instructions.</strong> pi takes one file per directory, in the order <code>AGENTS.override.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>. Claude Code's loader reads <code>AGENTS.md</code> only "where the project has no CLAUDE.md" (as quoted from its code in the post above). A repo with both files gives a pi session one file and a Claude Code session the other.</p>
 
 <h2>Run it on your stack (about a minute)</h2>
 <pre>git clone https://github.com/piiiico/agent-errata

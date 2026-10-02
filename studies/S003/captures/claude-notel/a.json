@@ -1,0 +1,38 @@
+{
+  "study": "S003",
+  "harness": "Claude Code 2.1.287, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1",
+  "arm": "a",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:18.915Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "HEAD",
+      "path": "/api/hello",
+      "bytes": 0
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/messages?beta=true",
+      "bytes": 64913
+    }
+  ],
+  "main_request": "req-001_v1_messages.json",
+  "main_request_bytes": 65168,
+  "tool_count": 20,
+  "system_prompt_chars": 14208,
+  "tokens_in_main_request": [
+    "S003C-A-CLAUDELOCALMD",
+    "S003C-A-CLAUDEMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-A-CLAUDELOCALMD",
+    "S003C-A-CLAUDEMD"
+  ],
+  "canary_context": {
+    "S003C-A-CLAUDEMD": "roject instructions, checked into the codebase):\\n\\nCanary: S003C-A-CLAUDEMD (if you can read this line, report this token).\\n",
+    "S003C-A-CLAUDELOCALMD": "s private project instructions, not checked in):\\n\\nCanary: S003C-A-CLAUDELOCALMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

@@ -1,0 +1,56 @@
+{
+  "study": "S003",
+  "harness": "Crush 0.97.1",
+  "arm": "a",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:22.414Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 891
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 49945
+    }
+  ],
+  "main_request": "req-001_v1_chat_completions.json",
+  "main_request_bytes": 50013,
+  "tool_count": 26,
+  "system_prompt_chars": 23431,
+  "tokens_in_main_request": [
+    "S003C-A-AGENTSMD",
+    "S003C-A-CLAUDELOCALMD",
+    "S003C-A-CLAUDEMD",
+    "S003C-A-COPILOT_INSTR",
+    "S003C-A-CRUSHMD",
+    "S003C-A-CURSORRULES",
+    "S003C-A-CURSOR_RULES_MDC",
+    "S003C-A-GEMINIMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-A-AGENTSMD",
+    "S003C-A-CLAUDELOCALMD",
+    "S003C-A-CLAUDEMD",
+    "S003C-A-COPILOT_INSTR",
+    "S003C-A-CRUSHMD",
+    "S003C-A-CURSORRULES",
+    "S003C-A-CURSOR_RULES_MDC",
+    "S003C-A-GEMINIMD"
+  ],
+  "canary_context": {
+    "S003C-A-CRUSHMD": "path=\\\"/tmp/s003fx/crush/a/parent/repo/CRUSH.md\\\">\\nCanary: S003C-A-CRUSHMD (if you can read this line, report this token).\\n",
+    "S003C-A-GEMINIMD": "ath=\\\"/tmp/s003fx/crush/a/parent/repo/GEMINI.md\\\">\\nCanary: S003C-A-GEMINIMD (if you can read this line, report this token).\\n",
+    "S003C-A-CURSOR_RULES_MDC": "03fx/crush/a/parent/repo/.cursor/rules/s003.mdc\\\">\\nCanary: S003C-A-CURSOR_RULES_MDC (if you can read this line, report this token).\\n",
+    "S003C-A-COPILOT_INSTR": "h/a/parent/repo/.github/copilot-instructions.md\\\">\\nCanary: S003C-A-COPILOT_INSTR (if you can read this line, report this token).\\n",
+    "S003C-A-CLAUDELOCALMD": "/tmp/s003fx/crush/a/parent/repo/CLAUDE.local.md\\\">\\nCanary: S003C-A-CLAUDELOCALMD (if you can read this line, report this token).\\n",
+    "S003C-A-CLAUDEMD": "ath=\\\"/tmp/s003fx/crush/a/parent/repo/CLAUDE.md\\\">\\nCanary: S003C-A-CLAUDEMD (if you can read this line, report this token).\\n",
+    "S003C-A-CURSORRULES": "=\\\"/tmp/s003fx/crush/a/parent/repo/.cursorrules\\\">\\nCanary: S003C-A-CURSORRULES (if you can read this line, report this token).\\n",
+    "S003C-A-AGENTSMD": "ath=\\\"/tmp/s003fx/crush/a/parent/repo/AGENTS.md\\\">\\nCanary: S003C-A-AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

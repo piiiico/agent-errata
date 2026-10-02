@@ -1,0 +1,35 @@
+{
+  "study": "S003",
+  "harness": "Qwen Code 0.24.7",
+  "arm": "d",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:20.868Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 58177
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 25726
+    }
+  ],
+  "main_request": "req-000_v1_chat_completions.json",
+  "main_request_bytes": 58283,
+  "tool_count": 10,
+  "system_prompt_chars": 22927,
+  "tokens_in_main_request": [
+    "S003C-D-AGENTSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-D-AGENTSMD"
+  ],
+  "canary_context": {
+    "S003C-D-AGENTSMD": " result.\\n\\n---\\n\\n--- Context from: AGENTS.md ---\\nCanary: S003C-D-AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

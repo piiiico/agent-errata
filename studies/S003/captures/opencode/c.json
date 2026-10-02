@@ -1,0 +1,38 @@
+{
+  "study": "S003",
+  "harness": "opencode 1.18.34",
+  "arm": "c",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:22.247Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 2567
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 31159
+    }
+  ],
+  "main_request": "req-001_v1_chat_completions.json",
+  "main_request_bytes": 31159,
+  "tool_count": 10,
+  "system_prompt_chars": 9869,
+  "tokens_in_main_request": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+  ],
+  "canary_context": {
+    "S003C-C-CHILD_AGENTSMD": " from: /tmp/s003fx/opencode/c/mono/child/AGENTS.md\\nCanary: S003C-C-CHILD_AGENTSMD (if you can read this line, report this token).\\n",
+    "S003C-C-ROOT_AGENTSMD": "ctions from: /tmp/s003fx/opencode/c/mono/AGENTS.md\\nCanary: S003C-C-ROOT_AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

@@ -1,0 +1,53 @@
+{
+  "study": "S003",
+  "harness": "Gemini CLI 0.62.0",
+  "arm": "b",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:19.651Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 3703
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 3703
+    },
+    {
+      "n": 2,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 3703
+    },
+    {
+      "n": 3,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 3703
+    },
+    {
+      "n": 4,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 3703
+    },
+    {
+      "n": 5,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.1-pro-preview:streamGenerateContent?alt=sse",
+      "bytes": 40794
+    }
+  ],
+  "main_request": "req-005_v1beta_models_gemini_3_1_pro_preview_streamGenerateContent.json",
+  "main_request_bytes": 40836,
+  "tool_count": 8,
+  "system_prompt_chars": 32069,
+  "tokens_in_main_request": [],
+  "tokens_in_any_request": [],
+  "canary_context": {},
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

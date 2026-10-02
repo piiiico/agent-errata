@@ -1,0 +1,38 @@
+{
+  "study": "S003",
+  "harness": "Claude Code 2.1.287",
+  "arm": "c",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:20.081Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "HEAD",
+      "path": "/api/hello",
+      "bytes": 0
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/messages?beta=true",
+      "bytes": 80574
+    }
+  ],
+  "main_request": "req-001_v1_messages.json",
+  "main_request_bytes": 80927,
+  "tool_count": 23,
+  "system_prompt_chars": 13694,
+  "tokens_in_main_request": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+  ],
+  "canary_context": {
+    "S003C-C-ROOT_AGENTSMD": "roject instructions, checked into the codebase):\\n\\nCanary: S003C-C-ROOT_AGENTSMD (if you can read this line, report this token).\\n",
+    "S003C-C-CHILD_AGENTSMD": "roject instructions, checked into the codebase):\\n\\nCanary: S003C-C-CHILD_AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

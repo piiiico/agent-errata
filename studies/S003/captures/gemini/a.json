@@ -1,0 +1,59 @@
+{
+  "study": "S003",
+  "harness": "Gemini CLI 0.62.0",
+  "arm": "a",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:19.522Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 4407
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 4407
+    },
+    {
+      "n": 2,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 4407
+    },
+    {
+      "n": 3,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 4407
+    },
+    {
+      "n": 4,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "bytes": 4407
+    },
+    {
+      "n": 5,
+      "method": "POST",
+      "path": "/v1beta/models/gemini-3.1-pro-preview:streamGenerateContent?alt=sse",
+      "bytes": 41496
+    }
+  ],
+  "main_request": "req-005_v1beta_models_gemini_3_1_pro_preview_streamGenerateContent.json",
+  "main_request_bytes": 41732,
+  "tool_count": 8,
+  "system_prompt_chars": 32067,
+  "tokens_in_main_request": [
+    "S003C-A-GEMINIMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-A-GEMINIMD"
+  ],
+  "canary_context": {
+    "S003C-A-GEMINIMD": "om: /tmp/s003fx/gemini/a/parent/repo/GEMINI.md ---\\nCanary: S003C-A-GEMINIMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

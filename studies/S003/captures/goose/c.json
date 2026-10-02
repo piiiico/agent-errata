@@ -1,0 +1,44 @@
+{
+  "study": "S003",
+  "harness": "goose 1.52.0",
+  "arm": "c",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:21.901Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "GET",
+      "path": "/v1/models",
+      "bytes": 0
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 2050
+    },
+    {
+      "n": 2,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 18391
+    }
+  ],
+  "main_request": "req-002_v1_chat_completions.json",
+  "main_request_bytes": 18431,
+  "tool_count": 17,
+  "system_prompt_chars": 4553,
+  "tokens_in_main_request": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+  ],
+  "canary_context": {
+    "S003C-C-ROOT_AGENTSMD": "ints for working on the project in this directory.\\nCanary: S003C-C-ROOT_AGENTSMD (if you can read this line, report this token).\\n",
+    "S003C-C-CHILD_AGENTSMD": " (if you can read this line, report this token).\\n\\nCanary: S003C-C-CHILD_AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}

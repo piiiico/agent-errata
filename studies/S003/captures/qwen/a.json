@@ -1,0 +1,41 @@
+{
+  "study": "S003",
+  "harness": "Qwen Code 0.24.7",
+  "arm": "a",
+  "counted_by": "capture endpoint, request body grep",
+  "captured_at": "2026-10-02T00:44:20.600Z",
+  "requests": [
+    {
+      "n": 0,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 59196
+    },
+    {
+      "n": 1,
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "bytes": 26051
+    }
+  ],
+  "main_request": "req-000_v1_chat_completions.json",
+  "main_request_bytes": 59506,
+  "tool_count": 10,
+  "system_prompt_chars": 23537,
+  "tokens_in_main_request": [
+    "S003C-A-AGENTSMD",
+    "S003C-A-PARENT_AGENTSMD",
+    "S003C-A-QWENMD"
+  ],
+  "tokens_in_any_request": [
+    "S003C-A-AGENTSMD",
+    "S003C-A-PARENT_AGENTSMD",
+    "S003C-A-QWENMD"
+  ],
+  "canary_context": {
+    "S003C-A-QWENMD": "al result.\\n\\n---\\n\\n--- Context from: QWEN.md ---\\nCanary: S003C-A-QWENMD (if you can read this line, report this token).\\n",
+    "S003C-A-PARENT_AGENTSMD": " QWEN.md ---\\n\\n--- Context from: ../AGENTS.md ---\\nCanary: S003C-A-PARENT_AGENTSMD (if you can read this line, report this token).\\n",
+    "S003C-A-AGENTSMD": "./AGENTS.md ---\\n\\n--- Context from: AGENTS.md ---\\nCanary: S003C-A-AGENTSMD (if you can read this line, report this token).\\n"
+  },
+  "note": "System prompts are not published. canary_context quotes <=60 chars before and 50 after each token, from the raw JSON body (escapes kept)."
+}
