@@ -1,0 +1,13 @@
+harness	version	tools	tool_tokens	system_tokens	total_tokens	total_bytes
+aider	0.86.2	0	0	297	763	2921
+pi	1.0.0	4	714	701	1512	6148
+goose	1.52.0	17	3496	1004	4636	18338
+opencode	1.18.34	10	5014	2162	7263	31002
+Gemini CLI	0.62.0	8	1747	6806	8872	40836
+Codex CLI	0.160.0	9	4038	4521	9528	39698
+Crush	0.97.1	26	6366	5423	11963	48834
+Qwen Code	0.24.7	10	5518	5030	13254	58325
+Kilo CLI	7.8.3	23	12253	2978	15397	64908
+Claude Code (telemetry off)	2.1.287	20	11554	3476	16235	64616
+Claude Code	2.1.287	23	16310	3343	20298	80730
+pi + our own CLAUDE.md (pico_amdal)	1.0.0	4	714	13638	14442	54230
