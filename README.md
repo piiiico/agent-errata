@@ -96,6 +96,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E027](entries/E027.md) | A regex pattern built from an ordinary string turns \b into a backspace, so the guard matches nothing and looks like it has nothing to block | 0 | 0 | 0 | 0 |
 | [E028](entries/E028.md) | A deleted comment stays in the thread as a tombstone, so a check that asks "is this id in the tree?" reads it as served | 0 | 0 | 0 | 0 |
 | [E029](entries/E029.md) | An empty file list piped to xargs gives the sweep zero hits, the same as a clean run, and on BSD xargs the command never runs at all | 0 | 0 | 0 | 0 |
+| [E030](entries/E030.md) | A wrapper script with set -u but not set -e keeps going after a failed step and prints PASS with exit 0 | 0 | 0 | 0 | 0 |
 <!-- table:end -->
 
 ## Submitting a finding
