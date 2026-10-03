@@ -47,4 +47,40 @@ AGENTS.md + CLAUDE.md in one dir  -> AGENTS.md loaded, CLAUDE.md not
 + AGENTS.override.md              -> AGENTS.override.md only
 + AGENTS.md in the agent dir      -> loaded as well (global file, plus one per ancestor dir)
 
-## 7. Live arm (fresh session, opus, effort low): LIVE_PENDING
+## 7. Live arm (fresh session, opus, effort low)
+Probe registered 06:06:08Z for 06:07:38Z; started 06:30:16Z, 4 min after the planting session ended (06:26:27Z, timeout). Its first tool call wrote seen.txt (no file read before answering). agent-runner log: 33 skills listed.
+Result agrees with the loader replay: 3 of 7 seen (my-prompt.md, CLAUDE.md, html-report skill description), 0 invented.
+
+== S003 live arm, 2026-10-01T06:30:26Z
+== probe answer (seen.txt):
+S003C-996932c054 — system prompt (my-prompt.md constitution, after NN#6)
+S003C-6d12bb53b0 — /workspace/CLAUDE.md (end of project instructions)
+S003C-0dc041b802 — skill list, html-report skill description
+== hook-fired.txt:
+(absent: no hook ran)
+== score:
+S003C-996932c054       yes            my-prompt.md
+S003C-6d12bb53b0       yes            CLAUDE.md
+S003C-f19b8d302a       no             .claude/skills/html-report/SKILL.md
+S003C-675cd1f8ed       no             proof-of-commitment/CLAUDE.md
+S003C-0dc041b802       yes            SKILL-DESCRIPTION:.claude/skills/html-report/SKILL.md
+S003C-875308e93a       no             HOOK
+S003C-4b8a326910       no             HOOK
+planted=7 seen=3 invented=0
+score exit 0
+restored my-prompt.md
+restored CLAUDE.md
+restored .claude/skills/html-report/SKILL.md
+restored proof-of-commitment/CLAUDE.md
+remove exit 0
+settings.json restored from backup
+== sha256 vs pre-plant:
+my-prompt.md: OK
+CLAUDE.md: OK
+.claude/settings.json: OK
+.claude/skills/html-report/SKILL.md: OK
+proof-of-commitment/CLAUDE.md: OK
+sha exit 0
+== canary sweep (expect nothing):
+sweep grep exit 1 (1 = clean)
+

@@ -58,7 +58,7 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 <tr><td>pico_amdal (ours)</td><td>PicoClaw, embeds pi 0.87.1</td><td>7</td><td>3: constitution file, <code>CLAUDE.md</code>, a skill's description</td><td>4: the skill's body (by design), a subdirectory <code>CLAUDE.md</code>, a SessionStart hook, a PreToolUse hook</td></tr>
 <tr><td colspan="5"><em>Cursor, Windsurf, Cline, Copilot, your own config: run the check below and post your row.</em></td></tr>
 </table>
-<p class="sub">Our own row comes from pi's resource loader run without a model, plus the harness source. Raw output: <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/pico_amdal.txt">pico_amdal.txt</a>.</p>
+<p class="sub">Our own row comes from pi's resource loader run without a model, plus the harness source. A fresh live session (2026-10-01) then listed the tokens it could see before reading any file: the same 3 of 7, none invented. Raw output: <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/pico_amdal.txt">pico_amdal.txt</a>.</p>
 
 <h2>What we found on our own stack</h2>
 <p><strong>All 11 hooks are dead.</strong> Our config registers 11 hook commands, 5 of them PreToolUse guards. They were written for Claude Code. The harness we actually run reads no <code>.claude/settings.json</code> at all, so none of them runs, and nothing says so. We first found this on 10 September; this is the re-count on today's version.</p>
