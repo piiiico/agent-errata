@@ -26,6 +26,8 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 
 <p class="big"><strong>With <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side, Claude Code reads only <code>CLAUDE.md</code>, six harnesses read only <code>AGENTS.md</code>, Crush reads both, and Gemini CLI and aider read neither.</strong></p>
 
+<p class="sub">Short answer, one line per harness: <a href="../instruction-files/">which instruction file does each coding agent actually load?</a></p>
+
 <p>A file the harness skips looks exactly like one it reads. Nothing errors; the session runs without it. In September a <a href="https://blog.szypowi.cz/p/claude-code-reads-agents.md-only-when-telemetry-is-on/">post</a> showed Claude Code skipping <code>AGENTS.md</code> when telemetry was off (<a href="https://news.ycombinator.com/item?id=49814947">485 points on Hacker News</a>, since marked fixed). The author caught it with a canary word. We ran the same check on ten harnesses at once.</p>
 
 <p><strong>How we counted.</strong> Each harness was pointed at a local server that records the request body and answers "NONE". No model, no API key, an empty home directory. We grepped the first real request for the canary tokens, so this is what the harness <em>sent</em>, not what a model claims it saw. Three runs each; all three matched.</p>

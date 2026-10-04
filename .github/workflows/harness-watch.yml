@@ -46,7 +46,7 @@ jobs:
       - name: commit rows and changelogs
         if: always() && !inputs.selftest
         run: |
-          git add studies/S003/watch docs/S003 docs/S004
+          git add studies/S003/watch docs/S003 docs/S004 docs/instruction-files docs/sitemap.xml
           if ! git diff --cached --quiet; then
             git config user.name "agent-errata-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
