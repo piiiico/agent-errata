@@ -10,6 +10,10 @@ on:
         description: "harness ids to re-measure even at the same version, comma-separated (positive control)"
         required: false
         default: ""
+      selftest:
+        description: "plant a change in a scratch copy of pi's baseline row and check that it is detected and reported (opens and closes one [selftest] issue; commits nothing)"
+        type: boolean
+        default: false
 permissions:
   contents: write
   issues: write
@@ -31,6 +35,7 @@ jobs:
           python-version: "3.12"
       - run: pip install -q tiktoken
       - id: watch
+        if: ${{ !inputs.selftest }}
         env:
           FORCE: ${{ inputs.force }}
           GITHUB_TOKEN: ${{ github.token }}
@@ -39,7 +44,7 @@ jobs:
           if [ -n "$FORCE" ]; then bun studies/S003/watch/watch.ts --force "$FORCE"; else bun studies/S003/watch/watch.ts; fi
           echo "rc=$?" >> "$GITHUB_OUTPUT"
       - name: commit rows and changelogs
-        if: always()
+        if: always() && !inputs.selftest
         run: |
           git add studies/S003/watch docs/S003 docs/S004
           if ! git diff --cached --quiet; then
@@ -50,18 +55,22 @@ jobs:
             git push
           fi
       - name: open an issue for each changed row
-        if: always()
+        if: always() && !inputs.selftest
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           [ -f /tmp/hw/report.json ] || exit 0
-          bun -e '
-            const r = require("/tmp/hw/report.json");
-            for (const c of r.changed) {
-              const t = `Harness Watch: ${c.label} ${c.version} changed`;
-              const b = `${c.label} ${c.previous_version} → ${c.version}, re-measured ${c.date} (${c.where}).\n\n` + c.changes.map(x => "- " + x).join("\n") + `\n\nRow: studies/S003/watch/runs/${c.date}-${c.harness}-${c.version}.json\nRun: ${c.run}`;
-              Bun.spawnSync(["gh", "issue", "create", "--title", t, "--body", b], { stdout: "inherit", stderr: "inherit" });
-            }'
+          bun studies/S003/watch/issue.ts /tmp/hw/report.json
+      - name: selftest (planted change must be detected and reported)
+        if: inputs.selftest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          cp -r "$PWD" /tmp/selftest && cd /tmp/selftest
+          bun -e 'const f="studies/S003/watch/state.json",fs=require("fs"),s=JSON.parse(fs.readFileSync(f,"utf8"));s.harnesses.pi.row.arms.b=["S003C-B-CLAUDEMD"];fs.writeFileSync(f,JSON.stringify(s))'
+          HW_WORK=/tmp/hw-self bun studies/S003/watch/watch.ts --only pi --force pi
+          bun studies/S003/watch/issue.ts /tmp/hw-self/report.json --selftest
       - name: fail if any lookup or re-measure failed
-        if: always()
+        if: always() && !inputs.selftest
         run: exit ${{ steps.watch.outputs.rc || 1 }}
