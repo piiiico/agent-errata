@@ -1,0 +1,345 @@
+{
+ "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
+ "harnesses": {
+  "claude": {
+   "version": "2.1.287",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-CLAUDELOCALMD",
+      "S003C-A-CLAUDEMD"
+     ],
+     "b": [
+      "S003C-B-CLAUDEMD"
+     ],
+     "c": [
+      "S003C-C-CHILD_AGENTSMD",
+      "S003C-C-ROOT_AGENTSMD"
+     ],
+     "d": [
+      "S003C-D-ANCESTOR_CLAUDEMD"
+     ]
+    },
+    "sym": {
+     "e": {
+      "S003C-E-AGENTSMD": 1
+     },
+     "f": {
+      "S003C-F-CLAUDEMD": 1
+     }
+    },
+    "tools": 23,
+    "s004": {
+     "total": 20298,
+     "tools": 16310,
+     "system": 3343
+    }
+   }
+  },
+  "codex": {
+   "version": "0.160.0",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-AGENTSOVERRIDEMD"
+     ],
+     "b": [
+      "S003C-B-AGENTSMD"
+     ],
+     "c": [
+      "S003C-C-CHILD_AGENTSMD",
+      "S003C-C-ROOT_AGENTSMD"
+     ],
+     "d": [
+      "S003C-D-AGENTSMD"
+     ]
+    },
+    "sym": {
+     "e": {
+      "S003C-E-AGENTSMD": 1
+     },
+     "f": {
+      "S003C-F-CLAUDEMD": 1
+     }
+    },
+    "tools": 9,
+    "s004": {
+     "total": 9528,
+     "tools": 4038,
+     "system": 4521
+    }
+   }
+  },
+  "gemini": {
+   "version": "0.62.0",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-GEMINIMD"
+     ],
+     "b": [],
+     "c": [],
+     "d": []
+    },
+    "sym": {
+     "e": {},
+     "f": {}
+    },
+    "tools": 8,
+    "s004": {
+     "total": 8872,
+     "tools": 1747,
+     "system": 6806
+    }
+   }
+  },
+  "qwen": {
+   "version": "0.24.7",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-AGENTSMD",
+      "S003C-A-PARENT_AGENTSMD",
+      "S003C-A-QWENMD"
+     ],
+     "b": [
+      "S003C-B-AGENTSMD"
+     ],
+     "c": [
+      "S003C-C-CHILD_AGENTSMD",
+      "S003C-C-ROOT_AGENTSMD"
+     ],
+     "d": [
+      "S003C-D-AGENTSMD"
+     ]
+    },
+    "sym": {
+     "e": {
+      "S003C-E-AGENTSMD": 1
+     },
+     "f": {
+      "S003C-F-CLAUDEMD": 1
+     }
+    },
+    "tools": 10,
+    "s004": {
+     "total": 13254,
+     "tools": 5518,
+     "system": 5030
+    }
+   }
+  },
+  "opencode": {
+   "version": "1.18.34",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-AGENTSMD"
+     ],
+     "b": [
+      "S003C-B-AGENTSMD"
+     ],
+     "c": [
+      "S003C-C-CHILD_AGENTSMD",
+      "S003C-C-ROOT_AGENTSMD"
+     ],
+     "d": [
+      "S003C-D-AGENTSMD"
+     ]
+    },
+    "sym": {
+     "e": {
+      "S003C-E-AGENTSMD": 1
+     },
+     "f": {
+      "S003C-F-CLAUDEMD": 1
+     }
+    },
+    "tools": 10,
+    "s004": {
+     "total": 7263,
+     "tools": 5014,
+     "system": 2162
+    }
+   }
+  },
+  "kilo": {
+   "version": "7.8.3",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-AGENTSMD",
+      "S003C-A-KILOCODE_RULES"
+     ],
+     "b": [
+      "S003C-B-AGENTSMD"
+     ],
+     "c": [
+      "S003C-C-CHILD_AGENTSMD",
+      "S003C-C-ROOT_AGENTSMD"
+     ],
+     "d": [
+      "S003C-D-AGENTSMD"
+     ]
+    },
+    "sym": {
+     "e": {
+      "S003C-E-AGENTSMD": 1
+     },
+     "f": {
+      "S003C-F-CLAUDEMD": 1
+     }
+    },
+    "tools": 23,
+    "s004": {
+     "total": 15397,
+     "tools": 12253,
+     "system": 2978
+    }
+   }
+  },
+  "crush": {
+   "version": "0.97.1",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-AGENTSMD",
+      "S003C-A-CLAUDELOCALMD",
+      "S003C-A-CLAUDEMD",
+      "S003C-A-COPILOT_INSTR",
+      "S003C-A-CRUSHMD",
+      "S003C-A-CURSORRULES",
+      "S003C-A-CURSOR_RULES_MDC",
+      "S003C-A-GEMINIMD"
+     ],
+     "b": [
+      "S003C-B-AGENTSMD",
+      "S003C-B-CLAUDEMD"
+     ],
+     "c": [
+      "S003C-C-CHILD_AGENTSMD"
+     ],
+     "d": [
+      "S003C-D-AGENTSMD"
+     ]
+    },
+    "sym": {
+     "e": {
+      "S003C-E-AGENTSMD": 2
+     },
+     "f": {
+      "S003C-F-CLAUDEMD": 2
+     }
+    },
+    "tools": 26,
+    "s004": {
+     "total": 11963,
+     "tools": 6366,
+     "system": 5423
+    }
+   }
+  },
+  "goose": {
+   "version": "1.52.0",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-AGENTSMD",
+      "S003C-A-GOOSEHINTS"
+     ],
+     "b": [
+      "S003C-B-AGENTSMD"
+     ],
+     "c": [
+      "S003C-C-CHILD_AGENTSMD",
+      "S003C-C-ROOT_AGENTSMD"
+     ],
+     "d": [
+      "S003C-D-AGENTSMD"
+     ]
+    },
+    "sym": {},
+    "tools": 17,
+    "s004": {
+     "total": 4636,
+     "tools": 3496,
+     "system": 1004
+    }
+   }
+  },
+  "aider": {
+   "version": "0.86.2",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [],
+     "b": [],
+     "c": [],
+     "d": []
+    },
+    "sym": {},
+    "tools": 0,
+    "s004": {
+     "total": 763,
+     "tools": 0,
+     "system": 297
+    }
+   }
+  },
+  "pi": {
+   "version": "1.0.0",
+   "measured": "2026-10-02",
+   "where": "container linux-aarch64 (10-02 sweep)",
+   "row": {
+    "arms": {
+     "a": [
+      "S003C-A-AGENTSOVERRIDEMD",
+      "S003C-A-PARENT_AGENTSMD"
+     ],
+     "b": [
+      "S003C-B-AGENTSMD"
+     ],
+     "c": [
+      "S003C-C-CHILD_AGENTSMD",
+      "S003C-C-ROOT_AGENTSMD"
+     ],
+     "d": [
+      "S003C-D-AGENTSMD",
+      "S003C-D-ANCESTOR_CLAUDEMD"
+     ]
+    },
+    "sym": {
+     "e": {
+      "S003C-E-AGENTSMD": 1
+     },
+     "f": {
+      "S003C-F-CLAUDEMD": 1
+     }
+    },
+    "tools": 4,
+    "s004": {
+     "total": 1512,
+     "tools": 714,
+     "system": 701
+    }
+   }
+  }
+ }
+}

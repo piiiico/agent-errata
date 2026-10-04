@@ -1,0 +1,67 @@
+name: harness-watch
+# S003/S004 Harness Watch: every day, check the 10 harnesses for a new release; re-run the canary arms a-f and
+# the S004 token split on each new version, commit the row and the page changelogs, open an issue if a row changed.
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "harness ids to re-measure even at the same version, comma-separated (positive control)"
+        required: false
+        default: ""
+permissions:
+  contents: write
+  issues: write
+concurrency:
+  group: harness-watch
+  cancel-in-progress: false
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q tiktoken
+      - id: watch
+        env:
+          FORCE: ${{ inputs.force }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          if [ -n "$FORCE" ]; then bun studies/S003/watch/watch.ts --force "$FORCE"; else bun studies/S003/watch/watch.ts; fi
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+      - name: commit rows and changelogs
+        if: always()
+        run: |
+          git add studies/S003/watch docs/S003 docs/S004
+          if ! git diff --cached --quiet; then
+            git config user.name "agent-errata-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Harness Watch $(date -u +%F): $(bun -e 'const r=require("/tmp/hw/report.json");console.log(r.measured+" re-measured, "+r.changed.length+" changed")')"
+            git pull --rebase
+            git push
+          fi
+      - name: open an issue for each changed row
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -f /tmp/hw/report.json ] || exit 0
+          bun -e '
+            const r = require("/tmp/hw/report.json");
+            for (const c of r.changed) {
+              const t = `Harness Watch: ${c.label} ${c.version} changed`;
+              const b = `${c.label} ${c.previous_version} → ${c.version}, re-measured ${c.date} (${c.where}).\n\n` + c.changes.map(x => "- " + x).join("\n") + `\n\nRow: studies/S003/watch/runs/${c.date}-${c.harness}-${c.version}.json\nRun: ${c.run}`;
+              Bun.spawnSync(["gh", "issue", "create", "--title", t, "--body", b], { stdout: "inherit", stderr: "inherit" });
+            }'
+      - name: fail if any lookup or re-measure failed
+        if: always()
+        run: exit ${{ steps.watch.outputs.rc || 1 }}
