@@ -23,11 +23,15 @@ export function runs() {
   const dir = `${W}/runs`;
   if (!existsSync(dir)) return [];
   return readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => ({ file: f, ...JSON.parse(readFileSync(`${dir}/${f}`, "utf8")) }))
-    .sort((a, b) => (b.date + b.file).localeCompare(a.date + a.file));
+    .sort((a, b) => key(b).localeCompare(key(a)));
+}
+// newest first: date, then the Actions run id (runs are sequential), then file name
+function key(r: any) {
+  return `${r.date}|${(r.run?.match(/runs\/(\d+)/)?.[1] ?? "").padStart(14, "0")}|${r.file}`;
 }
 
 function line(r: any, html: boolean) {
-  const from = r.previous_version && r.previous_version !== r.version ? `${r.previous_version} → ${r.version}` : `${r.version}${r.forced ? " (forced re-run, same version)" : ""}`;
+  const from = r.previous_version && r.previous_version !== r.version ? `${r.previous_version} → ${r.version}` : `${r.version}${r.forced ? `, same version re-run (${r.where.replace(/, run \d+$/, "")}) against the ${r.previous_measured} row` : ""}`;
   const verdict = r.changed ? `CHANGED: ${r.changes.map(human).join("; ")}` : "re-measured, unchanged";
   const minor = r.minor?.length ? ` (${r.minor.join(", ")})` : "";
   const rowUrl = `${REPO}/blob/main/studies/S003/watch/runs/${r.file}`;
