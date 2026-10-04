@@ -4,6 +4,7 @@
 // Requests without tools (titles, routing, summaries) get a short text answer. No model is involved.
 // Usage: PORT=18200 OUT=dir IN_TOK=20000 OUT_TOK=500 CWD=/abs/repo [SAME=1] [MARK=text] bun loop.ts
 // SAME=1: identical arguments on every call (a stuck model). MARK: log whether each request body contains this text.
+// TOOL=<name> CMD=<shell>: always call that tool with that command (e.g. TOOL=Bash CMD="seq 1 150000" for a large pending tool result); bytes= logs request size.
 import { mkdirSync, appendFileSync } from "fs";
 const PORT = Number(process.env.PORT ?? 18200), OUT = process.env.OUT ?? "./loop-out";
 const IN_TOK = Number(process.env.IN_TOK ?? 20000), OUT_TOK = Number(process.env.OUT_TOK ?? 500);
@@ -30,7 +31,7 @@ function argsFor(t: T, n: number): Record<string, any> {
     const p = props[k] ?? {}, ty = Array.isArray(p.type) ? p.type[0] : p.type;
     let v: any;
     if (/pattern/i.test(k)) v = `*s005-${n}*`;
-    else if (/command|cmd/i.test(k)) v = `echo s005-${n}`;
+    else if (/command|cmd/i.test(k)) v = process.env.CMD ?? `echo s005-${n}`;
     else if (/path|dir|file/i.test(k)) v = CWD;
     else if (ty === "number" || ty === "integer") v = 1;
     else if (ty === "boolean") v = false;
@@ -51,11 +52,11 @@ Bun.serve({ port: PORT, hostname: "127.0.0.1", idleTimeout: 120, async fetch(req
     return Response.json({ object: "list", data: ["gpt-5", "gpt-4o", "claude-sonnet-4-5", "test-model"].map((id) => ({ id, object: "model", created: 0, owned_by: "x" })) });
   }
   const tools = toolsOf(j);
-  const pick = PREF.map((nm) => tools.find((t) => t.name === nm)).find(Boolean);
+  const pick = process.env.TOOL ? tools.find((t) => t.name.toLowerCase() === process.env.TOOL!.toLowerCase()) : PREF.map((nm) => tools.find((t) => t.name === nm)).find(Boolean);
   const call = pick ? (toolTurns++, { name: pick.name, args: argsFor(pick, process.env.SAME ? 1 : toolTurns), id: `call_s005_${n}` }) : null;
   const inTok = call ? IN_TOK : 10, outTok = call ? OUT_TOK : 5;
   if (n < 2 && tools.length) appendFileSync(`${OUT}/tools.txt`, `${p}\t${tools.map((t) => t.name).join(",")}\n`);
-  appendFileSync(`${OUT}/index.log`, `${n}\t${new Date().toISOString()}\t${req.method}\t${p}\ttools=${tools.length}\tmark=${process.env.MARK && body.includes(process.env.MARK) ? 1 : 0}\tcall=${call ? call.name + JSON.stringify(call.args) : "-"}\n`);
+  appendFileSync(`${OUT}/index.log`, `${n}\t${new Date().toISOString()}\t${req.method}\t${p}\ttools=${tools.length}\tbytes=${body.length}\tmark=${process.env.MARK && body.includes(process.env.MARK) ? 1 : 0}\tcall=${call ? call.name + JSON.stringify(call.args) : "-"}\n`);
 
   if (p.endsWith("/messages") && req.method === "POST") {
     const content: any[] = call ? [{ type: "tool_use", id: call.id, name: call.name, input: call.args }] : [{ type: "text", text: "OK" }];

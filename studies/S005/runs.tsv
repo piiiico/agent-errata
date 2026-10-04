@@ -35,3 +35,9 @@ same-pi	pi		143	true	45	918	918	SAME=1 (identical arguments every call)
 same-qwen	qwen		1	false	7	5	5	SAME=1 (identical arguments every call)
 crush-pending-low	crush		143	true	40	178	177	TOOL=bash CMD="seq 1 150000" IN_TOK=1000, context_window 128000, 2026-10-04: never compacted; request 177 was 7,704,542 bytes (pending tool results not counted by the context gate)
 crush-pending-ctl	crush		143	true	40	374	187	same, IN_TOK=125000: a no-tools summary call after every tool call; largest request 65,738 bytes
+cc-pending-low	claude		143	true	60	690	689	TOOL=Bash CMD="seq 1 150000" IN_TOK=1000, 2026-10-04: never compacted; each request ~3.1 KB bigger (Bash output cut before it is sent); request 689 was 2,344,276 chars
+cc-pending-low180	claude		143	true	180	1462	1461	same, 180 s: never compacted; request 1461 was 4,783,451 chars
+cc-pending-ctl	claude		143	true	60	687	686	same, IN_TOK=190000: never compacted; request sizes identical to cc-pending-low
+cc-pending-500000	claude		143	true	15	196	195	same, IN_TOK=500000: never compacted
+cc-pending-900000	claude		143	true	15	191	190	same, IN_TOK=900000: never compacted
+cc-pending-1m	claude		1	false	3	3	2	same, IN_TOK=1000000: request 2 (the one carrying the first tool result) was ~6.5 KB bigger than in the other runs, then exit 1 "Prompt is too long · automatic compaction failed: summarization produced empty response" (the stand-in answers every tools request with a tool call)
