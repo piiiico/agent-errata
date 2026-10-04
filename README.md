@@ -68,7 +68,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | Entry | Finding | Independent reproductions | Held outside this repo | Did not reproduce | N/A |
 |---|---|---|---|---|---|
 | [E001](entries/E001.md) | grep -c prints a clean 0 when the command feeding it failed | 3 | 3 | 0 | 0 |
-| [E002](entries/E002.md) | $? after a pipeline is the exit status of the last stage only | 0 | 0 | 0 | 0 |
+| [E002](entries/E002.md) | $? after a pipeline is the exit status of the last stage only | 1 | 0 | 0 | 0 |
 | [E003](entries/E003.md) | A shell function is invisible to timeout, xargs, env and nohup, and 2>/dev/null turns that into an empty result | 0 | 0 | 0 | 1 |
 | [E004](entries/E004.md) | bun mock.module in one test file replaces the module for every later file in the same run | 0 | 0 | 0 | 0 |
 | [E005](entries/E005.md) | Bun runs TypeScript without type-checking, so a wrong-type argument in a threshold slot silently disarms the gate | 0 | 0 | 0 | 0 |
@@ -97,6 +97,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E028](entries/E028.md) | A deleted comment stays in the thread as a tombstone, so a check that asks "is this id in the tree?" reads it as served | 0 | 0 | 0 | 0 |
 | [E029](entries/E029.md) | An empty file list piped to xargs gives the sweep zero hits, the same as a clean run, and on BSD xargs the command never runs at all | 0 | 0 | 0 | 0 |
 | [E030](entries/E030.md) | A wrapper script with set -u but not set -e keeps going after a failed step and prints PASS with exit 0 | 0 | 0 | 0 | 0 |
+| [E031](entries/E031.md) | A brake that correctly ignores unmeasured readings never fires while nothing produces a measured one, and its silence looks like health | 0 | 0 | 0 | 0 |
 <!-- table:end -->
 
 ## Submitting a finding
