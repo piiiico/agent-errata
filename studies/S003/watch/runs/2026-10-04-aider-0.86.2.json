@@ -1,0 +1,36 @@
+{
+ "harness": "aider",
+ "label": "aider",
+ "version": "0.86.2",
+ "previous_version": "0.86.2",
+ "previous_measured": "2026-10-02",
+ "date": "2026-10-04",
+ "where": "GitHub Actions linux-x64, run 37187947680",
+ "run": "https://github.com/piiiico/agent-errata/actions/runs/37187947680",
+ "forced": true,
+ "changed": false,
+ "changes": [],
+ "minor": [
+  "S004 total 763 → 763 tokens, +0.0%"
+ ],
+ "row": {
+  "arms": {
+   "a": [],
+   "b": [],
+   "c": [],
+   "d": []
+  },
+  "sym": {
+   "e": {},
+   "f": {}
+  },
+  "tools": 0,
+  "bytes_b": 2921,
+  "s004": {
+   "total": 763,
+   "tools": 0,
+   "system": 297
+  }
+ },
+ "note": "Tokens found in the main request per arm (S003 arms a-f, sweep/README.md), occurrence counts for the symlink arms, S004 o200k split of arm b. No model, dummy keys, empty HOME."
+}

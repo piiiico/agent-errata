@@ -1,0 +1,38 @@
+{
+ "harness": "gemini",
+ "label": "Gemini CLI",
+ "version": "0.62.0",
+ "previous_version": "0.62.0",
+ "previous_measured": "2026-10-02",
+ "date": "2026-10-04",
+ "where": "GitHub Actions linux-x64, run 37187947680",
+ "run": "https://github.com/piiiico/agent-errata/actions/runs/37187947680",
+ "forced": true,
+ "changed": false,
+ "changes": [],
+ "minor": [
+  "S004 total 8,872 → 8,862 tokens, -0.1%"
+ ],
+ "row": {
+  "arms": {
+   "a": [
+    "S003C-A-GEMINIMD"
+   ],
+   "b": [],
+   "c": [],
+   "d": []
+  },
+  "sym": {
+   "e": {},
+   "f": {}
+  },
+  "tools": 8,
+  "bytes_b": 40746,
+  "s004": {
+   "total": 8862,
+   "tools": 1747,
+   "system": 6800
+  }
+ },
+ "note": "Tokens found in the main request per arm (S003 arms a-f, sweep/README.md), occurrence counts for the symlink arms, S004 o200k split of arm b. No model, dummy keys, empty HOME."
+}

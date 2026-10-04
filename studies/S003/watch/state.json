@@ -41,8 +41,8 @@
   },
   "codex": {
    "version": "0.160.0",
-   "measured": "2026-10-02",
-   "where": "container linux-aarch64 (10-02 sweep)",
+   "measured": "2026-10-04",
+   "where": "GitHub Actions linux-x64, run 37187947680",
    "row": {
     "arms": {
      "a": [
@@ -68,17 +68,18 @@
      }
     },
     "tools": 9,
+    "bytes_b": 39684,
     "s004": {
-     "total": 9528,
+     "total": 9517,
      "tools": 4038,
-     "system": 4521
+     "system": 4517
     }
    }
   },
   "gemini": {
    "version": "0.62.0",
-   "measured": "2026-10-02",
-   "where": "container linux-aarch64 (10-02 sweep)",
+   "measured": "2026-10-04",
+   "where": "GitHub Actions linux-x64, run 37187947680",
    "row": {
     "arms": {
      "a": [
@@ -93,17 +94,18 @@
      "f": {}
     },
     "tools": 8,
+    "bytes_b": 40746,
     "s004": {
-     "total": 8872,
+     "total": 8862,
      "tools": 1747,
-     "system": 6806
+     "system": 6800
     }
    }
   },
   "qwen": {
    "version": "0.24.7",
-   "measured": "2026-10-02",
-   "where": "container linux-aarch64 (10-02 sweep)",
+   "measured": "2026-10-04",
+   "where": "GitHub Actions linux-x64, run 37187947680",
    "row": {
     "arms": {
      "a": [
@@ -131,17 +133,18 @@
      }
     },
     "tools": 10,
+    "bytes_b": 58215,
     "s004": {
-     "total": 13254,
+     "total": 13237,
      "tools": 5518,
-     "system": 5030
+     "system": 5013
     }
    }
   },
   "opencode": {
    "version": "1.18.34",
-   "measured": "2026-10-02",
-   "where": "container linux-aarch64 (10-02 sweep)",
+   "measured": "2026-10-04",
+   "where": "GitHub Actions linux-x64, run 37187947680",
    "row": {
     "arms": {
      "a": [
@@ -167,6 +170,7 @@
      }
     },
     "tools": 10,
+    "bytes_b": 31002,
     "s004": {
      "total": 7263,
      "tools": 5014,
@@ -176,8 +180,8 @@
   },
   "kilo": {
    "version": "7.8.3",
-   "measured": "2026-10-02",
-   "where": "container linux-aarch64 (10-02 sweep)",
+   "measured": "2026-10-04",
+   "where": "GitHub Actions linux-x64, run 37187947680",
    "row": {
     "arms": {
      "a": [
@@ -204,17 +208,18 @@
      }
     },
     "tools": 23,
+    "bytes_b": 64892,
     "s004": {
-     "total": 15397,
+     "total": 15395,
      "tools": 12253,
-     "system": 2978
+     "system": 2976
     }
    }
   },
   "crush": {
    "version": "0.97.1",
-   "measured": "2026-10-02",
-   "where": "container linux-aarch64 (10-02 sweep)",
+   "measured": "2026-10-04",
+   "where": "GitHub Actions linux-x64, run 37187947680",
    "row": {
     "arms": {
      "a": [
@@ -247,10 +252,11 @@
      }
     },
     "tools": 26,
+    "bytes_b": 48743,
     "s004": {
-     "total": 11963,
-     "tools": 6366,
-     "system": 5423
+     "total": 11940,
+     "tools": 6344,
+     "system": 5422
     }
    }
   },
@@ -294,8 +300,8 @@
   },
   "aider": {
    "version": "0.86.2",
-   "measured": "2026-10-02",
-   "where": "container linux-aarch64 (10-02 sweep)",
+   "measured": "2026-10-04",
+   "where": "GitHub Actions linux-x64, run 37187947680",
    "row": {
     "arms": {
      "a": [],
@@ -303,8 +309,12 @@
      "c": [],
      "d": []
     },
-    "sym": {},
+    "sym": {
+     "e": {},
+     "f": {}
+    },
     "tools": 0,
+    "bytes_b": 2921,
     "s004": {
      "total": 763,
      "tools": 0,
