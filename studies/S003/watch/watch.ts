@@ -131,7 +131,9 @@ function diff(prev: any, row: any) {
   }
   for (const a of ["e", "f"]) {
     const p = prev?.sym?.[a];
-    if (p && !same(p, row.sym[a])) changes.push(`arm ${a} (symlink): was ${JSON.stringify(p)}, now ${JSON.stringify(row.sym[a])}`);
+    const sum = (o: Record<string, number>) => Object.values(o ?? {}).reduce((x, y) => x + y, 0);
+    const layout = a === "e" ? "CLAUDE.md -> AGENTS.md" : "AGENTS.md -> CLAUDE.md";
+    if (p && !same(p, row.sym[a])) changes.push(`arm ${a} (${layout} symlink): content now sent ${sum(row.sym[a])}x, was ${sum(p)}x`);
   }
   const pt = prev?.s004?.total, nt = row.s004?.total;
   if (pt && nt) {
@@ -174,7 +176,7 @@ if (!argv.includes("--check")) {
         note: "Tokens found in the main request per arm (S003 arms a-f, sweep/README.md), occurrence counts for the symlink arms, S004 o200k split of arm b. No model, dummy keys, empty HOME.",
       };
       mkdirSync(`${W}/runs`, { recursive: true });
-      writeFileSync(`${W}/runs/${today}-${h.id}-${v}.json`, JSON.stringify(rec, null, 1) + "\n");
+      writeFileSync(`${W}/runs/${today}-${h.id}-${v}${rec.forced ? "-forced" : ""}.json`, JSON.stringify(rec, null, 1) + "\n");
       state.harnesses[h.id] = { version: v, measured: today, where, row };
       report.push(rec);
       console.log(changes.length ? `CHANGED: ${changes.join(" | ")}` : `unchanged${minor.length ? ` (${minor.join(", ")})` : ""}`);
