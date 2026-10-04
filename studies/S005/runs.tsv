@@ -1,0 +1,35 @@
+label	harness	args	exit	timed_out	secs	requests	tool_calls	config
+cc-turns5	claude	--max-turns 5 --output-format json	1	false	14	6	5	
+cc-usd1-r1	claude	--model claude-sonnet-4-5 --max-budget-usd 1 --output-format json	1	false	3	2	1	IN_TOK=1000000 OUT_TOK=1000
+cc-usd1-r2	claude	--model claude-sonnet-4-5 --max-budget-usd 1 --output-format json	1	false	3	2	1	IN_TOK=1000000 OUT_TOK=1000
+cc-usd1-r3	claude	--model claude-sonnet-4-5 --max-budget-usd 1 --output-format json	1	false	3	2	1	IN_TOK=1000000 OUT_TOK=1000
+cx-budget50k-r1	codex		1	false	12	3	3	~/.codex/config.toml [features.rollout_budget] enabled=true limit_tokens=50000 reminder_at_remaining_tokens=[10000]
+cx-budget50k-r2	codex		1	false	12	3	3	~/.codex/config.toml [features.rollout_budget] enabled=true limit_tokens=50000 reminder_at_remaining_tokens=[10000]
+cx-budget50k-r3	codex		1	false	12	3	3	~/.codex/config.toml [features.rollout_budget] enabled=true limit_tokens=50000 reminder_at_remaining_tokens=[10000]
+def-claude	claude		143	true	90	519	518	
+def-codex	codex		0	true	90	411	411	
+def-crush	crush		143	true	90	1431	1430	
+def-gemini	gemini	-m gemini-2.5-pro	137	true	123	2012	1888	
+def-goose	goose		143	true	90	644	643	
+def-kilo	kilo		143	true	90	21	21	
+def-opencode	opencode		143	true	90	68	67	
+def-pi	pi		143	true	90	1094	1094	
+def-qwen	qwen		137	true	93	736	736	
+gm-turns5	gemini	-m gemini-2.5-pro	53	false	11	5	5	~/.gemini/settings.json model.maxSessionTurns=5
+gs-default	goose		0	false	98	1001	1000	
+gs-turns5	goose	--max-turns 5	0	false	3	6	5	
+kl-steps5	kilo		143	true	40	25	25	kilo.json agent.build.steps=5
+oc-steps5	opencode		137	true	43	95	94	opencode.json agent.build.steps=5
+qw-stl10k	qwen		0	false	11	1	1	~/.qwen/settings.json model.sessionTokenLimit=10000
+qw-stl50k	qwen		137	true	63	871	871	~/.qwen/settings.json model.sessionTokenLimit=50000
+qw-tools5	qwen	--max-tool-calls 5	55	false	11	6	6	
+qw-turns5	qwen	--max-session-turns 5	53	false	11	5	5	
+qw-wall20	qwen	--max-wall-time 20s	55	false	30	312	312	
+same-claude	claude		143	true	45	446	445	SAME=1 (identical arguments every call)
+same-codex	codex		0	true	45	299	299	SAME=1 (identical arguments every call)
+same-crush	crush		0	false	4	11	10	SAME=1 (identical arguments every call)
+same-gemini	gemini	-m gemini-2.5-pro	0	false	7	6	6	SAME=1 (identical arguments every call)
+same-goose	goose		143	true	45	493	492	SAME=1 (identical arguments every call)
+same-opencode	opencode		137	true	48	66	65	SAME=1 (identical arguments every call)
+same-pi	pi		143	true	45	918	918	SAME=1 (identical arguments every call)
+same-qwen	qwen		1	false	7	5	5	SAME=1 (identical arguments every call)
