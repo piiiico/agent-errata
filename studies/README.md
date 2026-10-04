@@ -14,3 +14,4 @@ An entry (`entries/E###.md`) is one failure mode with a check. A study is one nu
 | [S003](S003.md) | Does your harness load the instruction files and hooks you think it loads? ([page](https://piiiico.github.io/agent-errata/S003/)) |
 | [S004](S004.md) | How many tokens does your harness send before your first word? ([page](https://piiiico.github.io/agent-errata/S004/)) |
 | [S005](S005.md) | Can your coding agent stop itself at a dollar amount, and does it stop before or after the bill? ([page](https://piiiico.github.io/agent-errata/S005/)) |
+| [S006](S006.md) | When your agent rewrites its own notes, how often does a dated line keep its date? |
