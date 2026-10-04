@@ -33,3 +33,5 @@ same-goose	goose		143	true	45	493	492	SAME=1 (identical arguments every call)
 same-opencode	opencode		137	true	48	66	65	SAME=1 (identical arguments every call)
 same-pi	pi		143	true	45	918	918	SAME=1 (identical arguments every call)
 same-qwen	qwen		1	false	7	5	5	SAME=1 (identical arguments every call)
+crush-pending-low	crush		143	true	40	178	177	TOOL=bash CMD="seq 1 150000" IN_TOK=1000, context_window 128000, 2026-10-04: never compacted; request 177 was 7,704,542 bytes (pending tool results not counted by the context gate)
+crush-pending-ctl	crush		143	true	40	374	187	same, IN_TOK=125000: a no-tools summary call after every tool call; largest request 65,738 bytes
