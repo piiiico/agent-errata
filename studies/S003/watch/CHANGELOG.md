@@ -2,6 +2,8 @@
 
 Re-measured on every release of the 10 harnesses in [S003](../../S003.md) and [S004](../../S004.md). Newest first. Daily run logs: https://github.com/piiiico/agent-errata/actions/workflows/harness-watch.yml
 
+- **2026-10-05** · Qwen Code 0.24.7 → 0.25.0: re-measured, unchanged (S004 total 13,237 → 13,311 tokens, +0.6%). [row](runs/2026-10-05-qwen-0.25.0.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/37328063124)
+- **2026-10-05** · pi 1.0.2 → 1.0.3: re-measured, unchanged (S004 total 1,551 → 1,551 tokens, +0.0%). [row](runs/2026-10-05-pi-1.0.3.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/37328063124)
 - **2026-10-04** · Qwen Code 0.24.7, same version re-run (GitHub Actions linux-x64) against the 2026-10-02 row: re-measured, unchanged (S004 total 13,254 → 13,237 tokens, -0.1%). [row](runs/2026-10-04-qwen-0.24.7.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/37187947680)
 - **2026-10-04** · opencode 1.18.34, same version re-run (GitHub Actions linux-x64) against the 2026-10-02 row: re-measured, unchanged (S004 total 7,263 → 7,263 tokens, +0.0%). [row](runs/2026-10-04-opencode-1.18.34.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/37187947680)
 - **2026-10-04** · Kilo CLI 7.8.3, same version re-run (GitHub Actions linux-x64) against the 2026-10-02 row: re-measured, unchanged (S004 total 15,397 → 15,395 tokens, -0.0%). [row](runs/2026-10-04-kilo-7.8.3.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/37187947680)

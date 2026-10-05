@@ -103,9 +103,9 @@
    }
   },
   "qwen": {
-   "version": "0.24.7",
-   "measured": "2026-10-04",
-   "where": "GitHub Actions linux-x64, run 37187947680",
+   "version": "0.25.0",
+   "measured": "2026-10-05",
+   "where": "GitHub Actions linux-x64, run 37328063124",
    "row": {
     "arms": {
      "a": [
@@ -133,11 +133,11 @@
      }
     },
     "tools": 10,
-    "bytes_b": 58215,
+    "bytes_b": 58614,
     "s004": {
-     "total": 13237,
+     "total": 13311,
      "tools": 5518,
-     "system": 5013
+     "system": 5087
     }
    }
   },
@@ -323,9 +323,9 @@
    }
   },
   "pi": {
-   "version": "1.0.2",
-   "measured": "2026-10-04",
-   "where": "GitHub Actions linux-x64, run 37187891530",
+   "version": "1.0.3",
+   "measured": "2026-10-05",
+   "where": "GitHub Actions linux-x64, run 37328063124",
    "row": {
     "arms": {
      "a": [
