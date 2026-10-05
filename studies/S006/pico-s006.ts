@@ -1,4 +1,4 @@
-// Reads /workspace/tmp/s006/snaps.json = distinct CLAUDE.md snapshots [{t,c}] (146 distinct of 173 rows). Unit = sentence (our lines are paragraphs). Prints kept/total for all pairs and split by new/old length ratio.
+// Reads /workspace/tmp/s006/snaps.json = distinct CLAUDE.md snapshots [{t,c}] (146 distinct of 173 rows). Unit = sentence (our lines are paragraphs). Prints kept/total for all pairs and split by new/old length ratio, raw and with dates removed from both lengths (10-05, after Dione: the raw ratio counts the kept date itself).
 // S006 protocol on pico's CLAUDE.md snapshots (Dione's masked-coordinate matcher, adapted: unit = sentence, not line)
 import { readFileSync } from "fs";
 const snaps: {t:string,c:string}[] = JSON.parse(readFileSync("/workspace/tmp/s006/snaps.json","utf8"));
@@ -26,9 +26,11 @@ function run(minShared:number, fNew:number, fOld:number){
       const dates = pos==="inline"?inl:o.head; const nd=new Set([...(best.s.match(DATE)??[]).map(norm), ...best.head]);
       const kept = dates.some(d=>nd.has(d));
       (res as any)[pos][1]++; if(kept)(res as any)[pos][0]++;
-      res.pairs.push({ratio:+(best.s.length/o.s.length).toFixed(2),t:snaps[i].t.slice(0,10),pos,kept,old:o.s.slice(0,220),new:best.s.slice(0,220)});
+      const strip=(x:string)=>x.replace(DATE,"").replace(/\s+/g," ").trim().length;
+      res.pairs.push({ratio:+(best.s.length/o.s.length).toFixed(2),mratio:+(strip(best.s)/strip(o.s)).toFixed(2),t:snaps[i].t.slice(0,10),pos,kept,old:o.s.slice(0,220),new:best.s.slice(0,220)});
     }
   } return res; }
 const variants:[number,number,number][]= [[4,.5,.25],[3,.5,.25],[5,.5,.25],[4,.4,.2],[4,.6,.3],[4,.5,.4],[6,.6,.4]];
-for (const v of variants){ const r=run(...v); const c=r.pairs.filter((x:any)=>x.ratio<0.7), e=r.pairs.filter((x:any)=>x.ratio>=0.7); console.log(JSON.stringify(v),"all",r.inline.join("/"),"cut<0.7",c.filter((x:any)=>x.kept).length+"/"+c.length,"edit>=0.7",e.filter((x:any)=>x.kept).length+"/"+e.length); }
+for (const v of variants){ const r=run(...v); const c=r.pairs.filter((x:any)=>x.ratio<0.7), e=r.pairs.filter((x:any)=>x.ratio>=0.7); console.log(JSON.stringify(v),"all",r.inline.join("/"),"cut<0.7",c.filter((x:any)=>x.kept).length+"/"+c.length,"edit>=0.7",e.filter((x:any)=>x.kept).length+"/"+e.length);
+  const mc=r.pairs.filter((x:any)=>x.pos==="inline"&&x.mratio<0.7), me=r.pairs.filter((x:any)=>x.pos==="inline"&&x.mratio>=0.7); console.log("   date-masked ratio: cut<0.7",mc.filter((x:any)=>x.kept).length+"/"+mc.length,"edit>=0.7",me.filter((x:any)=>x.kept).length+"/"+me.length); }
 
