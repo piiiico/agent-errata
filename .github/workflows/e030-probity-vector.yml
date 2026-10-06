@@ -1,0 +1,51 @@
+name: e030-probity-vector
+# Runs Probity's pinned run-contract vector (an external E030 instance) unmodified against the pinned
+# Frequency review wrapper and the APS and PriorSeal checkouts it names. Finding: imokokok. Vector: Probity.
+# The vector asserts the wrapper's current behaviour, so a nonzero exit here means that behaviour changed.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/e030-probity-vector.yml", "entries/E030.md"]
+  schedule:
+    - cron: "41 5 * * 1"
+permissions:
+  contents: read
+jobs:
+  vector:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: fetch pinned vector and checkouts
+        run: |
+          set -euo pipefail
+          W="$RUNNER_TEMP/w"; mkdir -p "$W"; cd "$W"
+          curl -sSfL -o check-run-contract.mjs https://raw.githubusercontent.com/probityai/agent-evidence-atlas/89250120e9cafe14eafb87eaa9c1454bab64683c/experiments/aps-priorseal-source-replay/check-run-contract.mjs
+          echo "2e303302a3082a3965988f0f32e30e931416b8a0818c04fd7a845e395c7bb43a  check-run-contract.mjs" | sha256sum -c -
+          clone() { git clone -q "$1" "$2"; git -C "$2" checkout -q --detach "$3"; }
+          clone https://github.com/altrudev/Frequency-Federation-Review.git review-wrapper b12879d5878991d9c3ed260d06ee11716eb99d33
+          clone https://github.com/aeoess/agent-passport-system.git aps 948f99b85343bef2c6fa677c8543965caacfc087
+          clone https://github.com/imokokok/PriorSeal.git priorseal d749d2691c3e6be139de4020e7b27cdafca2c428
+      - name: run vector
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/w"
+          mkdir -p out
+          { uname -srm; node --version; bash --version | head -1; git --version; } > out/env.txt
+          set +e
+          node check-run-contract.mjs review-wrapper aps priorseal contract-result > out/stdout.txt 2> out/stderr.txt
+          rc=$?
+          set -e
+          echo "$rc" > out/exit-status.txt
+          cp contract-result/record.json out/ 2>/dev/null || echo "no record.json written" >> out/stderr.txt
+          (cd out && sha256sum * > SHA256SUMS)
+          cat out/env.txt out/stdout.txt out/stderr.txt out/exit-status.txt
+          exit "$rc"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e030-probity-vector
+          path: ${{ runner.temp }}/w/out
+          retention-days: 90
