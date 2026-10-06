@@ -1,0 +1,51 @@
+{
+ "harness": "pi",
+ "label": "pi",
+ "version": "1.0.4",
+ "previous_version": "1.0.3",
+ "previous_measured": "2026-10-05",
+ "date": "2026-10-06",
+ "where": "GitHub Actions linux-x64, run 37470452914",
+ "run": "https://github.com/piiiico/agent-errata/actions/runs/37470452914",
+ "forced": false,
+ "changed": false,
+ "changes": [],
+ "minor": [
+  "S004 total 1,551 → 1,551 tokens, +0.0%"
+ ],
+ "row": {
+  "arms": {
+   "a": [
+    "S003C-A-AGENTSOVERRIDEMD",
+    "S003C-A-PARENT_AGENTSMD"
+   ],
+   "b": [
+    "S003C-B-AGENTSMD"
+   ],
+   "c": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+   ],
+   "d": [
+    "S003C-D-AGENTSMD",
+    "S003C-D-ANCESTOR_CLAUDEMD"
+   ]
+  },
+  "sym": {
+   "e": {
+    "S003C-E-AGENTSMD": 1
+   },
+   "f": {
+    "S003C-F-CLAUDEMD": 1
+   }
+  },
+  "tools": 4,
+  "bytes_b": 6244,
+  "s004": {
+   "total": 1551,
+   "tools": 714,
+   "system": 740
+  }
+ },
+ "note": "Tokens found in the main request per arm (S003 arms a-f, sweep/README.md), occurrence counts for the symlink arms, S004 o200k split of arm b. No model, dummy keys, empty HOME."
+}

@@ -21,7 +21,7 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 <h1>10 coding agents, one prompt: 763 to 20,298 tokens before your first word</h1>
 <p class="sub">Study S004 of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · counted 3 October 2026 · open for rows from any harness</p>
 <!-- watch:stamp -->
-<p class="sub">Harness Watch: re-measured on every release of the 10 harnesses · last re-measured 2026-10-05 · <a href="#changelog">changelog</a> · <a href="https://github.com/piiiico/agent-errata/actions/workflows/harness-watch.yml">daily run logs</a></p>
+<p class="sub">Harness Watch: re-measured on every release of the 10 harnesses · last re-measured 2026-10-06 · <a href="#changelog">changelog</a> · <a href="https://github.com/piiiico/agent-errata/actions/workflows/harness-watch.yml">daily run logs</a></p>
 <!-- /watch:stamp -->
 
 <p class="big"><strong>Same empty repo, same one-line prompt. Claude Code puts 20,298 tokens in front of it, aider 763. In Claude Code, 16,310 of those are tool schemas.</strong></p>
@@ -60,6 +60,9 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 <h2 id="changelog">Changelog</h2>
 <p>A GitHub Actions job checks npm, PyPI and GitHub releases every day. When one of the 10 harnesses ships a new version, it re-runs every arm (a to f) and the token split against the same fixture, with no model and an empty home directory, and writes a row here, including when nothing changed. Newest first. Code: <a href="https://github.com/piiiico/agent-errata/tree/main/studies/S003/watch">studies/S003/watch</a>.</p>
 <ul>
+<li><strong>2026-10-06</strong> · pi 1.0.3 → 1.0.4: re-measured, unchanged (S004 total 1,551 → 1,551 tokens, +0.0%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-06-pi-1.0.4.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37470452914">run log</a></li>
+<li><strong>2026-10-06</strong> · Codex CLI 0.160.0 → 0.160.1: re-measured, unchanged (S004 total 9,517 → 9,493 tokens, -0.3%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-06-codex-0.160.1.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37470452914">run log</a></li>
+<li><strong>2026-10-06</strong> · Claude Code 2.1.289 → 2.1.291: re-measured, unchanged (S004 total 20,335 → 20,492 tokens, +0.8%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-06-claude-2.1.291.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37470452914">run log</a></li>
 <li><strong>2026-10-05</strong> · Qwen Code 0.24.7 → 0.25.0: re-measured, unchanged (S004 total 13,237 → 13,311 tokens, +0.6%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-05-qwen-0.25.0.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37328063124">run log</a></li>
 <li><strong>2026-10-05</strong> · pi 1.0.2 → 1.0.3: re-measured, unchanged (S004 total 1,551 → 1,551 tokens, +0.0%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-05-pi-1.0.3.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37328063124">run log</a></li>
 <li><strong>2026-10-04</strong> · Qwen Code 0.24.7, same version re-run (GitHub Actions linux-x64) against the 2026-10-02 row: re-measured, unchanged (S004 total 13,254 → 13,237 tokens, -0.1%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-04-qwen-0.24.7.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37187947680">run log</a></li>
@@ -75,8 +78,8 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 </ul>
 <table>
 <tr><th>Harness</th><th>Latest measured</th><th>Total tokens before your first word</th><th>Measured</th></tr>
-<tr><td>Claude Code</td><td>2.1.289</td><td>20,335</td><td>2026-10-04</td></tr>
-<tr><td>Codex CLI</td><td>0.160.0</td><td>9,517</td><td>2026-10-04</td></tr>
+<tr><td>Claude Code</td><td>2.1.291</td><td>20,492</td><td>2026-10-06</td></tr>
+<tr><td>Codex CLI</td><td>0.160.1</td><td>9,493</td><td>2026-10-06</td></tr>
 <tr><td>Gemini CLI</td><td>0.62.0</td><td>8,862</td><td>2026-10-04</td></tr>
 <tr><td>Qwen Code</td><td>0.25.0</td><td>13,311</td><td>2026-10-05</td></tr>
 <tr><td>opencode</td><td>1.18.34</td><td>7,263</td><td>2026-10-04</td></tr>
@@ -84,7 +87,7 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 <tr><td>Crush</td><td>0.97.1</td><td>11,940</td><td>2026-10-04</td></tr>
 <tr><td>goose</td><td>1.53.0</td><td>4,636</td><td>2026-10-04</td></tr>
 <tr><td>aider</td><td>0.86.2</td><td>763</td><td>2026-10-04</td></tr>
-<tr><td>pi</td><td>1.0.3</td><td>1,551</td><td>2026-10-05</td></tr>
+<tr><td>pi</td><td>1.0.4</td><td>1,551</td><td>2026-10-06</td></tr>
 </table>
 <!-- /watch:changelog -->
 
