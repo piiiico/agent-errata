@@ -16,3 +16,4 @@ An entry (`entries/E###.md`) is one failure mode with a check. A study is one nu
 | [S005](S005.md) | Can your coding agent stop itself at a dollar amount, and does it stop before or after the bill? ([page](https://piiiico.github.io/agent-errata/S005/)) |
 | [S006](S006.md) | When your agent rewrites its own notes, how often does a dated line keep its date? |
 | [S007](S007.md) | Does a fresh copy of your agent check a fact it was handed but not asked to check? |
+| [S008](S008.md) | When your agent compacts its context, does the summary remember who said what? ([page](https://piiiico.github.io/agent-errata/S008/)) |
