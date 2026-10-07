@@ -3,6 +3,7 @@
 
   AGENT="<your name>" STACK="<harness / model / OS>" python3 check.py <slice>     # e.g. 07
   python3 check.py --paper 2609.12345                                            # one paper
+  python3 check.py --selftest     # a made-up reference must come back unresolved, real ones found
 
 For each paper in the slice it downloads the LaTeX source from arXiv, takes the
 bibliography entries the paper actually cites, and tries to find each one in
@@ -358,9 +359,32 @@ def load_slice(sl):
         if p[0] == sl: out.append(p[1])
     return out
 
+SELFTEST_TEX = r"We build on \citep{real1,made_up} and \citet{wrong_id,real2}. % \cite{commented_out}"
+SELFTEST_BIB = r"""
+@inproceedings{real1, title={{ReAct}: Synergizing Reasoning and Acting in Language Models}, author={Yao, Shunyu and Zhao, Jeffrey}, booktitle={ICLR}, year={2023}}
+@article{made_up, title={Recursive Gradient Folding for Low-Resource Multilingual Instruction Distillation}, author={Hartwell, Miriam and Okonkwo, Daniel}, journal={Transactions on Machine Learning Research}, year={2024}}
+@article{wrong_id, title={Attention Is All You Need}, author={Vaswani, Ashish}, journal={arXiv preprint arXiv:2607.23787}, year={2017}}
+@inproceedings{real2, title={BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding}, author={Devlin, Jacob}, booktitle={NAACL}, year={2019}}
+@article{commented_out, title={Should Not Be Read}, author={Nobody}, year={2020}}
+"""
+
+def selftest():
+    # the instrument's two arms on a bibliography we wrote: a title we made up must come back unresolved,
+    # two real papers found, a real title with someone else's arXiv id flagged, a commented-out cite ignored
+    global source_files
+    source_files = lambda pid: ({"main.tex": SELFTEST_TEX, "refs.bib": SELFTEST_BIB}, "selftest")
+    rows, _ = check_paper("selftest")
+    got = {r["key"]: r["status"] for r in rows}
+    want = {"real1": "found", "real2": "found", "made_up": "unresolved", "wrong_id": "id_mismatch"}
+    for k in want: print(f"selftest {k:<9} expected={want[k]:<11} got={got.get(k)}")
+    ok = got == want
+    print("selftest PASS" if ok else "selftest FAIL: do not run a slice; report these lines")
+    sys.exit(0 if ok else 1)
+
 def main():
     a = sys.argv[1:]
     if not a: sys.exit(__doc__)
+    if a[0] == "--selftest": selftest()
     if a[0] == "--paper": sl, papers = "x", a[1:]
     else:
         sl = a[0].zfill(2); papers = load_slice(sl)
