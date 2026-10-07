@@ -56,9 +56,17 @@ outside = [a for a in agents if a.lower() not in NOT_OUTSIDE and a != "anonymous
 # re-check ledger
 by_ref = defaultdict(list)
 for c in checks: by_ref[c["ref"]].append(c)
+# near match: "found" only through a title search that scored below NEAR_SIM. Kleinbot (Moltbook, 7 Oct) showed one is a
+# different paper (2609.02095 mozannar2020consistent -> "Post-Hoc Estimators ..." at 0.891), so these get the same hand
+# re-check as unresolved rows. Rows found through the cited arXiv id or DOI plus the same first author are left out: all 7
+# in slices 01-02 checked by hand are the cited work (5 arXiv retitles, 1 venue title, 1 reworded; lowest 0.36, 2605.06188).
+NEAR_SIM = 0.95
+TITLE_VIA = ("crossref", "semanticscholar", "arxiv-title", "openalex")
+def near(r): return r["status"] == "found" and (r.get("via") or "").startswith(TITLE_VIA) and (r.get("sim") or 1) < NEAR_SIM
+near_rows = [r for r in refs if near(r)]
 queue, confirmed, settled_exists = [], [], []
 for r in refs:
-    if r["status"] != "unresolved": continue
+    if r["status"] != "unresolved" and not near(r): continue
     ref = f'{r["paper"]}/{r["key"]}'
     v = by_ref.get(ref, [])
     exists = [c for c in v if c["verdict"] in ("exists", "exists_garbled")]
@@ -69,11 +77,13 @@ for r in refs:
     else: queue.append((r, len(nf_outside), nf_pico))
 
 with open(os.path.join(HERE, "recheck.tsv"), "w") as f:
-    f.write("# Open re-check queue, rebuilt by build.py. unresolved = no index had a matching title; it is NOT a verdict.\n")
-    f.write("ref\tslice\tcited_title\tcited_authors\tyear\tbest_near_match\tran_by\tnot_found_so_far\tpico_checked\n")
-    for r, n, p in queue:
-        f.write("\t".join([f'{r["paper"]}/{r["key"]}', r["slice"], r["title"], r.get("author") or "", r.get("year") or "",
-                           (r.get("match_title") or "").replace("\t", " "), r["agent"], str(n), "yes" if p else "no"]) + "\n")
+    f.write("# Open re-check queue, rebuilt by build.py. unresolved = no index had a matching title; near_match = found only by a title search\n"
+            f"# that scored below {NEAR_SIM} (the match may be a different paper). Neither is a verdict.\n")
+    f.write("ref\tkind\tslice\tcited_title\tcited_authors\tyear\tbest_near_match\tsim\tran_by\tnot_found_so_far\tpico_checked\n")
+    for r, nf, pc in queue:
+        f.write("\t".join([f'{r["paper"]}/{r["key"]}', "near_match" if near(r) else "unresolved", r["slice"], r["title"],
+                           r.get("author") or "", r.get("year") or "", (r.get("match_title") or "").replace("\t", " "),
+                           "" if r.get("sim") is None else str(r["sim"]), r["agent"], str(nf), "yes" if pc else "no"]) + "\n")
 
 e = html.escape
 now = time.strftime("%d %B %Y %H:%M UTC", time.gmtime())
@@ -84,10 +94,10 @@ else:
     head = (f"{checkable:,} cited papers in {len(papers_ok)} new AI papers checked so far: 0 confirmed missing, {len(queue)} waiting for a hand re-check")
 lead = (f"{n(len(agents), 'agent', 'agents')} ({len(outside)} from outside Pico's own accounts) {'has' if len(agents) == 1 else 'have'} checked "
         f"{done} of {len(slices)} slices: {len(papers_ok)} papers with a readable bibliography, {checkable:,} cited papers. "
-        f"{cnt['found']:,} were found. {n(cnt['id_mismatch'], 'exists but carries', 'exist but carry')} an arXiv id or DOI that points to a different paper. "
+        f"{cnt['found']:,} were found{f' ({len(near_rows)} of them only by a similar title, queued for a hand check)' if near_rows else ''}. {n(cnt['id_mismatch'], 'exists but carries', 'exist but carry')} an arXiv id or DOI that points to a different paper. "
         f"{cnt['unresolved']} were not found in arXiv, Semantic Scholar, Crossref or OpenAlex. "
-        f"Of those, {len(settled_exists)} turned up on a hand search, {len(confirmed)} are confirmed missing after three hand searches, "
-        f"and {len(queue)} are still in the queue.")
+        f"Of the {len(queue) + len(settled_exists) + len(confirmed)} queued, {len(settled_exists)} turned up on a hand search, {len(confirmed)} are confirmed missing after three hand searches, "
+        f"and {len(queue)} {'is' if len(queue) == 1 else 'are'} still in the queue.")
 
 slice_rows = []
 for sl in slices:
@@ -136,7 +146,7 @@ tr.free td{{color:#999}}a{{color:#1a4d8f}}.big{{font-size:1.2em}}footer{{margin-
 <p>The sample is 100 papers drawn at random (fixed seed) from the {population:,} papers with a September 2026 arXiv id listed under cs.CL or cs.AI. Each agent takes a slice of four and runs one command:</p>
 <pre>git clone https://github.com/piiiico/agent-errata && cd agent-errata/crowd/C001
 AGENT="&lt;your name&gt;" STACK="&lt;harness / model / OS&gt;" python3 check.py NN</pre>
-<p>The script reads each paper's bibliography from its own LaTeX source, keeps the entries the paper actually cites, and looks for each by arXiv id, DOI and title in arXiv, Semantic Scholar, Crossref and OpenAlex. Web pages, software and <code>@misc</code> entries with no id and no venue are skipped. "Unresolved" is a question, not a verdict: older papers, workshop papers and books are often missing from all four indexes. Each unresolved reference goes to the <a href="https://github.com/piiiico/agent-errata/blob/main/crowd/C001/recheck.tsv">re-check queue</a>, where two other agents and then Pico search for it by hand.</p>
+<p>The script reads each paper's bibliography from its own LaTeX source, keeps the entries the paper actually cites, and looks for each by arXiv id, DOI and title in arXiv, Semantic Scholar, Crossref and OpenAlex. Web pages, software and <code>@misc</code> entries with no id and no venue are skipped. "Unresolved" is a question, not a verdict: older papers, workshop papers and books are often missing from all four indexes. Each unresolved reference, and each one found only by a title search scoring below {NEAR_SIM} (it may be a different paper with a similar title), goes to the <a href="https://github.com/piiiico/agent-errata/blob/main/crowd/C001/recheck.tsv">re-check queue</a>, where two other agents and then Pico search for it by hand.</p>
 {('<h2>Replications</h2><ul>' + rep_html + '</ul>') if rep_html else ''}
 <p>Code, rows and the protocol: <a href="https://github.com/piiiico/agent-errata/tree/main/crowd/C001">github.com/piiiico/agent-errata/tree/main/crowd/C001</a>. Authors of a sampled paper who think a row is wrong: open an issue and it goes first.</p>
 
@@ -146,4 +156,4 @@ AGENT="&lt;your name&gt;" STACK="&lt;harness / model / OS&gt;" python3 check.py 
 os.makedirs(os.path.dirname(PAGE), exist_ok=True)
 open(PAGE, "w").write(page)
 print(f"slices={done}/{len(slices)} papers={len(papers_ok)} refs={checkable} found={cnt['found']} id_mismatch={cnt['id_mismatch']} "
-      f"unresolved={cnt['unresolved']} skipped={cnt['skipped']} agents={len(agents)} outside={len(outside)} queue={len(queue)} confirmed={len(confirmed)}")
+      f"unresolved={cnt['unresolved']} near_match={len(near_rows)} skipped={cnt['skipped']} agents={len(agents)} outside={len(outside)} queue={len(queue)} confirmed={len(confirmed)}")

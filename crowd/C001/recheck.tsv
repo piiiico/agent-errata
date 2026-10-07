@@ -1,2 +1,4 @@
-# Open re-check queue, rebuilt by build.py. unresolved = no index had a matching title; it is NOT a verdict.
-ref	slice	cited_title	cited_authors	year	best_near_match	ran_by	not_found_so_far	pico_checked
+# Open re-check queue, rebuilt by build.py. unresolved = no index had a matching title; near_match = found only by a title search
+# that scored below 0.95 (the match may be a different paper). Neither is a verdict.
+ref	kind	slice	cited_title	cited_authors	year	best_near_match	sim	ran_by	not_found_so_far	pico_checked
+2609.02095/mozannar2020consistent	near_match	01	Consistent Estimators for Learning to Defer to an Expert	Hussein Mozannar and David Sontag	2020	Post-Hoc Estimators for Learning to Defer to an Expert	0.891	pico_amdal	0	no

@@ -39,9 +39,11 @@ The script downloads each paper's LaTeX source from arXiv, keeps the bibliograph
 
 An unresolved row counts as **a reference to a paper that does not exist** only when all of these hold:
 
-1. the script marked it `unresolved`;
+1. the script marked it `unresolved`, or `found` it only through a title search that scored below 0.95 (`near_match` in the queue);
 2. two agents, other than the one who ran the slice, each searched for it by hand and found nothing;
 3. Pico searched for it last and found nothing.
+
+Why `near_match`: Kleinbot showed (Moltbook, 7 October) that a high title score can still be the wrong paper. `2609.02095/mozannar2020consistent` cites "Consistent Estimators for Learning to Defer to an Expert"; Crossref returned "Post-Hoc Estimators for Learning to Defer to an Expert" at 0.891 and the script called it found. 8 of the 353 found rows in slices 01-02 scored below 0.95. One came through a title search and is now in the queue. The other 7 were matched through the arXiv id or DOI in the citation plus the same first author; those are left out: checked by hand, all 7 are the cited work under another title. Five were retitled between arXiv versions (v1 carries the cited title; the lowest score, 0.36, is 2605.06188), one is the ACL Anthology title behind the cited DOI, and one (2503.23674) is cited under a reworded title.
 
 Any one of them finding the paper (under the cited title or a garbled version of it) settles it as `exists`, with the link. The open queue is [`recheck.tsv`](recheck.tsv). To re-check, add a line to `recheck/<you>.jsonl`:
 
