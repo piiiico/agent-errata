@@ -8,7 +8,9 @@
 For each paper in the slice it downloads the LaTeX source from arXiv, takes the
 bibliography entries the paper actually cites, and tries to find each one in
 arXiv, Semantic Scholar, Crossref and OpenAlex by identifier and by title. Every reference gets one
-row: found, id_mismatch (the title exists but the arXiv id or DOI given points at
+row: found, near_match (found only through a title search scoring below 0.95, or
+through an arXiv id / DOI whose record has a different title by the same first author: may be a
+different paper, so it gets a hand re-check), id_mismatch (the title exists but the arXiv id or DOI given points at
 a different paper), unresolved (no record with a matching title anywhere we
 looked), or skipped (no title, or a web page / software / dataset rather than a paper).
 
@@ -20,12 +22,14 @@ Rows go to rows/<slice>.<agent>.jsonl and stdout. The last line is the summary.
 """
 import difflib, gzip, threading, io, json, os, re, sys, tarfile, time, unicodedata, urllib.error, urllib.parse, urllib.request
 
-VERSION = "c001-check/1"
+VERSION = "c001-check/2"
 UA = f"{VERSION} (crowd study; https://github.com/piiiico/agent-errata/tree/main/crowd/C001)"
 MAILTO = os.environ.get("MAILTO", "pico@amdal.dev")
 from concurrent.futures import ThreadPoolExecutor
 HERE = os.path.dirname(os.path.abspath(__file__))
 FOUND_SIM = 0.88
+NEAR_SIM = 0.95
+TITLE_VIA = ("crossref", "semanticscholar", "arxiv-title", "openalex")
 _last = {}
 
 _lock = threading.Lock()
@@ -191,11 +195,21 @@ def arxiv_titles(ids):
         code, xml = get(f"https://export.arxiv.org/api/query?{q}", "arxiv", 3.1)
         if code != 200 or not xml: continue
         for ent in re.findall(r"<entry>(.*?)</entry>", xml, re.S):
-            im = re.search(r"arxiv\.org/abs/(\d{4}\.\d{4,5})", ent)
+            im = re.search(r"arxiv\.org/abs/(\d{4}\.\d{4,5})(?:v(\d+))?", ent)
             tm = re.search(r"<title>(.*?)</title>", ent, re.S)
             am = re.search(r"<author>\s*<name>(.*?)</name>", ent, re.S)
-            if im and tm: found[im.group(1)] = (" ".join(tm.group(1).split()), am.group(1).split()[-1] if am else "")
+            if im and tm: found[im.group(1)] = (" ".join(tm.group(1).split()), am.group(1).split()[-1] if am else "", int(im.group(2) or 1))
     return found
+
+def earlier_titles(arxiv_id, latest):
+    # titles of v1..v(latest-1): a citation often carries the title of the version the author read
+    out = []
+    for v in range(1, latest):
+        code, xml = get(f"https://export.arxiv.org/api/query?id_list={arxiv_id}v{v}", "arxiv", 3.1)
+        ent = re.findall(r"<entry>(.*?)</entry>", xml or "", re.S)
+        tm = re.search(r"<title>(.*?)</title>", ent[0], re.S) if ent else None
+        if tm: out.append((v, " ".join(tm.group(1).split())))
+    return out
 
 def first_author_words(author):
     # "Last, First and ..." or "First Last, Second Author, and ..." -> the words of the first name only
@@ -304,12 +318,17 @@ def check_paper(pid):
                 got = ax.get(ids[key])
                 if got is None: r["id_note"] = f"arXiv:{ids[key]} not found on arXiv"
                 else:
-                    t, sur = got
+                    t, sur, latest = got
                     s = sim(title, t)
                     if s >= FOUND_SIM: id_hit = (s, "arXiv:" + ids[key], t, "arxiv-id")
                     elif sur and norm(sur) in first_author_words(e.get("author", "")):
-                        # same id, same first author, different title: arXiv titles change between versions
-                        id_hit = (s, "arXiv:" + ids[key], t, "arxiv-id+author")
+                        # same id, same first author, different title: either a retitle between versions or another
+                        # paper by the same author (systematicsignalslab, Moltbook 7 Oct). An earlier version carrying
+                        # the cited title settles it; otherwise near_match, which goes to a hand check
+                        old = [(sim(title, ot), v, ot) for v, ot in earlier_titles(ids[key], latest)]
+                        bv = max(old) if old else None
+                        if bv and bv[0] >= FOUND_SIM: id_hit = (bv[0], "arXiv:" + ids[key], bv[2], f"arxiv-id (v{bv[1]} title)")
+                        else: id_hit = (s, "arXiv:" + ids[key], t, "arxiv-id+author")
                     else: r["id_note"] = f"arXiv:{ids[key]} is titled: {t[:200]}"
             if not id_hit and r["doi"]:
                 got = doi_record(r["doi"])
@@ -332,6 +351,11 @@ def check_paper(pid):
                     if b and b[0] >= FOUND_SIM: hit = (*b, via); break
             if hit:
                 r["status"] = "id_mismatch" if (r["id_note"] and not hit[3].startswith(("arxiv-id", "doi"))) else "found"
+                # near_match: found only through the author (id or DOI points at a different title by the same first
+                # author) or through a title search below NEAR_SIM. Either may be a different paper; build.py queues
+                # these for the same hand re-check as unresolved rows
+                if r["status"] == "found" and (hit[3] in ("arxiv-id+author", "doi+author") or (hit[3] in TITLE_VIA and hit[0] < NEAR_SIM)):
+                    r["status"] = "near_match"
                 r["sim"], r["match"], r["match_title"], r["via"] = hit[0], hit[1], (hit[2] or "")[:200], hit[3]
             else:
                 r["status"], r["via"] = "unresolved", "arxiv-id,doi,s2,crossref,arxiv-title,openalex"
@@ -345,7 +369,7 @@ def check_paper(pid):
         if r["status"] == "unresolved" and r.get("unreachable"):
             b = s2_match(r["title"], tries=8)
             if b and b != ERR and b[0] >= FOUND_SIM:
-                r.update(status="found", sim=b[0], match=b[1], match_title=(b[2] or "")[:200], via="semanticscholar (retry)")
+                r.update(status="found" if b[0] >= NEAR_SIM else "near_match", sim=b[0], match=b[1], match_title=(b[2] or "")[:200], via="semanticscholar (retry)")
             elif b != ERR:
                 r["unreachable"] = [u for u in r["unreachable"] if u != "semanticscholar"] or None
     print("", file=sys.stderr)
@@ -359,12 +383,14 @@ def load_slice(sl):
         if p[0] == sl: out.append(p[1])
     return out
 
-SELFTEST_TEX = r"We build on \citep{real1,made_up} and \citet{wrong_id,real2}. % \cite{commented_out}"
+SELFTEST_TEX = r"We build on \citep{real1,made_up} and \citet{wrong_id,real2,same_author,retitled}. % \cite{commented_out}"
 SELFTEST_BIB = r"""
 @inproceedings{real1, title={{ReAct}: Synergizing Reasoning and Acting in Language Models}, author={Yao, Shunyu and Zhao, Jeffrey}, booktitle={ICLR}, year={2023}}
 @article{made_up, title={Recursive Gradient Folding for Low-Resource Multilingual Instruction Distillation}, author={Hartwell, Miriam and Okonkwo, Daniel}, journal={Transactions on Machine Learning Research}, year={2024}}
 @article{wrong_id, title={Attention Is All You Need}, author={Vaswani, Ashish}, journal={arXiv preprint arXiv:2607.23787}, year={2017}}
 @inproceedings{real2, title={BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding}, author={Devlin, Jacob}, booktitle={NAACL}, year={2019}}
+@article{same_author, title={Chain-of-Thought Prompting Elicits Reasoning in Large Language Models}, author={Wei, Jason and Wang, Xuezhi}, journal={arXiv preprint arXiv:2206.07682}, year={2022}}
+@article{retitled, title={{OPSD} Compresses What {RLVR} Teaches: A Post-RL Compaction Stage for Reasoning Models}, author={Kim, Jaehoon and Lee, Dongha}, journal={arXiv preprint arXiv:2605.06188}, year={2026}}
 @article{commented_out, title={Should Not Be Read}, author={Nobody}, year={2020}}
 """
 
@@ -375,8 +401,9 @@ def selftest():
     source_files = lambda pid: ({"main.tex": SELFTEST_TEX, "refs.bib": SELFTEST_BIB}, "selftest")
     rows, _ = check_paper("selftest")
     got = {r["key"]: r["status"] for r in rows}
-    want = {"real1": "found", "real2": "found", "made_up": "unresolved", "wrong_id": "id_mismatch"}
-    for k in want: print(f"selftest {k:<9} expected={want[k]:<11} got={got.get(k)}")
+    want = {"real1": "found", "real2": "found", "made_up": "unresolved", "wrong_id": "id_mismatch",
+            "same_author": "near_match", "retitled": "found"}
+    for k in want: print(f"selftest {k:<11} expected={want[k]:<11} got={got.get(k)}")
     ok = got == want
     print("selftest PASS" if ok else "selftest FAIL: do not run a slice; report these lines")
     sys.exit(0 if ok else 1)
@@ -394,7 +421,7 @@ def main():
     day = time.strftime("%Y-%m-%d", time.gmtime())
     os.makedirs(os.path.join(HERE, "rows"), exist_ok=True)
     path = os.path.join(HERE, "rows", f"{sl}.{re.sub(r'[^A-Za-z0-9_.-]', '_', agent)}.jsonl")
-    counts, t0 = {"found": 0, "id_mismatch": 0, "unresolved": 0, "skipped": 0}, time.time()
+    counts, t0 = {"found": 0, "near_match": 0, "id_mismatch": 0, "unresolved": 0, "skipped": 0}, time.time()
     paper_notes = []
     with open(path, "w") as f:
         for pid in papers:
@@ -412,7 +439,7 @@ def main():
                     print(f"C001 {sl} {pid} {r['status']:<11} {r['via'] or ''} sim={r['sim']} \"{r['title'][:90]}\"" + (f" | unreachable: {','.join(r['unreachable'])}" if r.get("unreachable") else "") +
                           (f" | {r['id_note'].strip()}" if r["id_note"] else ""), flush=True)
     total = sum(counts.values())
-    print(f"C001 slice={sl} papers={len(papers)} refs={total} found={counts['found']} id_mismatch={counts['id_mismatch']} "
+    print(f"C001 slice={sl} papers={len(papers)} refs={total} found={counts['found']} near_match={counts['near_match']} id_mismatch={counts['id_mismatch']} "
           f"unresolved={counts['unresolved']} skipped={counts['skipped']} agent={agent} secs={int(time.time() - t0)} file={os.path.relpath(path, HERE)}")
     if total == 0:
         sys.exit("FLOOR: 0 references parsed from the whole slice. That is an instrument failure, not a result. Report it as such.")

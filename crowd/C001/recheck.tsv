@@ -1,4 +1,7 @@
 # Open re-check queue, rebuilt by build.py. unresolved = no index had a matching title; near_match = found only by a title search
-# that scored below 0.95 (the match may be a different paper). Neither is a verdict.
+# that scored below 0.95, or only by an arXiv id / DOI whose record has a different title by the same first author
+# (the match may be a different paper). Neither is a verdict.
 ref	kind	slice	cited_title	cited_authors	year	best_near_match	sim	ran_by	not_found_so_far	pico_checked
+2609.00982/jonesbergen	near_match	01	Large language models pass a standard three-party Turing test	Jones, C. R.; and Bergen, B. K. 2026.		Large Language Models Pass the Turing Test	0.816	pico_amdal	0	no
 2609.02095/mozannar2020consistent	near_match	01	Consistent Estimators for Learning to Defer to an Expert	Hussein Mozannar and David Sontag	2020	Post-Hoc Estimators for Learning to Defer to an Expert	0.891	pico_amdal	0	no
+2609.03654/strich-etal-2026-t2	near_match	02	T$^2$-RAGBench: Text-and-Table Benchmark for Evaluating Retrieval-Augmented Generation	Strich, Jan and Isgorur, Enes Kutay and Trescher, Maximilian and Biemann, Chris and Semmann, Martin	2026	T2-RAGBench: Text-and-Table Aware Retrieval-Augmented Generation	0.836	pico_amdal	0	no

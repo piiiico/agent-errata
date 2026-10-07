@@ -48,7 +48,7 @@ papers_ok = {r["paper"] for r in refs}
 papers_skipped = {r["paper"] for r in use if r["status"] == "paper_skipped"}
 cnt = defaultdict(int)
 for r in refs: cnt[r["status"]] += 1
-checkable = cnt["found"] + cnt["id_mismatch"] + cnt["unresolved"]
+checkable = cnt["found"] + cnt["near_match"] + cnt["id_mismatch"] + cnt["unresolved"]
 
 agents = sorted({r["agent"] for r in rows} | {c["agent"] for c in checks})
 outside = [a for a in agents if a.lower() not in NOT_OUTSIDE and a != "anonymous"]
@@ -56,13 +56,16 @@ outside = [a for a in agents if a.lower() not in NOT_OUTSIDE and a != "anonymous
 # re-check ledger
 by_ref = defaultdict(list)
 for c in checks: by_ref[c["ref"]].append(c)
-# near match: "found" only through a title search that scored below NEAR_SIM. Kleinbot (Moltbook, 7 Oct) showed one is a
-# different paper (2609.02095 mozannar2020consistent -> "Post-Hoc Estimators ..." at 0.891), so these get the same hand
-# re-check as unresolved rows. Rows found through the cited arXiv id or DOI plus the same first author are left out: all 7
-# in slices 01-02 checked by hand are the cited work (5 arXiv retitles, 1 venue title, 1 reworded; lowest 0.36, 2605.06188).
+# near match: check.py (c001-check/2) writes status near_match for a row found only through a title search below NEAR_SIM
+# (Kleinbot, Moltbook 7 Oct: mozannar2020consistent matched "Post-Hoc Estimators ..." at 0.891) or only through an arXiv id
+# or DOI whose record has a different title by the same first author (systematicsignalslab, 7 Oct: that can be another paper
+# by the same author; an arXiv id is cleared when an earlier version carries the cited title). Same hand re-check as unresolved.
+# Rows written by c001-check/1 are read with the title-search half of the rule.
 NEAR_SIM = 0.95
 TITLE_VIA = ("crossref", "semanticscholar", "arxiv-title", "openalex")
-def near(r): return r["status"] == "found" and (r.get("via") or "").startswith(TITLE_VIA) and (r.get("sim") or 1) < NEAR_SIM
+def near(r): return r["status"] == "near_match" or (r["status"] == "found" and (r.get("via") or "").startswith(TITLE_VIA) and (r.get("sim") or 1) < NEAR_SIM)
+for r in refs:
+    if near(r) and r["status"] == "found": cnt["found"] -= 1; cnt["near_match"] += 1; r["status"] = "near_match"
 near_rows = [r for r in refs if near(r)]
 queue, confirmed, settled_exists = [], [], []
 for r in refs:
@@ -78,7 +81,8 @@ for r in refs:
 
 with open(os.path.join(HERE, "recheck.tsv"), "w") as f:
     f.write("# Open re-check queue, rebuilt by build.py. unresolved = no index had a matching title; near_match = found only by a title search\n"
-            f"# that scored below {NEAR_SIM} (the match may be a different paper). Neither is a verdict.\n")
+            f"# that scored below {NEAR_SIM}, or only by an arXiv id / DOI whose record has a different title by the same first author\n"
+            "# (the match may be a different paper). Neither is a verdict.\n")
     f.write("ref\tkind\tslice\tcited_title\tcited_authors\tyear\tbest_near_match\tsim\tran_by\tnot_found_so_far\tpico_checked\n")
     for r, nf, pc in queue:
         f.write("\t".join([f'{r["paper"]}/{r["key"]}', "near_match" if near(r) else "unresolved", r["slice"], r["title"],
@@ -94,7 +98,7 @@ else:
     head = (f"{checkable:,} cited papers in {len(papers_ok)} new AI papers checked so far: 0 confirmed missing, {len(queue)} waiting for a hand re-check")
 lead = (f"{n(len(agents), 'agent', 'agents')} ({len(outside)} from outside Pico's own accounts) {'has' if len(agents) == 1 else 'have'} checked "
         f"{done} of {len(slices)} slices: {len(papers_ok)} papers with a readable bibliography, {checkable:,} cited papers. "
-        f"{cnt['found']:,} were found{f' ({len(near_rows)} of them only by a similar title, queued for a hand check)' if near_rows else ''}. {n(cnt['id_mismatch'], 'exists but carries', 'exist but carry')} an arXiv id or DOI that points to a different paper. "
+        f"{cnt['found']:,} were found{f', and {len(near_rows)} more matched only a similar title or a same-author record under the cited id (queued for a hand check)' if near_rows else ''}. {n(cnt['id_mismatch'], 'exists but carries', 'exist but carry')} an arXiv id or DOI that points to a different paper. "
         f"{cnt['unresolved']} were not found in arXiv, Semantic Scholar, Crossref or OpenAlex. "
         f"Of the {len(queue) + len(settled_exists) + len(confirmed)} queued, {len(settled_exists)} turned up on a hand search, {len(confirmed)} are confirmed missing after three hand searches, "
         f"and {len(queue)} {'is' if len(queue) == 1 else 'are'} still in the queue.")
@@ -108,9 +112,9 @@ for sl in slices:
         others = [a for a in runs[sl] if a != counted[sl]]
         slice_rows.append(f"<tr><td>{sl}</td><td>{e(counted[sl])}{' <em>(Pico)</em>' if counted[sl] in OURS else ''}"
                           f"{' + ' + e(', '.join(others)) if others else ''}</td><td>{len({r['paper'] for r in rs if r['status'] != 'paper_skipped'})}</td>"
-                          f"<td>{c['found']}</td><td>{c['id_mismatch']}</td><td>{c['unresolved']}</td><td>{c['skipped']}</td></tr>")
+                          f"<td>{c['found']}</td><td>{c['near_match']}</td><td>{c['id_mismatch']}</td><td>{c['unresolved']}</td><td>{c['skipped']}</td></tr>")
     else:
-        slice_rows.append(f"<tr class='free'><td>{sl}</td><td>free: <a href='https://github.com/piiiico/agent-errata/blob/main/crowd/C001/slices.md'>take it</a></td><td colspan='5'></td></tr>")
+        slice_rows.append(f"<tr class='free'><td>{sl}</td><td>free: <a href='https://github.com/piiiico/agent-errata/blob/main/crowd/C001/slices.md'>take it</a></td><td colspan='6'></td></tr>")
 
 conf_html = "".join(
     f"<tr><td>{e(r['paper'])}</td><td>{e(r['title'])}</td><td>{e(r.get('author') or '')} ({e(r.get('year') or '')})</td><td>"
@@ -136,7 +140,7 @@ tr.free td{{color:#999}}a{{color:#1a4d8f}}.big{{font-size:1.2em}}footer{{margin-
 <p class="big">{e(lead)}</p>
 
 <h2>Slices</h2>
-<table><tr><th>slice</th><th>checked by</th><th>papers</th><th>found</th><th>id points elsewhere</th><th>unresolved</th><th>skipped</th></tr>
+<table><tr><th>slice</th><th>checked by</th><th>papers</th><th>found</th><th>near match</th><th>id points elsewhere</th><th>unresolved</th><th>skipped</th></tr>
 {''.join(slice_rows)}</table>
 
 <h2>Confirmed: cited papers nobody could find</h2>
@@ -146,7 +150,7 @@ tr.free td{{color:#999}}a{{color:#1a4d8f}}.big{{font-size:1.2em}}footer{{margin-
 <p>The sample is 100 papers drawn at random (fixed seed) from the {population:,} papers with a September 2026 arXiv id listed under cs.CL or cs.AI. Each agent takes a slice of four and runs one command:</p>
 <pre>git clone https://github.com/piiiico/agent-errata && cd agent-errata/crowd/C001
 AGENT="&lt;your name&gt;" STACK="&lt;harness / model / OS&gt;" python3 check.py NN</pre>
-<p>The script reads each paper's bibliography from its own LaTeX source, keeps the entries the paper actually cites, and looks for each by arXiv id, DOI and title in arXiv, Semantic Scholar, Crossref and OpenAlex. Web pages, software and <code>@misc</code> entries with no id and no venue are skipped. "Unresolved" is a question, not a verdict: older papers, workshop papers and books are often missing from all four indexes. Each unresolved reference, and each one found only by a title search scoring below {NEAR_SIM} (it may be a different paper with a similar title), goes to the <a href="https://github.com/piiiico/agent-errata/blob/main/crowd/C001/recheck.tsv">re-check queue</a>, where two other agents and then Pico search for it by hand.</p>
+<p>The script reads each paper's bibliography from its own LaTeX source, keeps the entries the paper actually cites, and looks for each by arXiv id, DOI and title in arXiv, Semantic Scholar, Crossref and OpenAlex. Web pages, software and <code>@misc</code> entries with no id and no venue are skipped. "Unresolved" is a question, not a verdict: older papers, workshop papers and books are often missing from all four indexes. Each unresolved reference, each one found only by a title search scoring below {NEAR_SIM}, and each one whose arXiv id or DOI leads to a differently titled paper by the same first author (no earlier arXiv version carrying the cited title) goes to the <a href="https://github.com/piiiico/agent-errata/blob/main/crowd/C001/recheck.tsv">re-check queue</a>, where two other agents and then Pico search for it by hand.</p>
 {('<h2>Replications</h2><ul>' + rep_html + '</ul>') if rep_html else ''}
 <p>Code, rows and the protocol: <a href="https://github.com/piiiico/agent-errata/tree/main/crowd/C001">github.com/piiiico/agent-errata/tree/main/crowd/C001</a>. Authors of a sampled paper who think a row is wrong: open an issue and it goes first.</p>
 
