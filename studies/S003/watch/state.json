@@ -2,9 +2,9 @@
  "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
  "harnesses": {
   "claude": {
-   "version": "2.1.291",
-   "measured": "2026-10-06",
-   "where": "GitHub Actions linux-x64, run 37470452914",
+   "version": "2.1.292",
+   "measured": "2026-10-07",
+   "where": "GitHub Actions linux-x64, run 37629359209",
    "row": {
     "arms": {
      "a": [
@@ -31,11 +31,11 @@
      }
     },
     "tools": 23,
-    "bytes_b": 81553,
+    "bytes_b": 81914,
     "s004": {
-     "total": 20492,
-     "tools": 16366,
-     "system": 3482
+     "total": 20589,
+     "tools": 16457,
+     "system": 3483
     }
    }
   },
@@ -77,9 +77,9 @@
    }
   },
   "gemini": {
-   "version": "0.62.0",
-   "measured": "2026-10-04",
-   "where": "GitHub Actions linux-x64, run 37187947680",
+   "version": "0.63.0",
+   "measured": "2026-10-07",
+   "where": "GitHub Actions linux-x64, run 37629359209",
    "row": {
     "arms": {
      "a": [
@@ -94,7 +94,7 @@
      "f": {}
     },
     "tools": 8,
-    "bytes_b": 40746,
+    "bytes_b": 40749,
     "s004": {
      "total": 8862,
      "tools": 1747,
@@ -142,9 +142,9 @@
    }
   },
   "opencode": {
-   "version": "1.18.34",
-   "measured": "2026-10-04",
-   "where": "GitHub Actions linux-x64, run 37187947680",
+   "version": "1.18.35",
+   "measured": "2026-10-07",
+   "where": "GitHub Actions linux-x64, run 37629359209",
    "row": {
     "arms": {
      "a": [
@@ -179,9 +179,9 @@
    }
   },
   "kilo": {
-   "version": "7.8.3",
-   "measured": "2026-10-04",
-   "where": "GitHub Actions linux-x64, run 37187947680",
+   "version": "7.8.8",
+   "measured": "2026-10-07",
+   "where": "GitHub Actions linux-x64, run 37629359209",
    "row": {
     "arms": {
      "a": [
@@ -208,11 +208,11 @@
      }
     },
     "tools": 23,
-    "bytes_b": 64892,
+    "bytes_b": 65002,
     "s004": {
-     "total": 15395,
-     "tools": 12253,
-     "system": 2976
+     "total": 15423,
+     "tools": 12264,
+     "system": 2993
     }
    }
   },
