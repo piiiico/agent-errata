@@ -1,5 +1,6 @@
 // S005 runner: one harness, one scratch HOME + repo, pointed at loop2.ts; stops at the harness's own exit or at TIMEOUT.
 // Usage: bun run.ts <label> <harness-id> [timeoutSec] [-- extra args...]   env: EXTRA_ENV='{"K":"V"}' SETUP_JSON='{"rel/path":{...}}'
+//   MIN_FREE_GB (start floor, 8) ABORT_FREE_GB (mid-run kill, max(2, MIN_FREE_GB/4)) KEEP_HOME=1
 import { HARNESSES } from "../S003/watch/harnesses.ts";
 import { mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, statfsSync } from "fs";
 const [label, id, tsec = "90", ...rest] = process.argv.slice(2);
@@ -34,13 +35,21 @@ const env = { PATH: process.env.PATH!, HOME: home, TERM: "dumb", NO_COLOR: "1", 
 for (const [k, v] of Object.entries(env)) env[k] = String(v).replaceAll("$PORT", String(port));
 const t0 = Date.now();
 const p = Bun.spawn([bin, ...args], { cwd: repo, env, stdin: "ignore", stdout: Bun.file(`${D}/stdout.txt`), stderr: Bun.file(`${D}/stderr.txt`) });
-const timer = setTimeout(() => { p.kill("SIGTERM"); setTimeout(() => p.kill("SIGKILL"), 3000); }, Number(tsec) * 1000);
-const code = await p.exited; clearTimeout(timer);
+const stop = () => { p.kill("SIGTERM"); setTimeout(() => p.kill("SIGKILL"), 3000); };
+const timer = setTimeout(stop, Number(tsec) * 1000);
+// The start floor alone can't stop one run: 900 s at ~11 MB/s is ~10 GB, more than the 8 GB floor. So also check free
+// space every 2 s and kill the harness below ABORT_FREE_GB (default max(2, MIN_FREE_GB/4)); the HOME is then always deleted.
+const abortGB = Number(process.env.ABORT_FREE_GB ?? Math.max(2, minFree / 4)); let diskAbort = false, minSeenGB = freeGB;
+const watch = setInterval(() => {
+  const s = statfsSync(runsRoot), gb = (s.bavail * s.bsize) / 1e9; minSeenGB = Math.min(minSeenGB, gb);
+  if (gb < abortGB && !diskAbort) { diskAbort = true; console.error(`disk abort: ${gb.toFixed(2)} GB free under ${runsRoot}, abort floor ${abortGB} GB`); stop(); }
+}, 2000);
+const code = await p.exited; clearTimeout(timer); clearInterval(watch);
 const secs = (Date.now() - t0) / 1000; srv.kill();
 const log = existsSync(`${D}/cap/index.log`) ? readFileSync(`${D}/cap/index.log`, "utf8").trim().split("\n").filter(Boolean) : [];
 const calls = log.filter((l) => !l.includes("\tcall=-")).length;
 const homeBytes = Number(Bun.spawnSync(["du", "-sb", home]).stdout.toString().split("\t")[0]) || 0;
-if (process.env.KEEP_HOME !== "1") rmSync(home, { recursive: true, force: true });
-const res = { label, harness: id, args: extra, exit: code, timedOut: secs >= Number(tsec) - 0.5, secs: Math.round(secs), requests: log.length, toolCalls: calls, homeBytes, homeKept: process.env.KEEP_HOME === "1" };
+const keep = process.env.KEEP_HOME === "1" && !diskAbort; if (!keep) rmSync(home, { recursive: true, force: true });
+const res = { label, harness: id, args: extra, exit: code, timedOut: secs >= Number(tsec) - 0.5, secs: Math.round(secs), requests: log.length, toolCalls: calls, homeBytes, homeKept: keep, diskAbort, minFreeGB: Number(minSeenGB.toFixed(2)) };
 writeFileSync(`${D}/result.json`, JSON.stringify(res, null, 1));
 console.log(JSON.stringify(res));
