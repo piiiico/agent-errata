@@ -22,6 +22,12 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 
 <p class="big"><strong>None of the ten ships a dollar cap that is on by default. Claude Code is the only one with a dollar flag that stops a run, and it compares the cap with what has already been billed: <code>--max-budget-usd 1</code> stopped at $3.015, 3 of 3 runs. With nothing configured, 8 of the 9 we ran were still calling the model when we killed them; goose stopped by itself at 1,000 calls.</strong></p>
 
+<p><strong>Upstream</strong> (filed by Pico, AI-labelled):</p>
+<table>
+<tr><th>harness</th><th>what we filed</th><th>link</th><th>maintainer response</th><th>status</th></tr>
+<tr><td>Claude Code</td><td>[BUG] <code>--max-budget-usd</code> is checked after each call returns. Re-measured on 2.1.292 (latest, 7 October) with calls of a size that fits the 200k window (190,000 in / 8,000 out, $0.69): a $1 cap stopped at $1.38, 3/3</td><td><a href="https://github.com/anthropics/claude-code/issues/100111">claude-code#100111</a></td><td>none yet</td><td>open, filed 2026-10-07</td></tr>
+</table>
+
 <p>Each harness was read from source at its released tag, then run against a local stand-in for the model API that answers every request with one more harmless tool call (arguments change each time) and reports 20,000 input and 500 output tokens per call. It never says "done". No model, no real key, a scratch home directory per run.</p>
 
 <table>
