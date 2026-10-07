@@ -17,3 +17,4 @@ An entry (`entries/E###.md`) is one failure mode with a check. A study is one nu
 | [S006](S006.md) | When your agent rewrites its own notes, how often does a dated line keep its date? |
 | [S007](S007.md) | Does a fresh copy of your agent check a fact it was handed but not asked to check? |
 | [S008](S008.md) | When your agent compacts its context, does the summary remember who said what? ([page](https://piiiico.github.io/agent-errata/S008/)) |
+| [C001](C001.md) | Crowd study: do the papers cited by 100 new AI papers on arXiv exist? ([page](https://piiiico.github.io/agent-errata/C001/)) |

@@ -1,0 +1,102 @@
+# C001 sample: 100 of 7441 cs.CL/cs.AI papers with a 2609.* id (arXiv API, 2026-10-07 11:10 UTC), seed C001-2026-10-07
+slice	arxiv	primary	title
+01	2609.00982	cs.CL	Disclosure-Gated User Simulation for Companion-Agent Evaluation
+01	2609.00999	cs.CL	Right Frame, Wrong Rule: Cultural Cues Expose the Financial Knowledge Gap They Were Meant to Close
+01	2609.01507	cs.LG	LatentPress: Context Compression Beyond Text and Vision
+01	2609.02095	cs.AI	READY or Not: Reliable Enterprise Agent Deployment
+02	2609.03241	cs.LG	FlowBalance: Verifier-Grounded Self-Improvement from On-Policy Reasoning Experience
+02	2609.03450	cs.IR	Plan Pointers and Record-Directive Form in Budgeted Verification of Inherited Agent Memory
+02	2609.03654	cs.CL	Enhancing Financial Question Answering: A Novel Benchmark Dataset of Banks' financial statements
+02	2609.04180	cs.CL	Knowledge Acquisition During Pre-training? Large Language Models Learn Better With Auxiliary Views
+03	2609.04356	cs.CR	Blockchain-Enabled Secure Logging for Fiscal Electronic Mechanisms: Evaluation of the Greek eSEND and myDATA Tax Systems
+03	2609.04516	cs.SD	Pitch-class Steering for Diffusion-based Music Generation via Latent-space Probes
+03	2609.04526	cs.CL	Scale-QLoRA: Code-Invariant Adapter Merging for Native 4-bit Microscaling LLMs
+03	2609.04706	cs.AI	FinalityBench: An Effect-Level Benchmark for Agent Decisions Under Delayed and Conflicting Financial Finality
+04	2609.05069	cs.CL	A Structured Debate-Mixture-of-Agents Framework for Complex Clinical Diagnostic Decision Support
+04	2609.05139	cs.CL	NS-ST-GraphRAG: Neuro-Symbolic Spatio-Temporal GraphRAG for Literary Knowledge Processing
+04	2609.05993	cs.CL	Alignment by Stereotyping: How LLMs Sacrifice Individual Distinctiveness for Cultural Adaptation
+04	2609.06664	cs.IR	EviMap: Evidence-Grounded Hierarchical Topic Maps for Exploring Unlabeled Corpora
+05	2609.06912	cs.LG	From Synthetic Priors to Model Behavior: Structural Coverage in Tabular Foundation Models
+05	2609.07213	cs.AI	Unraveling the Real Working Mechanism and Inherent Flaws of GAE: A Method for Interpreting Transformer Processes from an Economic Perspective
+05	2609.07432	cs.LG	Revisiting Thinning Methods for Kernel Learning Problems
+05	2609.08123	cs.RO	DISEIL: Demonstration Distillation for Sample-Efficient Imitation Learning
+06	2609.08672	cs.SD	X2Streaming-ASR: wait when uncertain, emit when ready for streaming ASR
+06	2609.08936	cs.SD	AuK Technical Report: An Open-Source Foundational Model for Speech Generation and Editing
+06	2609.09853	cs.AI	The Era by Eon Benchmark: A Generated Enterprise Estate with Exact Ground Truth for Benchmarking LLM Agents
+06	2609.09928	cs.AI	Structural Process Supervision for Latent Chain-of-Thought Reasoning
+07	2609.10248	cs.SE	A-JIT: Agentic Just-In-Time Software Construction
+07	2609.10792	cs.CL	Analyzing Traditional and Neural Approaches to Multilingual Readability Assessment
+07	2609.11282	cs.AI	When Does Text Inform? Benchmarking Information-Theoretic Metrics for Multimodal Time-Series Forecasting
+07	2609.11911	cs.AI	Artificial Id: Drive and Persistent Alignment in Agentic AI
+08	2609.12002	cs.LG	Can We Trust LLM Judges: A Study of Capability-Dependent Biases and Multi-Judge Ensemble for Bias Calibration
+08	2609.12101	cs.AI	Competence-Gated Pooling of Language Models and Priors for Event Forecasting
+08	2609.13253	cs.MA	An Evolutionary Computation Framework for Multi-Agent Q-Learning with Mean-Field Environmental Feedback
+08	2609.13566	cs.AI	Planning or Learning: Reliability and Cost in Multi-Asset Maintenance
+09	2609.13847	cs.CL	Measuring the Cost of Variety Conflation in Multilingual MT Evaluation: Adding Mozambican Xichangana, Nyanja and Sena to FLORES+
+09	2609.14987	cs.CR	ActGuard: Pre-execution Action Auditing against Indirect Prompt Injection in LLM Agents
+09	2609.15772	cs.NE	Event-Native Symbolic-Temporal Spike Encoding Framework for Heterogeneous Cyber Streams
+09	2609.16635	cs.AI	EchoPath: Execution-Level Replayable Memory for GUI Agents
+10	2609.17141	cs.RO	Continual Learning for Traversability Prediction with Uncertainty-Aware Adaptation
+10	2609.17394	cs.SE	Coding Agents Have Converged: Why the SWE-bench Leaderboard Can No Longer Order Its Top Entries, and What to Measure Instead
+10	2609.17863	cs.AI	The Inference Engineering Pareto Atlas: Which Optimizations Dominate the Cost, Quality, and Latency Frontier?
+10	2609.17997	cs.LG	The Attention Within: Consensus Dynamics in Selective State Space Models
+11	2609.18080	cs.AI	Decodability is Not Causality: Dissociating Probe Readouts from Behavioral Drivers via SAE Decomposition
+11	2609.18516	cs.CL	Align, Integrate, and Fire: Efficient Token-Level Alignment for Zero-Shot SpeechLLMs
+11	2609.18723	cs.AI	Beyond Truncation: Rethinking LLM Decoding as Ensemble Pruning
+11	2609.19868	cs.CL	Zarya: A Hybrid Autoregressive--Masked Diffusion Language Model with Flexible Training and Dual-Mode Inference
+12	2609.21145	cs.CL	Scaling Forced Alignment to End-User Devices
+12	2609.21259	cs.AI	CogGym: Towards Large-Scale Comparative Evaluation of Human and Machine Cognition
+12	2609.21637	cs.CL	Chinese Competitive Debating Dataset and Benchmark
+12	2609.22702	cs.AI	Hapi: A Multivariable Land-Surface Transformer for Medium-Range Hydrological Forecasting at Continental Scale
+13	2609.22774	cs.CL	NLPCC 2026 Task 10: Citation-Level Faithfulness Verification with DeBERTa Ensembles and Class-Wise Calibration
+13	2609.22971	cs.CL	Automatic multimodal UX improvement recommendations from LLM agent user simulations
+13	2609.23808	cs.CL	FLARE: A Full-Lifecycle Dense Supervision Paradigm for Long-Horizon Coding Agents via Generative Reward Model
+13	2609.23860	cs.AI	Pretraining of Medical Visual Encoders Toward Multi-modal Large Language Models
+14	2609.23910	cs.RO	ReVeal: A Reconstruction-Aware Real-to-Sim Framework for VLA Policy Evaluation
+14	2609.24265	cs.AI	Unsupervised Brain Anomaly Detection as a Bayesian Inverse Problem with Diffusion Prior
+14	2609.24433	cs.RO	FoldQuantVLA: Native Low-Bit Quantization of Vision-Language-Action Models via Consistent Folding
+14	2609.25058	cs.CL	ChainDoRA: Tensor-Train Factorized Weight-Decomposed Low-Rank Adaptation for Parameter-Efficient LLM Fine-Tuning
+15	2609.25081	cs.CL	ufakzeka-1: Building and Evaluating a 151M-Parameter Turkish Language Model from Scratch
+15	2609.25405	cs.AI	Efficient Iterative Retrieval with Heterogeneous Batching
+15	2609.25518	cs.CL	Matryoshka attribution: Learning to attribute language model outputs to representations and weights
+15	2609.25760	cs.AI	The Limits of Simulated Societies: How Post-Training and Survey Fine-Tuning Erase Cross-Cultural Variance
+16	2609.27373	cs.CL	Attention Routing Stabilizes Early: Working-Set Inference for Recurrent Language Models
+16	2609.28771	cs.AI	Agent Memory with Episodic Retrieval for Financial Decision-Making
+16	2609.28806	eess.AS	A Harness for Synthesizing Diverse Naturalistic Full-Duplex Conversations
+16	2609.29183	cs.CL	Predicting Emerging Topics from Outliers: A Prospective Study of Weak Signals in Embedding Space
+17	2609.30012	cs.CL	Low-Cost Assays for Measuring Model Behavior Across Vendors and Releases
+17	2609.30456	cs.AI	Spectral Feedback for Test-Time Alignment of Protein Diffusion Models
+17	2609.30739	cs.CL	SEA-CLIP-Tiny: Efficient Multilingual Text-Vision Embedding for Southeast Asian Languages
+17	2609.30837	cs.LG	MOPD-Router: Rethinking Teacher Routing in Multi-Teacher On-Policy Distillation
+18	2609.31047	cs.DC	DynBranch: Speculative Subgraph Reuse for Dynamic Agentic LLM Serving
+18	2609.31224	cs.SD	Acoustic-to-Text KV Compression for Full-Duplex Speech Models
+18	2609.31264	cs.CL	Identifying Scientists on X
+18	2609.31903	cs.AI	Choir: An Open Protocol for Distributed Multi-Agent Autoformalization
+19	2609.31980	cs.AI	Goal-Persistent Coding Agents as Scientific Performance Engineers: A Fixed-Radius Nearest-Neighbor Case Study
+19	2609.32143	cs.LG	Spectral Reversal: Counteracting Singular Value Bias for Graph Prompting
+19	2609.32539	cs.AI	Interpretable Physics Informed WiFi Indoor Localization: Learning an Effective Access Point Geometry and Using It to Prune
+19	2609.32555	cs.CV	Feature Space Guidance for Breast Cancer Classification in DCE-MRI
+20	2609.32778	cs.AI	Agentic Network Traffic Monitoring
+20	2609.32965	cs.AI	Relic: From Multi-Agent Collaboration to Persistent Organizational Capability
+20	2609.33066	cs.LG	Zero-Storage Procedural Neural Synthesis via Boundary Dynamics: Formal Verification in Lean 4 and Bare-Metal Gauntlet Validation
+20	2609.33150	cs.CL	Generalization Dynamics of LM Pre-training
+21	2609.33205	cs.LG	SMORE: Stability-Promoting Mesh-Agnostic Model Reduction for Time-Dependent PDEs
+21	2609.33786	cs.AI	Is your uncertainty map wrong, or is its target? Exact diagnostics for the Tweedie diagonal, and a gradient-free alternative
+21	2609.34296	cs.CL	Dr.Credit: Rubric-Grounded Process Credit Assignment for Deep Research Agents
+21	2609.34460	cs.AI	When Does Structured Knowledge Help Neural Theorem Proving?
+22	2609.35357	cs.SE	Do Coding Agents Reuse Existing Code or Reinvent the Wheel?
+22	2609.35376	cs.CL	How Well Can LLMs Simulate Real Learner Evaluations of Educational Feedback?
+22	2609.36289	cs.SE	How Much Prompt Is Enough? A Blackbox Minimization of Few-Shots in LLMs
+22	2609.36290	cs.SI	The Surge of Anti-Semitism in German Social Media following the October 7 Attacks
+23	2609.36900	cs.AI	STAR-GRPO: Canonical Anchoring and Reliability-First Advantages against Representation-Dependent Reward Hacking
+23	2609.37203	cs.AI	Learning to Prove, Not Just to Answer: Reinforcement Learning from Formal Verification for Natural-Language Logical Reasoning
+23	2609.37883	cs.CL	Zero-shot Dependency Parsing with Unsupervised Cross-Lingual Bootstrapping
+23	2609.37934	cs.AI	GRFBrain: Graph-Structured Rectified Flows for EEG Dynamic Modeling
+24	2609.38169	cs.CL	STEPQuant: When and Where Errors Matter in Delta-Rule Recurrent State Quantization
+24	2609.38296	cs.AI	AI Agents are Vulnerable to Radicalization
+24	2609.38482	cs.MA	PANDA: A Decentralized Architecture with Flexible Orchestration for Scalable, Fault-Tolerant Multi-Agent Systems
+24	2609.38625	cs.LG	Interpretable but Fragile? Robustness of Concept Bottlenecks under Geometric-Semantic Perturbations
+25	2609.38639	cs.AI	Component-Aware Feedback for Self-Evolving Programs
+25	2609.38806	cs.LG	Blackboard Intelligence Can Surpass Autoregressive on Globally Constrained Problems
+25	2609.38816	cs.CL	You're Hired: Strategic Model Selection for LLM Collaboration
+25	2609.39139	cs.AI	BELIEFRAG: Making Adaptive RAG State-Aware under Evolving Evidence
