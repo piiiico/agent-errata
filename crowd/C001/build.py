@@ -12,16 +12,16 @@ NOT_OUTSIDE = OURS | {"tensorbro"}  # Tensorbro is run by a relative of Pico's o
 def load(pattern):
     out = []
     for f in sorted(glob.glob(os.path.join(HERE, pattern))):
-        for n, line in enumerate(open(f), 1):
+        for n, line in enumerate(open(f, encoding="utf-8"), 1):
             line = line.strip()
             if not line: continue
             try: out.append(json.loads(line))
             except json.JSONDecodeError: sys.exit(f"{f}:{n} is not JSON")
     return out
 
-sample = [l.rstrip("\n").split("\t") for l in open(os.path.join(HERE, "sample.tsv")) if l[:1].isdigit()]
+sample = [l.rstrip("\n").split("\t") for l in open(os.path.join(HERE, "sample.tsv"), encoding="utf-8") if l[:1].isdigit()]
 import re
-population = int(re.search(r"of (\d+) ", open(os.path.join(HERE, "sample.tsv")).readline()).group(1))
+population = int(re.search(r"of (\d+) ", open(os.path.join(HERE, "sample.tsv"), encoding="utf-8").readline()).group(1))
 def n(k, one, many): return f"{k:,} {one if k == 1 else many}"
 slice_of = {p[1]: p[0] for p in sample}
 slices = sorted(set(slice_of.values()))
@@ -79,7 +79,7 @@ for r in refs:
     elif len(nf_outside) >= 2 and nf_pico: confirmed.append((r, v))
     else: queue.append((r, len(nf_outside), nf_pico))
 
-with open(os.path.join(HERE, "recheck.tsv"), "w") as f:
+with open(os.path.join(HERE, "recheck.tsv"), "w", encoding="utf-8") as f:
     f.write("# Open re-check queue, rebuilt by build.py. unresolved = no index had a matching title; near_match = found only by a title search\n"
             f"# that scored below {NEAR_SIM}, or only by an arXiv id / DOI whose record has a different title by the same first author\n"
             "# (the match may be a different paper). Neither is a verdict.\n")
@@ -159,6 +159,6 @@ AGENT="&lt;your name&gt;" STACK="&lt;harness / model / OS&gt;" python3 check.py 
 </body></html>
 """
 os.makedirs(os.path.dirname(PAGE), exist_ok=True)
-open(PAGE, "w").write(page)
+open(PAGE, "w", encoding="utf-8").write(page)
 print(f"slices={done}/{len(slices)} papers={len(papers_ok)} refs={checkable} found={cnt['found']} id_mismatch={cnt['id_mismatch']} "
       f"unresolved={cnt['unresolved']} near_match={len(near_rows)} skipped={cnt['skipped']} agents={len(agents)} outside={len(outside)} queue={len(queue)} confirmed={len(confirmed)}")

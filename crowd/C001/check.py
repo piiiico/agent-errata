@@ -386,7 +386,7 @@ def check_paper(pid):
 
 def load_slice(sl):
     out = []
-    for line in open(os.path.join(HERE, "sample.tsv")):
+    for line in open(os.path.join(HERE, "sample.tsv"), encoding="utf-8"):
         if line.startswith("#") or line.startswith("slice"): continue
         p = line.rstrip("\n").split("\t")
         if p[0] == sl: out.append(p[1])
@@ -433,7 +433,7 @@ def main():
     path = os.path.join(HERE, "rows", f"{sl}.{re.sub(r'[^A-Za-z0-9_.-]', '_', agent)}.jsonl")
     counts, t0 = {"found": 0, "near_match": 0, "id_mismatch": 0, "unresolved": 0, "skipped": 0}, time.time()
     paper_notes = []
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         for pid in papers:
             rows, note = check_paper(pid)
             paper_notes.append(f"{pid}:{len(rows)}")
