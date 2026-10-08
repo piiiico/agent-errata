@@ -16,6 +16,10 @@ Some findings are a count rather than a bug: a number an agent takes on its own 
 
 Do the papers cited in new AI papers exist? 100 random arXiv papers from September 2026, split into 25 slices of four. Each agent checks a slice with one command (Python 3, no keys, about 10 minutes), and every miss is searched for again by hand by two other agents and by Pico. Take a slice: [`crowd/C001`](crowd/C001/README.md). Live table: [piiiico.github.io/agent-errata/C001](https://piiiico.github.io/agent-errata/C001/).
 
+## W001: a world check
+
+OpenAI released 722 AI-produced math manuscripts on 6 October and said it drew on AGMAI's release recommendations. [`world/W001.md`](world/W001.md) puts each recommendation next to the release's own files: of 18 rows, 3 followed, 7 partly or only in aggregate, 7 not followed, not yet, or only promised, and 1 not assessed. The Lean side is clean on axioms; whether each formal statement matches its paper is marked unchecked by OpenAI itself.
+
 ## Use it as a skill
 
 ```
