@@ -22,7 +22,7 @@ Rows go to rows/<slice>.<agent>.jsonl and stdout. The last line is the summary.
 """
 import difflib, gzip, threading, io, json, os, re, sys, tarfile, time, unicodedata, urllib.error, urllib.parse, urllib.request
 
-VERSION = "c001-check/2"
+VERSION = "c001-check/3"
 UA = f"{VERSION} (crowd study; https://github.com/piiiico/agent-errata/tree/main/crowd/C001)"
 MAILTO = os.environ.get("MAILTO", "pico@amdal.dev")
 from concurrent.futures import ThreadPoolExecutor
@@ -240,28 +240,36 @@ def openalex_title(title):
         if not best or s > best[0]: best = (s, w.get("doi") or w.get("id"), w.get("display_name"))
     return best
 
+def cr_titles(m):
+    # Crossref splits "Tanks and temples" / "benchmarking large-scale scene reconstruction": a citation may carry
+    # either the bare title or title + subtitle, so both are candidates (c001-check/3)
+    t, sub = (m.get("title") or [""])[0], (m.get("subtitle") or [""])[0]
+    return [t, f"{t}: {sub}"] if sub else [t]
+
+def best_title(title, cands):
+    return max((sim(title, c), c) for c in cands)
+
 def doi_record(doi):
-    # (title, first author's family name) for a DOI: Crossref first, OpenAlex for DOIs Crossref does not register
+    # (candidate titles, first author's family name) for a DOI: Crossref first, OpenAlex for DOIs Crossref does not register
     code, body = get(f"https://api.crossref.org/works/{urllib.parse.quote(doi)}?mailto={MAILTO}", "crossref", 0.25)
     if code == 200 and body:
         m = json.loads(body).get("message", {})
-        return ((m.get("title") or [""])[0], ((m.get("author") or [{}])[0].get("family") or ""))
+        return (cr_titles(m), ((m.get("author") or [{}])[0].get("family") or ""))
     code, body = get(f"https://api.openalex.org/works/doi:{urllib.parse.quote(doi)}?mailto={MAILTO}&select=display_name,authorships", "openalex", 0.15)
     if code == 200 and body:
         w = json.loads(body)
         a = ((w.get("authorships") or [{}])[0].get("author") or {}).get("display_name") or ""
-        return (w.get("display_name") or "", a.split()[-1] if a else "")
+        return ([w.get("display_name") or ""], a.split()[-1] if a else "")
     return None
 
 def crossref_title(title, author):
     code, body = get("https://api.crossref.org/works?" + urllib.parse.urlencode(
-        {"query.bibliographic": clean_latex(title) + " " + clean_latex(author)[:80], "rows": 5, "select": "DOI,title", "mailto": MAILTO}), "crossref", 0.25)
+        {"query.bibliographic": clean_latex(title) + " " + clean_latex(author)[:80], "rows": 5, "select": "DOI,title,subtitle", "mailto": MAILTO}), "crossref", 0.25)
     if code == 0: return ERR
     if code != 200 or not body: return None
     best = None
     for it in json.loads(body).get("message", {}).get("items", []):
-        t = (it.get("title") or [""])[0]
-        s = sim(title, t)
+        s, t = best_title(title, cr_titles(it))
         if not best or s > best[0]: best = (s, "https://doi.org/" + it.get("DOI", ""), t)
     return best
 
@@ -334,8 +342,8 @@ def check_paper(pid):
                 got = doi_record(r["doi"])
                 if got is None: r["id_note"] = (r["id_note"] or "") + f" doi:{r['doi']} not found"
                 else:
-                    t, sur = got
-                    s = sim(title, t)
+                    cands, sur = got
+                    s, t = best_title(title, cands)
                     if s >= FOUND_SIM: id_hit = (s, "doi:" + r["doi"], t, "doi")
                     elif sur and norm(sur) in first_author_words(e.get("author", "")):
                         id_hit = (s, "doi:" + r["doi"], t, "doi+author")
@@ -369,7 +377,8 @@ def check_paper(pid):
         if r["status"] == "unresolved" and r.get("unreachable"):
             b = s2_match(r["title"], tries=8)
             if b and b != ERR and b[0] >= FOUND_SIM:
-                r.update(status="found" if b[0] >= NEAR_SIM else "near_match", sim=b[0], match=b[1], match_title=(b[2] or "")[:200], via="semanticscholar (retry)")
+                # a title-search hit does not clear a cited id that points at another paper (c001-check/3)
+                r.update(status="id_mismatch" if r["id_note"] else "found" if b[0] >= NEAR_SIM else "near_match", sim=b[0], match=b[1], match_title=(b[2] or "")[:200], via="semanticscholar (retry)")
             elif b != ERR:
                 r["unreachable"] = [u for u in r["unreachable"] if u != "semanticscholar"] or None
     print("", file=sys.stderr)
@@ -383,7 +392,7 @@ def load_slice(sl):
         if p[0] == sl: out.append(p[1])
     return out
 
-SELFTEST_TEX = r"We build on \citep{real1,made_up} and \citet{wrong_id,real2,same_author,retitled}. % \cite{commented_out}"
+SELFTEST_TEX = r"We build on \citep{real1,made_up} and \citet{wrong_id,real2,same_author,retitled,subtitled}. % \cite{commented_out}"
 SELFTEST_BIB = r"""
 @inproceedings{real1, title={{ReAct}: Synergizing Reasoning and Acting in Language Models}, author={Yao, Shunyu and Zhao, Jeffrey}, booktitle={ICLR}, year={2023}}
 @article{made_up, title={Recursive Gradient Folding for Low-Resource Multilingual Instruction Distillation}, author={Hartwell, Miriam and Okonkwo, Daniel}, journal={Transactions on Machine Learning Research}, year={2024}}
@@ -391,6 +400,7 @@ SELFTEST_BIB = r"""
 @inproceedings{real2, title={BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding}, author={Devlin, Jacob}, booktitle={NAACL}, year={2019}}
 @article{same_author, title={Chain-of-Thought Prompting Elicits Reasoning in Large Language Models}, author={Wei, Jason and Wang, Xuezhi}, journal={arXiv preprint arXiv:2206.07682}, year={2022}}
 @article{retitled, title={{OPSD} Compresses What {RLVR} Teaches: A Post-RL Compaction Stage for Reasoning Models}, author={Kim, Jaehoon and Lee, Dongha}, journal={arXiv preprint arXiv:2605.06188}, year={2026}}
+@article{subtitled, title={Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography}, author={Fischler, Martin A. and Bolles, Robert C.}, journal={Communications of the ACM}, doi={10.1145/358669.358692}, year={1981}}
 @article{commented_out, title={Should Not Be Read}, author={Nobody}, year={2020}}
 """
 
@@ -402,7 +412,7 @@ def selftest():
     rows, _ = check_paper("selftest")
     got = {r["key"]: r["status"] for r in rows}
     want = {"real1": "found", "real2": "found", "made_up": "unresolved", "wrong_id": "id_mismatch",
-            "same_author": "near_match", "retitled": "found"}
+            "same_author": "near_match", "retitled": "found", "subtitled": "found"}
     for k in want: print(f"selftest {k:<11} expected={want[k]:<11} got={got.get(k)}")
     ok = got == want
     print("selftest PASS" if ok else "selftest FAIL: do not run a slice; report these lines")

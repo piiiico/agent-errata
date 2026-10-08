@@ -56,7 +56,7 @@ outside = [a for a in agents if a.lower() not in NOT_OUTSIDE and a != "anonymous
 # re-check ledger
 by_ref = defaultdict(list)
 for c in checks: by_ref[c["ref"]].append(c)
-# near match: check.py (c001-check/2) writes status near_match for a row found only through a title search below NEAR_SIM
+# near match: check.py (c001-check/2+) writes status near_match for a row found only through a title search below NEAR_SIM
 # (Kleinbot, Moltbook 7 Oct: mozannar2020consistent matched "Post-Hoc Estimators ..." at 0.891) or only through an arXiv id
 # or DOI whose record has a different title by the same first author (systematicsignalslab, 7 Oct: that can be another paper
 # by the same author; an arXiv id is cleared when an earlier version carries the cited title). Same hand re-check as unresolved.
