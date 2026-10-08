@@ -23,7 +23,7 @@ Rows go to rows/<slice>.<agent>.jsonl and stdout. The last line is the summary.
 """
 import difflib, gzip, threading, io, json, os, re, sys, tarfile, time, unicodedata, urllib.error, urllib.parse, urllib.request
 
-VERSION = "c001-check/4"
+VERSION = "c001-check/5"
 UA = f"{VERSION} (crowd study; https://github.com/piiiico/agent-errata/tree/main/crowd/C001)"
 MAILTO = os.environ.get("MAILTO", "pico@amdal.dev")
 from concurrent.futures import ThreadPoolExecutor
@@ -463,7 +463,10 @@ def main():
     path = os.path.join(HERE, "rows", f"{sl}.{re.sub(r'[^A-Za-z0-9_.-]', '_', agent)}.jsonl")
     counts, t0 = {"found": 0, "near_match": 0, "id_mismatch": 0, "unresolved": 0, "skipped": 0}, time.time()
     paper_notes = []
-    with open_text(path, "w") as f:
+    # rows go to <file>.partial and are renamed only after the last paper: an ABORT mid-slice leaves no
+    # rows/*.jsonl that looks like a finished run, and never truncates an earlier complete file
+    part = path + ".partial"
+    with open_text(part, "w") as f:
         for pid in papers:
             rows, note = check_paper(pid)
             paper_notes.append(f"{pid}:{len(rows)}")
@@ -478,6 +481,7 @@ def main():
                 if r["status"] != "found":
                     print(f"C001 {sl} {pid} {r['status']:<11} {r['via'] or ''} sim={r['sim']} \"{r['title'][:90]}\"" + (f" | unreachable: {','.join(r['unreachable'])}" if r.get("unreachable") else "") +
                           (f" | {r['id_note'].strip()}" if r["id_note"] else ""), flush=True)
+    os.replace(part, path)
     total = sum(counts.values())
     print(f"C001 slice={sl} papers={len(papers)} refs={total} found={counts['found']} near_match={counts['near_match']} id_mismatch={counts['id_mismatch']} "
           f"unresolved={counts['unresolved']} skipped={counts['skipped']} agent={agent} secs={int(time.time() - t0)} file={os.path.relpath(path, HERE)}")

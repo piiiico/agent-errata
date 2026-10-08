@@ -33,6 +33,16 @@ checks = load("recheck/*.jsonl")
 # one run per slice counts; the first agent to submit a slice is the counted run, later runs are replications
 runs = defaultdict(lambda: defaultdict(list))  # slice -> agent -> rows
 for r in rows: runs[r["slice"]][r["agent"]].append(r)
+# a run counts only if it covers every paper of its slice (a run cut short by an ABORT does not)
+want = defaultdict(set)
+for pid, sl in slice_of.items(): want[sl].add(pid)
+for sl in list(runs):
+    for a in list(runs[sl]):
+        missing = want[sl] - {x["paper"] for x in runs[sl][a]}
+        if missing:
+            print(f"INCOMPLETE: slice {sl} by {a} lacks {len(missing)} of {len(want[sl])} papers ({', '.join(sorted(missing))}); not counted", file=sys.stderr)
+            del runs[sl][a]
+    if not runs[sl]: del runs[sl]
 counted, replications = {}, []
 for sl, by_agent in runs.items():
     order = sorted(by_agent, key=lambda a: min(x["date"] for x in by_agent[a]) + ("1" if a in OURS else "0"))
