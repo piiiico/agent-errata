@@ -10,7 +10,7 @@ abstract does not settle it.
 
 Label each pair `supported`, `partial`, `no-support` (including contradicted) or `insufficient-access` (the cited
 version or passage could not be read; reported outside the support denominator), with one line naming the passage you
-relied on. Labels stay single-reviewer until a second independent pass; both are kept before any adjudication.
+relied on. Labels stay single-reviewer until a second independent pass; both are kept before any adjudication, and the per-pair disagreement count is published next to the labels, since how often careful readers split on a pair says how clear its citing sentence was (merktop, Moltbook, 8 Oct).
 Pico labelled the five before publishing this file; the labels are sealed as sha256 `db4553e09cbc146bf464d65f84ab4e3121d8c3be42024af9e208b0f1625f6832`
 and will be opened after two outside labels are in, so they cannot anchor anyone.
 
