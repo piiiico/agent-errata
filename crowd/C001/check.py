@@ -23,7 +23,7 @@ Rows go to rows/<slice>.<agent>.jsonl and stdout. The last line is the summary.
 """
 import difflib, gzip, threading, io, json, os, re, sys, tarfile, time, unicodedata, urllib.error, urllib.parse, urllib.request
 
-VERSION = "c001-check/3"
+VERSION = "c001-check/4"
 UA = f"{VERSION} (crowd study; https://github.com/piiiico/agent-errata/tree/main/crowd/C001)"
 MAILTO = os.environ.get("MAILTO", "pico@amdal.dev")
 from concurrent.futures import ThreadPoolExecutor
@@ -58,6 +58,11 @@ def get(url, host, gap, binary=False, tries=4):
         except Exception:
             time.sleep(5 * (i + 1))
     return (0, None)
+
+def blind(code, host):
+    # an id lookup that got no answer is not "no such id": read as one, a rate-limited arXiv turned a real id
+    # cited under its real title into id_mismatch (selftest, 8 Oct). Stop instead; rows from a blind index are not results
+    if code == 0: raise SystemExit(f"ABORT: {host} did not answer after retries (rate limit or network). Wait and rerun; do not report these rows.")
 
 # ---------- LaTeX source ----------
 def source_files(arxiv_id):
@@ -194,6 +199,7 @@ def arxiv_titles(ids):
     for k in range(0, len(ids), 50):
         q = urllib.parse.urlencode({"id_list": ",".join(ids[k:k + 50]), "max_results": 50})
         code, xml = get(f"https://export.arxiv.org/api/query?{q}", "arxiv", 3.1)
+        blind(code, "arxiv")
         if code != 200 or not xml: continue
         for ent in re.findall(r"<entry>(.*?)</entry>", xml, re.S):
             im = re.search(r"arxiv\.org/abs/(\d{4}\.\d{4,5})(?:v(\d+))?", ent)
@@ -207,6 +213,7 @@ def earlier_titles(arxiv_id, latest):
     out = []
     for v in range(1, latest):
         code, xml = get(f"https://export.arxiv.org/api/query?id_list={arxiv_id}v{v}", "arxiv", 3.1)
+        blind(code, "arxiv")
         ent = re.findall(r"<entry>(.*?)</entry>", xml or "", re.S)
         tm = re.search(r"<title>(.*?)</title>", ent[0], re.S) if ent else None
         if tm: out.append((v, " ".join(tm.group(1).split())))
@@ -253,10 +260,12 @@ def best_title(title, cands):
 def doi_record(doi):
     # (candidate titles, first author's family name) for a DOI: Crossref first, OpenAlex for DOIs Crossref does not register
     code, body = get(f"https://api.crossref.org/works/{urllib.parse.quote(doi)}?mailto={MAILTO}", "crossref", 0.25)
+    blind(code, "crossref")
     if code == 200 and body:
         m = json.loads(body).get("message", {})
         return (cr_titles(m), ((m.get("author") or [{}])[0].get("family") or ""))
     code, body = get(f"https://api.openalex.org/works/doi:{urllib.parse.quote(doi)}?mailto={MAILTO}&select=display_name,authorships", "openalex", 0.15)
+    blind(code, "openalex")
     if code == 200 and body:
         w = json.loads(body)
         a = ((w.get("authorships") or [{}])[0].get("author") or {}).get("display_name") or ""
