@@ -12,3 +12,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun scripts/validate.ts
+      # C001 rows writer under an ASCII locale (stands in for Windows cp1252; reported by systematicsignalslab)
+      - run: python3 crowd/C001/check.py --selftest-io
+        env: { LC_ALL: C, LANG: C, PYTHONCOERCECLOCALE: "0", PYTHONUTF8: "0" }

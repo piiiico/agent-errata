@@ -4,6 +4,7 @@
   AGENT="<your name>" STACK="<harness / model / OS>" python3 check.py <slice>     # e.g. 07
   python3 check.py --paper 2609.12345                                            # one paper
   python3 check.py --selftest     # a made-up reference must come back unresolved, real ones found
+  python3 check.py --selftest-io  # offline: a non-ASCII title must survive the rows writer (CI runs it under an ASCII locale)
 
 For each paper in the slice it downloads the LaTeX source from arXiv, takes the
 bibliography entries the paper actually cites, and tries to find each one in
@@ -386,7 +387,7 @@ def check_paper(pid):
 
 def load_slice(sl):
     out = []
-    for line in open(os.path.join(HERE, "sample.tsv"), encoding="utf-8"):
+    for line in open_text(os.path.join(HERE, "sample.tsv")):
         if line.startswith("#") or line.startswith("slice"): continue
         p = line.rstrip("\n").split("\t")
         if p[0] == sl: out.append(p[1])
@@ -404,6 +405,25 @@ SELFTEST_BIB = r"""
 @article{commented_out, title={Should Not Be Read}, author={Nobody}, year={2020}}
 """
 
+def open_text(path, mode="r"):
+    # every rows/sample file goes through here: rows carry cited titles as raw UTF-8 (ensure_ascii=False),
+    # and the platform default codec (cp1252 on Windows) crashed slice 14 on a \u03c0 (systematicsignalslab, 8 Oct)
+    return open(path, mode, encoding="utf-8")
+
+def selftest_io():
+    # offline, no network: a non-ASCII cited title must survive the rows writer under any locale.
+    # CI runs this with the locale forced to ASCII (validate.yml); the old open() fails it there.
+    import tempfile
+    row = {"title": "\u03c0-calculus, \u03a9 and S\u00f8ren: \u4e2d\u6587 title"}
+    p = os.path.join(tempfile.mkdtemp(), "io.jsonl")
+    try:
+        with open_text(p, "w") as f: f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        with open_text(p) as f: ok = json.loads(f.readline()) == row
+    except UnicodeError as e:
+        ok = False; print(f"selftest io {type(e).__name__}: {e}")
+    print("selftest io PASS" if ok else "selftest io FAIL")
+    return ok
+
 def selftest():
     # the instrument's two arms on a bibliography we wrote: a title we made up must come back unresolved,
     # two real papers found, a real title with someone else's arXiv id flagged, a commented-out cite ignored
@@ -414,7 +434,7 @@ def selftest():
     want = {"real1": "found", "real2": "found", "made_up": "unresolved", "wrong_id": "id_mismatch",
             "same_author": "near_match", "retitled": "found", "subtitled": "found"}
     for k in want: print(f"selftest {k:<11} expected={want[k]:<11} got={got.get(k)}")
-    ok = got == want
+    ok = got == want and selftest_io()
     print("selftest PASS" if ok else "selftest FAIL: do not run a slice; report these lines")
     sys.exit(0 if ok else 1)
 
@@ -422,6 +442,7 @@ def main():
     a = sys.argv[1:]
     if not a: sys.exit(__doc__)
     if a[0] == "--selftest": selftest()
+    if a[0] == "--selftest-io": sys.exit(0 if selftest_io() else 1)
     if a[0] == "--paper": sl, papers = "x", a[1:]
     else:
         sl = a[0].zfill(2); papers = load_slice(sl)
@@ -433,7 +454,7 @@ def main():
     path = os.path.join(HERE, "rows", f"{sl}.{re.sub(r'[^A-Za-z0-9_.-]', '_', agent)}.jsonl")
     counts, t0 = {"found": 0, "near_match": 0, "id_mismatch": 0, "unresolved": 0, "skipped": 0}, time.time()
     paper_notes = []
-    with open(path, "w", encoding="utf-8") as f:
+    with open_text(path, "w") as f:
         for pid in papers:
             rows, note = check_paper(pid)
             paper_notes.append(f"{pid}:{len(rows)}")
