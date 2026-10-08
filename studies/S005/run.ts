@@ -12,7 +12,7 @@ const BIN: Record<string, string> = {
   crush: "/workspace/tmp/s003-bin/node_modules/.bin/crush", goose: "/workspace/tmp/s005/gbin/goose",
 };
 const bin = process.env[`BIN_${id.toUpperCase()}`] ?? BIN[id] ?? `${process.env.BIN_DIR ?? "./node_modules/.bin"}/${h.bin}`;
-const D = `${process.env.RUNS ?? "./runs"}/${label}`; rmSync(D, { recursive: true, force: true });
+const D = require("path").resolve(`${process.env.RUNS ?? "./runs"}/${label}`); // absolute: Bun.spawn ENOENTs on a relative cwd rmSync(D, { recursive: true, force: true });
 // Disk guard: a harness fed a large pending tool result writes ~11 MB/s of transcript into its scratch HOME
 // (Claude Code, 20 s run = 228 MB, measured 2026-10-06). Uncapped runs filled a shared disk twice. Refuse to start
 // below MIN_FREE_GB, and delete the HOME afterwards unless KEEP_HOME=1 (its size is kept in result.json).
