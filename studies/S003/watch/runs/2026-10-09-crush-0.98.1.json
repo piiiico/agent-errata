@@ -1,0 +1,56 @@
+{
+ "harness": "crush",
+ "label": "Crush",
+ "version": "0.98.1",
+ "previous_version": "0.97.1",
+ "previous_measured": "2026-10-04",
+ "date": "2026-10-09",
+ "where": "GitHub Actions linux-x64, run 37936630112",
+ "run": "https://github.com/piiiico/agent-errata/actions/runs/37936630112",
+ "forced": false,
+ "changed": false,
+ "changes": [],
+ "minor": [
+  "S004 total 11,940 → 11,942 tokens, +0.0%"
+ ],
+ "row": {
+  "arms": {
+   "a": [
+    "S003C-A-AGENTSMD",
+    "S003C-A-CLAUDELOCALMD",
+    "S003C-A-CLAUDEMD",
+    "S003C-A-COPILOT_INSTR",
+    "S003C-A-CRUSHMD",
+    "S003C-A-CURSORRULES",
+    "S003C-A-CURSOR_RULES_MDC",
+    "S003C-A-GEMINIMD"
+   ],
+   "b": [
+    "S003C-B-AGENTSMD",
+    "S003C-B-CLAUDEMD"
+   ],
+   "c": [
+    "S003C-C-CHILD_AGENTSMD"
+   ],
+   "d": [
+    "S003C-D-AGENTSMD"
+   ]
+  },
+  "sym": {
+   "e": {
+    "S003C-E-AGENTSMD": 2
+   },
+   "f": {
+    "S003C-F-CLAUDEMD": 2
+   }
+  },
+  "tools": 26,
+  "bytes_b": 48743,
+  "s004": {
+   "total": 11942,
+   "tools": 6344,
+   "system": 5424
+  }
+ },
+ "note": "Tokens found in the main request per arm (S003 arms a-f, sweep/README.md), occurrence counts for the symlink arms, S004 o200k split of arm b. No model, dummy keys, empty HOME."
+}

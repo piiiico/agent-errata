@@ -21,7 +21,7 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 <h1>One repo, 17 instruction files, 10 coding agents: 10 different sets loaded</h1>
 <p class="sub">Study S003 of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · sweep counted 2 October 2026 · open for rows from any harness</p>
 <!-- watch:stamp -->
-<p class="sub">Harness Watch: re-measured on every release of the 10 harnesses · last re-measured 2026-10-08 · <a href="#changelog">changelog</a> · <a href="https://github.com/piiiico/agent-errata/actions/workflows/harness-watch.yml">daily run logs</a></p>
+<p class="sub">Harness Watch: re-measured on every release of the 10 harnesses · last re-measured 2026-10-09 · <a href="#changelog">changelog</a> · <a href="https://github.com/piiiico/agent-errata/actions/workflows/harness-watch.yml">daily run logs</a></p>
 <!-- /watch:stamp -->
 
 <p class="big"><strong>With <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side, Claude Code reads only <code>CLAUDE.md</code>, six harnesses read only <code>AGENTS.md</code>, Crush reads both, and Gemini CLI and aider read neither.</strong></p>
@@ -89,6 +89,10 @@ $S remove   # restores every file byte for byte</pre>
 <h2 id="changelog">Changelog</h2>
 <p>A GitHub Actions job checks npm, PyPI and GitHub releases every day. When one of the 10 harnesses ships a new version, it re-runs every arm (a to f) and the token split against the same fixture, with no model and an empty home directory, and writes a row here, including when nothing changed. Newest first. Code: <a href="https://github.com/piiiico/agent-errata/tree/main/studies/S003/watch">studies/S003/watch</a>.</p>
 <ul>
+<li><strong>2026-10-09</strong> · goose 1.53.0 → 1.54.0: re-measured, unchanged (S004 total 4,636 → 4,636 tokens, +0.0%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-09-goose-1.54.0.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37936630112">run log</a></li>
+<li><strong>2026-10-09</strong> · Crush 0.97.1 → 0.98.1: re-measured, unchanged (S004 total 11,940 → 11,942 tokens, +0.0%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-09-crush-0.98.1.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37936630112">run log</a></li>
+<li><strong>2026-10-09</strong> · Codex CLI 0.161.0 → 0.162.0: re-measured, unchanged (S004 total 9,487 → 9,563 tokens, +0.8%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-09-codex-0.162.0.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37936630112">run log</a></li>
+<li><strong>2026-10-09</strong> · Claude Code 2.1.293 → 2.1.295: re-measured, unchanged (S004 total 20,572 → 20,591 tokens, +0.1%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-09-claude-2.1.295.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37936630112">run log</a></li>
 <li><strong>2026-10-08</strong> · pi 1.0.4 → 1.1.0: re-measured, unchanged (S004 total 1,551 → 1,551 tokens, +0.0%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-08-pi-1.1.0.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37785954214">run log</a></li>
 <li><strong>2026-10-08</strong> · Codex CLI 0.160.1 → 0.161.0: re-measured, unchanged (S004 total 9,493 → 9,487 tokens, -0.1%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-08-codex-0.161.0.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37785954214">run log</a></li>
 <li><strong>2026-10-08</strong> · Claude Code 2.1.292 → 2.1.293: re-measured, unchanged (S004 total 20,589 → 20,572 tokens, -0.1%). <a href="https://github.com/piiiico/agent-errata/blob/main/studies/S003/watch/runs/2026-10-08-claude-2.1.293.json">row</a> · <a href="https://github.com/piiiico/agent-errata/actions/runs/37785954214">run log</a></li>
@@ -114,14 +118,14 @@ $S remove   # restores every file byte for byte</pre>
 </ul>
 <table>
 <tr><th>Harness</th><th>Latest measured</th><th>Files read (arm a, of 17)</th><th>Measured</th></tr>
-<tr><td>Claude Code</td><td>2.1.293</td><td>2: CLAUDE.local.md, CLAUDE.md</td><td>2026-10-08</td></tr>
-<tr><td>Codex CLI</td><td>0.161.0</td><td>1: AGENTS.override.md</td><td>2026-10-08</td></tr>
+<tr><td>Claude Code</td><td>2.1.295</td><td>2: CLAUDE.local.md, CLAUDE.md</td><td>2026-10-09</td></tr>
+<tr><td>Codex CLI</td><td>0.162.0</td><td>1: AGENTS.override.md</td><td>2026-10-09</td></tr>
 <tr><td>Gemini CLI</td><td>0.63.0</td><td>1: GEMINI.md</td><td>2026-10-07</td></tr>
 <tr><td>Qwen Code</td><td>0.25.0</td><td>3: AGENTS.md, AGENTS.md above the git root, QWEN.md</td><td>2026-10-05</td></tr>
 <tr><td>opencode</td><td>1.18.35</td><td>1: AGENTS.md</td><td>2026-10-07</td></tr>
 <tr><td>Kilo CLI</td><td>7.8.8</td><td>2: AGENTS.md, .kilocode/rules/s003.md</td><td>2026-10-07</td></tr>
-<tr><td>Crush</td><td>0.97.1</td><td>8: AGENTS.md, CLAUDE.local.md, CLAUDE.md, .github/copilot-instructions.md, CRUSH.md, .cursorrules, .cursor/rules/s003.mdc, GEMINI.md</td><td>2026-10-04</td></tr>
-<tr><td>goose</td><td>1.53.0</td><td>2: AGENTS.md, .goosehints</td><td>2026-10-04</td></tr>
+<tr><td>Crush</td><td>0.98.1</td><td>8: AGENTS.md, CLAUDE.local.md, CLAUDE.md, .github/copilot-instructions.md, CRUSH.md, .cursorrules, .cursor/rules/s003.mdc, GEMINI.md</td><td>2026-10-09</td></tr>
+<tr><td>goose</td><td>1.54.0</td><td>2: AGENTS.md, .goosehints</td><td>2026-10-09</td></tr>
 <tr><td>aider</td><td>0.86.2</td><td>0</td><td>2026-10-04</td></tr>
 <tr><td>pi</td><td>1.1.0</td><td>2: AGENTS.override.md, AGENTS.md above the git root</td><td>2026-10-08</td></tr>
 </table>

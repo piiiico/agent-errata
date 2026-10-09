@@ -2,9 +2,9 @@
  "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
  "harnesses": {
   "claude": {
-   "version": "2.1.293",
-   "measured": "2026-10-08",
-   "where": "GitHub Actions linux-x64, run 37785954214",
+   "version": "2.1.295",
+   "measured": "2026-10-09",
+   "where": "GitHub Actions linux-x64, run 37936630112",
    "row": {
     "arms": {
      "a": [
@@ -31,18 +31,18 @@
      }
     },
     "tools": 23,
-    "bytes_b": 81891,
+    "bytes_b": 81929,
     "s004": {
-     "total": 20572,
+     "total": 20591,
      "tools": 16457,
-     "system": 3471
+     "system": 3490
     }
    }
   },
   "codex": {
-   "version": "0.161.0",
-   "measured": "2026-10-08",
-   "where": "GitHub Actions linux-x64, run 37785954214",
+   "version": "0.162.0",
+   "measured": "2026-10-09",
+   "where": "GitHub Actions linux-x64, run 37936630112",
    "row": {
     "arms": {
      "a": [
@@ -68,11 +68,11 @@
      }
     },
     "tools": 9,
-    "bytes_b": 39684,
+    "bytes_b": 39796,
     "s004": {
-     "total": 9487,
+     "total": 9563,
      "tools": 4038,
-     "system": 4519
+     "system": 4573
     }
    }
   },
@@ -217,9 +217,9 @@
    }
   },
   "crush": {
-   "version": "0.97.1",
-   "measured": "2026-10-04",
-   "where": "GitHub Actions linux-x64, run 37187947680",
+   "version": "0.98.1",
+   "measured": "2026-10-09",
+   "where": "GitHub Actions linux-x64, run 37936630112",
    "row": {
     "arms": {
      "a": [
@@ -254,16 +254,16 @@
     "tools": 26,
     "bytes_b": 48743,
     "s004": {
-     "total": 11940,
+     "total": 11942,
      "tools": 6344,
-     "system": 5422
+     "system": 5424
     }
    }
   },
   "goose": {
-   "version": "1.53.0",
-   "measured": "2026-10-04",
-   "where": "GitHub Actions linux-x64, run 37187891530",
+   "version": "1.54.0",
+   "measured": "2026-10-09",
+   "where": "GitHub Actions linux-x64, run 37936630112",
    "row": {
     "arms": {
      "a": [
