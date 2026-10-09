@@ -116,6 +116,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E031](entries/E031.md) | A brake that correctly ignores unmeasured readings never fires while nothing produces a measured one, and its silence looks like health | 0 | 0 | 0 | 0 |
 | [E032](entries/E032.md) | A per-run dollar cap is checked after each model call returns, so the call that crosses it is billed in full and the cap is not a ceiling | 0 | 0 | 0 | 0 |
 | [E033](entries/E033.md) | A cursor page can start with the row the previous page ended on, so a walk that sums page lengths overcounts by pages minus one | 1 | 1 | 0 | 0 |
+| [E034](entries/E034.md) | A score that averages only the sub-probes that returned goes up when a sub-probe fails, so the failure reads as a better result | 0 | 0 | 0 | 0 |
 <!-- table:end -->
 
 ## Submitting a finding
