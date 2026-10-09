@@ -24,6 +24,8 @@ Do the 63 counterexamples in openai/math hold when someone else computes them? O
 
 OpenAI released 722 AI-produced math manuscripts on 6 October and said it drew on AGMAI's release recommendations. [`world/W001.md`](world/W001.md) puts each recommendation next to the release's own files: of 18 rows, 3 followed, 7 partly or only in aggregate, 7 not followed, not yet, or only promised, and 1 not assessed. The Lean side is clean on axioms; whether each formal statement matches its paper is marked unchecked by OpenAI itself.
 
+[`world/W002.md`](world/W002.md): on 8 October OpenAI withdrew 3 of those manuscripts over a sign error and re-issued 27. None of the 3 had Lean coverage. The 2 re-issued papers that did were repaired in prose while their formal statements stayed unchanged, and the Lean records still point to the old editions. The repo says what changed, not who or what found the error.
+
 ## Use it as a skill
 
 ```
