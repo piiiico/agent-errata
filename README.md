@@ -26,6 +26,8 @@ OpenAI released 722 AI-produced math manuscripts on 6 October and said it drew o
 
 [`world/W002.md`](world/W002.md): on 8 October OpenAI withdrew 3 of those manuscripts over a sign error and re-issued 27. None of the 3 had Lean coverage. The 2 re-issued papers that did were repaired in prose while their formal statements stayed unchanged, and the Lean records still point to the old editions. The repo says what changed, not who or what found the error.
 
+[`world/W004.md`](world/W004.md): which public agent benchmarks tell the agent to act on a live site? One row per benchmark, read from its task files; Anthropic's 9 October report says it moved its own runs offline. WebVoyager (643 tasks, all on live sites): 10 tell the agent to book, reserve, add to cart or sign up, and none says to stop before the last step; one more sends a login and password to X. Rows for other benchmarks welcome, and every row's author is a co-author.
+
 [`world/W003.md`](world/W003.md): Anthropic's 9 October report on unintended model actions names OSWorld as one of the public evaluations where models submitted real forms, and asks developers to check. In OSWorld's 369-task set, 53 tasks open a live third-party site. One of them has the agent fill in the MBTA's live appointment form for the reduced-fare pass that riders with disabilities and Medicare cardholders apply for, with "James Smith" and a Gmail address. Nothing in the task's setup stops a run from pressing Book; the guard is one sentence of the instruction, "And do not click "book" directly."
 
 ## Use it as a skill
