@@ -17,7 +17,7 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 </head>
 <body>
 <h1>Which instruction file does each coding agent actually load? Measured with canaries</h1>
-<p class="sub">Part of <a href="https://piiiico.github.io/agent-errata/S003/">study S003</a> of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · 10 harnesses · last measured 2026-10-09 · re-measured automatically on every release</p>
+<p class="sub">Part of <a href="https://piiiico.github.io/agent-errata/S003/">study S003</a> of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · 10 harnesses · last measured 2026-10-10 · re-measured automatically on every release</p>
 
 <p class="big"><strong>With <code>AGENTS.md</code> and <code>CLAUDE.md</code> in the same repo, Claude Code reads only <code>CLAUDE.md</code>; Codex CLI, Qwen Code, opencode, Kilo CLI, goose and pi read only <code>AGENTS.md</code>; Crush reads both; Gemini CLI and aider read neither.</strong></p>
 
@@ -25,8 +25,8 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 
 <h2>Per harness</h2>
 <ul>
-<li><strong>Claude Code 2.1.295</strong> (measured 2026-10-09): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>CLAUDE.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is read and the repo's <code>AGENTS.md</code> is dropped. With all 17 files present it loads 2: <code>CLAUDE.local.md</code>, <code>CLAUDE.md</code>.</li>
-<li><strong>Codex CLI 0.162.0</strong> (measured 2026-10-09): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 1: <code>AGENTS.override.md</code>.</li>
+<li><strong>Claude Code 2.1.296</strong> (measured 2026-10-10): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>CLAUDE.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is read and the repo's <code>AGENTS.md</code> is dropped. With all 17 files present it loads 2: <code>CLAUDE.local.md</code>, <code>CLAUDE.md</code>.</li>
+<li><strong>Codex CLI 0.162.1</strong> (measured 2026-10-10): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 1: <code>AGENTS.override.md</code>.</li>
 <li><strong>Gemini CLI 0.63.0</strong> (measured 2026-10-07): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads neither. In a monorepo, started in a child package, it reads neither the root nor the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored, and so is the repo's <code>AGENTS.md</code>. With all 17 files present it loads 1: <code>GEMINI.md</code>.</li>
 <li><strong>Qwen Code 0.25.0</strong> (measured 2026-10-05): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 3: <code>AGENTS.md</code>, <code>AGENTS.md above the git root</code>, <code>QWEN.md</code>.</li>
 <li><strong>opencode 1.18.35</strong> (measured 2026-10-07): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 1: <code>AGENTS.md</code>.</li>
@@ -40,8 +40,8 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 
 <table>
 <tr><th>Harness</th><th>Version</th><th>AGENTS.md + CLAUDE.md</th><th>Files loaded (of 17)</th><th>Measured</th></tr>
-<tr><td>Claude Code</td><td>2.1.295</td><td>only <code>CLAUDE.md</code></td><td>2</td><td>2026-10-09</td></tr>
-<tr><td>Codex CLI</td><td>0.162.0</td><td>only <code>AGENTS.md</code></td><td>1</td><td>2026-10-09</td></tr>
+<tr><td>Claude Code</td><td>2.1.296</td><td>only <code>CLAUDE.md</code></td><td>2</td><td>2026-10-10</td></tr>
+<tr><td>Codex CLI</td><td>0.162.1</td><td>only <code>AGENTS.md</code></td><td>1</td><td>2026-10-10</td></tr>
 <tr><td>Gemini CLI</td><td>0.63.0</td><td>neither</td><td>1</td><td>2026-10-07</td></tr>
 <tr><td>Qwen Code</td><td>0.25.0</td><td>only <code>AGENTS.md</code></td><td>3</td><td>2026-10-05</td></tr>
 <tr><td>opencode</td><td>1.18.35</td><td>only <code>AGENTS.md</code></td><td>1</td><td>2026-10-07</td></tr>
