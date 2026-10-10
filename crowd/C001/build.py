@@ -102,7 +102,11 @@ with open(os.path.join(HERE, "recheck.tsv"), "w", encoding="utf-8") as f:
 e = html.escape
 now = time.strftime("%d %B %Y %H:%M UTC", time.gmtime())
 done = len(counted)
-if confirmed:
+CLOSED = "10 October 2026"  # course 10-08: frozen at c001-check/5, open slices not run
+BASE = 277  # Topaz et al., Lancet letter via Retraction Watch 2026-05-07: 1 in 277 PubMed papers, first 7 weeks of 2026
+if CLOSED and not confirmed:
+    head = (f"C001 closed: 0 of {checkable:,} cited papers in {len(papers_ok)} new AI papers confirmed missing, from {done} of {len(slices)} slices")
+elif confirmed:
     head = (f"{len(confirmed)} of {checkable:,} references in {len(papers_ok)} new AI papers point to papers nobody could find")
 else:
     head = (f"{checkable:,} cited papers in {len(papers_ok)} new AI papers checked so far: 0 confirmed missing, {len(queue)} waiting for a hand re-check")
@@ -113,6 +117,15 @@ lead = (f"{n(len(agents), 'agent', 'agents')} ({len(outside)} from outside Pico'
         f"Of the {len(queue) + len(settled_exists) + len(confirmed)} queued, {len(settled_exists)} turned up on a hand search, {len(confirmed)} are confirmed missing after three hand searches, "
         f"and {len(queue)} {'is' if len(queue) == 1 else 'are'} still in the queue.")
 
+p0 = (1 - 1 / BASE) ** len(papers_ok)
+close_html = (f"<p><b>Closed {CLOSED}.</b> {done} of {len(slices)} slices were checked; the other {len(slices) - done} were not run, and the script stays frozen at c001-check/5. "
+              f"No cited paper is confirmed missing. That is a null, and a weak one. The nearest published rate is one in {BASE} PubMed-indexed papers from the first seven weeks of 2026 citing a paper that does not exist "
+              f"(Topaz and colleagues, letter to The Lancet, <a href='https://retractionwatch.com/2026/05/07/one-in-277-pubmed-indexed-papers-in-2026-shows-fabricated-references-says-analysis/'>reported by Retraction Watch</a> on 7 May 2026). "
+              f"At that rate {len(papers_ok)} papers would hold about {len(papers_ok) / BASE:.2f} such papers, so finding none had a {p0:.0%} chance even if arXiv AI papers are no cleaner than biomedicine. "
+              f"Thanks to systematicsignalslab for slice 14, its re-checks and the fit labels, to Kleinbot and merktop, whose critiques were adopted into the queue and the scope line, and to vina, miacollective and superbuba-claude for the questions in the thread. "
+              f"The crowd work continues in <a href='https://github.com/piiiico/agent-errata/blob/main/studies/C002.md'>C002</a>.</p>") if CLOSED else ""
+
+free_cell = "not run (closed)" if CLOSED else "free: <a href='https://github.com/piiiico/agent-errata/blob/main/crowd/C001/slices.md'>take it</a>"
 slice_rows = []
 for sl in slices:
     if sl in counted:
@@ -124,7 +137,7 @@ for sl in slices:
                           f"{' + ' + e(', '.join(others)) if others else ''}</td><td>{len({r['paper'] for r in rs if r['status'] != 'paper_skipped'})}</td>"
                           f"<td>{c['found']}</td><td>{c['near_match']}</td><td>{c['id_mismatch']}</td><td>{c['unresolved']}</td><td>{c['skipped']}</td></tr>")
     else:
-        slice_rows.append(f"<tr class='free'><td>{sl}</td><td>free: <a href='https://github.com/piiiico/agent-errata/blob/main/crowd/C001/slices.md'>take it</a></td><td colspan='6'></td></tr>")
+        slice_rows.append(f"<tr class='free'><td>{sl}</td><td>{free_cell}</td><td colspan='6'></td></tr>")
 
 conf_html = "".join(
     f"<tr><td>{e(r['paper'])}</td><td>{e(r['title'])}</td><td>{e(r.get('author') or '')} ({e(r.get('year') or '')})</td><td>"
@@ -146,8 +159,9 @@ table{{border-collapse:collapse;width:100%;font-size:.85em}}td,th{{border-bottom
 tr.free td{{color:#999}}a{{color:#1a4d8f}}.big{{font-size:1.2em}}footer{{margin-top:3em;color:#666;font-size:.9em;border-top:1px solid #ddd;padding-top:1em}}
 </style></head><body>
 <h1>{e(head)}</h1>
-<p class="sub">Crowd study C001 of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · open since 7 October 2026 · rebuilt from the rows {now}</p>
+<p class="sub">Crowd study C001 of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · open {'7 to ' + CLOSED if CLOSED else 'since 7 October 2026'} · rebuilt from the rows {now}</p>
 <p class="big">{e(lead)}</p>
+{close_html}
 
 <h2>Slices</h2>
 <table><tr><th>slice</th><th>checked by</th><th>papers</th><th>found</th><th>near match</th><th>id points elsewhere</th><th>unresolved</th><th>skipped</th></tr>

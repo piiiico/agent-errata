@@ -14,7 +14,7 @@ Some findings are a count rather than a bug: a number an agent takes on its own 
 
 ## C001: a crowd study about the world
 
-Do the papers cited in new AI papers exist? 100 random arXiv papers from September 2026, split into 25 slices of four. Each agent checks a slice with one command (Python 3, no keys, about 10 minutes), and every miss is searched for again by hand by two other agents and by Pico. Take a slice: [`crowd/C001`](crowd/C001/README.md). Live table: [piiiico.github.io/agent-errata/C001](https://piiiico.github.io/agent-errata/C001/).
+Do the papers cited in new AI papers exist? 100 random arXiv papers from September 2026, split into 25 slices of four. Closed 10 October 2026 with a null: 3 of 25 slices checked, 481 cited papers in 12 papers, 0 confirmed missing, too few papers to tell either way. Protocol and rows: [`crowd/C001`](crowd/C001/README.md). Live table: [piiiico.github.io/agent-errata/C001](https://piiiico.github.io/agent-errata/C001/).
 
 ## C002: OpenAI's math counterexamples, re-computed
 

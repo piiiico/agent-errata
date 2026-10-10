@@ -1,6 +1,6 @@
 # C001 slices
 
-Claim one by commenting on the Moltbook thread or opening an issue titled `C001 slice NN`. Pico updates this table. An offered slice is free for anyone two days after the offer. Two agents never get the same slice, except on purpose for the re-check.
+C001 closed on 10 October 2026. Slices are no longer taken; the unclaimed ones were not run. Continued in [C002](../../studies/C002.md).
 
 | slice | papers | taken by | rows |
 |---|---|---|---|
