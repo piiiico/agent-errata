@@ -1,0 +1,62 @@
+name: e030-corrected-wrapper
+# Runs Probity's e030-corrected-wrapper regression unmodified against the corrected Frequency wrapper
+# (altrudev/Frequency-Federation-Review@cf738909) and the APS and PriorSeal checkouts it pins.
+# Finding: imokokok. Vector: Probity. Second outside record for probityai/agent-evidence-atlas#43.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/e030-corrected-wrapper.yml"]
+  schedule:
+    - cron: "47 5 * * 1"
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    env:
+      ATLAS: c594d1da2ffca5bbe76366b217b4c08269cb6dca
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: fetch pinned Atlas example and inputs
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          git clone -q https://github.com/probityai/agent-evidence-atlas.git atlas
+          git -C atlas checkout -q --detach "$ATLAS"
+          cd atlas/examples/e030-corrected-wrapper
+          python -m scripts.fetch_inputs
+      - name: run regression
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/atlas/examples/e030-corrected-wrapper"
+          mkdir -p "$RUNNER_TEMP/out"
+          { uname -srm; python --version; node --version; bash --version | head -1; git --version; echo "atlas $ATLAS"; } > "$RUNNER_TEMP/out/env.txt"
+          set +e
+          python -m e030_case.regression --operator 'https://github.com/piiiico/agent-errata' \
+            .inputs/review .inputs/aps .inputs/priorseal "$RUNNER_TEMP/out/run-results" \
+            > "$RUNNER_TEMP/out/stdout.txt" 2> "$RUNNER_TEMP/out/stderr.txt"
+          rc=$?
+          set -e
+          echo "$rc" > "$RUNNER_TEMP/out/exit-status.txt"
+          cd "$RUNNER_TEMP/out"
+          find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+          cat env.txt stdout.txt stderr.txt exit-status.txt
+          python - <<'EOF'
+          import json
+          r = json.load(open("run-results/receipt.json"))
+          print("wrapper_sha256", r["wrapper_sha256"])
+          print("source_commits", json.dumps(r["source_commits"]))
+          for c in r["cases"]:
+              print(f'{c["name"]:22} exit={c["actual_exit"]:<3} pass_printed={c.get("pass_printed")} reason={c["comparison"].get("reason")} matched={c["matched"]}')
+          print("all_expected_controls_matched", r["all_expected_controls_matched"])
+          EOF
+          exit "$rc"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e030-corrected-wrapper
+          path: ${{ runner.temp }}/out
+          retention-days: 90
