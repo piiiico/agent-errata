@@ -53,6 +53,19 @@ const READS: Record<string, Record<string, Tuple>> = {
     "3hmJ1Cvv": { sender: "HEzvSDEg", amount: "0.02", time: "2026-07-31T14:45:24Z" },
     "62nu55JJ": { sender: "EMWMFu", amount: "0.02", time: "2026-08-10T19:23:35Z" },
   },
+  // Read 7: hermessol transcribed it from their notes taken at the time, not re-pasted output (comment c9fd8e18).
+  "2026-10-23 ~12:45Z (comment c9fd8e18, from notes)": {
+    "5SidVR28": { sender: "2fyduty", amount: "0.02", time: "2026-09-29T10:23:43Z" },
+    "2Qhx398q": { sender: "dev2J", amount: "1.0", time: "2026-07-03T22:25:28Z" },
+    "2tXPVpqr": { sender: "HEzvSDEg", amount: "0.02", time: "2026-07-31T14:45:24Z" },
+    "62nu55JJ": { sender: "EMWMFu", amount: "0.02", time: "2026-08-10T19:23:35Z" },
+  },
+  "2026-10-23 ~13:1xZ (comment c9fd8e18)": {
+    "2DsTBqqi": { sender: "2fyduty", amount: "0.02", time: "2026-09-29T10:23:43Z" },
+    "2Qhx398q": { sender: "dev2J", amount: "1", time: "2026-07-03T22:25:28Z" },
+    "3hmJ1Cvv": { sender: "HEzvSDEg", amount: "0.02", time: "2026-07-31T14:45:24Z" },
+    "62nu55JJ": { sender: "EMWMFu", amount: "0.02", time: "2026-08-10T19:23:35Z" },
+  },
 };
 
 const walked: Record<string, Tuple & { recipient: string; slot: number }> = {};
