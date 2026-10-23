@@ -91,6 +91,34 @@ for (const v of ["v1-permit", "v2-denial"]) {
   check(`${v}: delegation_ref names the delegation_chain digest`,
     rec.delegation_ref === "liu-chain:sha256:" + sha256(Buffer.from(jcs(chainAsObject ? { delegation_chain: input.delegation_chain } : input.delegation_chain), "utf8")));
   check(`${v}: subject_agent is the last delegatee`, rec.subject_agent === input.delegation_chain.at(-1).delegatee_id);
+
+  // action_ref and decision_ref, written from the README text of agent-passport-system#245 (head 324a7e7),
+  // "Construction of action_ref and decision_ref", without reading that PR's verifier diff.
+  const td = (tag: string, val: unknown) => sha256(tagged(tag, jcs(val)));
+  const plain = (val: unknown) => sha256(Buffer.from(jcs(val), "utf8"));
+  const C = input.delegation_chain, F = C.at(-1), X = input.rego_decision_context, E = X.evaluated_input;
+  const actionRef = td("APS-ACTION-REF-V2", {
+    profile: "aps-action-ref-v2", agent_id: F.delegatee_id, action_type: E.action, target: "item:" + E.item_id,
+    payload_ref: plain(E), scope_required: [E.action], issued_at: rec.issued_at,
+    nonce: sha256(Buffer.from("liu-composition-" + v, "utf8")).slice(0, 32),
+  });
+  check(`${v}: action_ref = APS-ACTION-REF-V2 digest of the eight-member action input`, actionRef === rec.action_ref);
+  const authority = td("APS-DECISION-AUTHORITY-V1", { delegation_chain: C });
+  const filledPolicy = { ...X.policy_ref, hash: "sha256-" + createHash("sha256").update(F.delegated_policy.content, "utf8").digest("base64") };
+  const narrowed = [...new Set([...String(F.delegated_policy.content).matchAll(/input\.action == "([^"]*)"/g)].map((m) => m[1]))]
+    .sort((a, b) => Buffer.compare(Buffer.from(a, "utf8"), Buffer.from(b, "utf8")));
+  const output = X.result === "allow"
+    ? { profile: "aps-core-decision-output-v1", verdict: "permit", effective_authority_ref: authority, constraints: narrowed }
+    : { profile: "aps-core-decision-output-v1", verdict: "deny", effective_authority_ref: null, constraints: ["requested_action_outside_narrowed_subset:" + E.action] };
+  const decisionRef = td("APS-DECISION-REF-V1", {
+    profile: "aps-decision-ref-v1", action_ref: actionRef, authority_state_ref: authority,
+    policy_ref: td("APS-DECISION-POLICY-V1", filledPolicy),
+    context_ref: td("APS-DECISION-CONTEXT-V1", { policy_ref: filledPolicy, input_hash: "sha256:" + plain(E), result: X.result, evaluation_timestamp: X.evaluation_timestamp }),
+    decision_output_ref: td("APS-DECISION-OUTPUT-V1", output),
+  });
+  check(`${v}: decision_ref = APS-DECISION-REF-V1 digest of the six-member decision object`, decisionRef === rec.decision_ref);
+  check(`${v}: narrowed subset in the receipt result matches the final hop's policy`,
+    X.result !== "allow" || jcs(rec.result?.narrowed_subset) === jcs(narrowed));
 }
 
 const obs = read("v3-observation", "record.json"), oin = read("v3-observation", "input.json");
