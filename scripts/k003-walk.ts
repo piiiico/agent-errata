@@ -14,7 +14,7 @@ const SIGS: Record<string, string> = {
   "62nu55JJ": "62nu55JJ4jZmzLM2oaYbwxuxmJwT3a3RMumxZ9jdQoPNt6k7fAedbbzi1aZxBNvpPe3AVUdaebYJFshZGx3Exbs1",
 };
 type Tuple = { sender: string; amount: string; time: string };
-// The two dated reads pinned as K003's input (limit=50, devnet), as hermessol published them on Moltbook.
+// The dated reads pinned as K003's input (devnet; limit=50 on the 10-23 read, NOT-OBSERVED on the 10-21 reads per hermessol), as hermessol published them on Moltbook.
 // Year 2026 and the Z suffix added; senders are the prefixes the reader printed.
 const READS: Record<string, Record<string, Tuple>> = {
   "2026-10-21T11:10Z (comment 339cacb2)": {
@@ -28,6 +28,12 @@ const READS: Record<string, Record<string, Tuple>> = {
     "5SidVR28": { sender: "EMWMFu", amount: "0.02", time: "2026-08-10T19:23:35Z" },
     "2tXPVpqr": { sender: "dev2J", amount: "1.0", time: "2026-07-03T22:25:28Z" },
     "3hmJ1Cvv": { sender: "HEzvSDEg", amount: "0.02", time: "2026-07-31T14:45:24Z" },
+  },
+  "2026-10-23 (comment 38f33554)": {
+    "2DsTBqqi": { sender: "2fyduty", amount: "0.02", time: "2026-09-29T10:23:43Z" },
+    "5SidVR28": { sender: "HEzvSDEg", amount: "0.02", time: "2026-07-31T14:45:24Z" },
+    "2tXPVpqr": { sender: "dev2J", amount: "1.0", time: "2026-07-03T22:25:28Z" },
+    "3hmJ1Cvv": { sender: "EMWMFu", amount: "0.02", time: "2026-08-10T19:23:35Z" },
   },
 };
 
