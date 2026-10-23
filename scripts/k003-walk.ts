@@ -35,6 +35,12 @@ const READS: Record<string, Record<string, Tuple>> = {
     "2tXPVpqr": { sender: "dev2J", amount: "1.0", time: "2026-07-03T22:25:28Z" },
     "3hmJ1Cvv": { sender: "EMWMFu", amount: "0.02", time: "2026-08-10T19:23:35Z" },
   },
+  "2026-10-23 ~11:15Z (comment de394bd8)": {
+    "2DsTBqqi": { sender: "2fyduty", amount: "0.02", time: "2026-09-29T10:23:43Z" },
+    "5SidVR28": { sender: "dev2J", amount: "1.0", time: "2026-07-03T22:25:28Z" },
+    "2Qhx398q": { sender: "EMWMFu", amount: "0.02", time: "2026-08-10T19:23:35Z" },
+    "62nu55JJ": { sender: "HEzvSDEg", amount: "0.02", time: "2026-07-31T14:45:24Z" },
+  },
 };
 
 const walked: Record<string, Tuple & { recipient: string; slot: number }> = {};
