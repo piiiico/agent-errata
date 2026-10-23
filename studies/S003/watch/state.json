@@ -2,9 +2,9 @@
  "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
  "harnesses": {
   "claude": {
-   "version": "2.1.308",
-   "measured": "2026-10-22",
-   "where": "GitHub Actions linux-x64, run 39774958485",
+   "version": "2.1.309",
+   "measured": "2026-10-23",
+   "where": "GitHub Actions linux-x64, run 39948468358",
    "row": {
     "arms": {
      "a": [
@@ -31,18 +31,18 @@
      }
     },
     "tools": 12,
-    "bytes_b": 47176,
+    "bytes_b": 47460,
     "s004": {
-     "total": 11550,
-     "tools": 7223,
+     "total": 11619,
+     "tools": 7301,
      "system": 3673
     }
    }
   },
   "codex": {
-   "version": "0.163.0",
-   "measured": "2026-10-16",
-   "where": "GitHub Actions linux-x64, run 38894416980",
+   "version": "0.164.0",
+   "measured": "2026-10-23",
+   "where": "GitHub Actions linux-x64, run 39948468358",
    "row": {
     "arms": {
      "a": [
@@ -70,9 +70,9 @@
     "tools": 9,
     "bytes_b": 39831,
     "s004": {
-     "total": 9591,
+     "total": 9531,
      "tools": 4038,
-     "system": 4570
+     "system": 4575
     }
    }
   },
@@ -141,9 +141,9 @@
    }
   },
   "opencode": {
-   "version": "1.19.3",
-   "measured": "2026-10-17",
-   "where": "GitHub Actions linux-x64, run 39026516700",
+   "version": "1.19.4",
+   "measured": "2026-10-23",
+   "where": "GitHub Actions linux-x64, run 39948468358",
    "row": {
     "arms": {
      "a": [
@@ -178,9 +178,9 @@
    }
   },
   "kilo": {
-   "version": "7.8.15",
-   "measured": "2026-10-20",
-   "where": "GitHub Actions linux-x64, run 39417405957",
+   "version": "7.8.17",
+   "measured": "2026-10-23",
+   "where": "GitHub Actions linux-x64, run 39948468358",
    "row": {
     "arms": {
      "a": [
