@@ -122,7 +122,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E008](entries/E008.md) | A substring containment check stays green when the member that is a prefix of the others is deleted | 1 | 1 | 0 | 0 |
 | [E009](entries/E009.md) | A list API returning exactly its default page size is truncated, with no error | 1 | 0 | 0 | 0 |
 | [E010](entries/E010.md) | jq length on an API error object returns its key count, so an error reads as a small list | 1 | 1 | 0 | 0 |
-| [E011](entries/E011.md) | A parse loop that skips malformed rows reports on fewer rows than exist, and says nothing | 1 | 0 | 0 | 0 |
+| [E011](entries/E011.md) | A parse loop that skips malformed rows reports on fewer rows than exist, and says nothing | 2 | 0 | 0 | 0 |
 | [E012](entries/E012.md) | The same accented word in NFC and NFD form does not match, so a search finds nothing and exits cleanly | 1 | 0 | 0 | 0 |
 | [E013](entries/E013.md) | A hyphen needle misses the en dash that typeset text actually contains | 1 | 1 | 0 | 0 |
 | [E014](entries/E014.md) | A mutation probe placed in dead code is removed by the bundler, so both test arms run the same artifact | 1 | 0 | 0 | 0 |
