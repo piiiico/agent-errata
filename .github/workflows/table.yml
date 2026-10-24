@@ -2,7 +2,7 @@ name: update-readme-table
 on:
   push:
     branches: [main]
-    paths: ["entries/**", "replications/**", "scripts/validate.ts"]
+    paths: ["entries/**", "replications/**", "claims/**", "scripts/validate.ts"]
 permissions:
   contents: write
 jobs:
