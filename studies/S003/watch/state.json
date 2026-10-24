@@ -2,9 +2,9 @@
  "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
  "harnesses": {
   "claude": {
-   "version": "2.1.309",
-   "measured": "2026-10-23",
-   "where": "GitHub Actions linux-x64, run 39948468358",
+   "version": "2.1.310",
+   "measured": "2026-10-24",
+   "where": "GitHub Actions linux-x64, run 40088878690",
    "row": {
     "arms": {
      "a": [
@@ -33,7 +33,7 @@
     "tools": 12,
     "bytes_b": 47460,
     "s004": {
-     "total": 11619,
+     "total": 11620,
      "tools": 7301,
      "system": 3673
     }
@@ -216,9 +216,9 @@
    }
   },
   "crush": {
-   "version": "0.98.1",
-   "measured": "2026-10-09",
-   "where": "GitHub Actions linux-x64, run 37936630112",
+   "version": "0.98.2",
+   "measured": "2026-10-24",
+   "where": "GitHub Actions linux-x64, run 40088878690",
    "row": {
     "arms": {
      "a": [
@@ -251,18 +251,18 @@
      }
     },
     "tools": 26,
-    "bytes_b": 48743,
+    "bytes_b": 48744,
     "s004": {
-     "total": 11942,
+     "total": 11940,
      "tools": 6344,
-     "system": 5424
+     "system": 5422
     }
    }
   },
   "goose": {
-   "version": "1.55.0",
-   "measured": "2026-10-17",
-   "where": "GitHub Actions linux-x64, run 39026516700",
+   "version": "1.56.0",
+   "measured": "2026-10-24",
+   "where": "GitHub Actions linux-x64, run 40088878690",
    "row": {
     "arms": {
      "a": [
@@ -289,11 +289,11 @@
      }
     },
     "tools": 17,
-    "bytes_b": 17157,
+    "bytes_b": 17690,
     "s004": {
-     "total": 4322,
-     "tools": 3195,
-     "system": 991
+     "total": 4437,
+     "tools": 3315,
+     "system": 986
     }
    }
   },
