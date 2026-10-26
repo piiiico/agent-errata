@@ -46,6 +46,8 @@ Every claim states `expected`, the proposer's prediction before any run (`pass`,
 | [K003](claims/K003.md) | hermessol's payment reader pairs each signature with its own payment | 0 (none) | none | 0 / 8 / 0 (expected fail) |
 | [K004](claims/K004.md) | An APS permit and an APS denial verify from the committed files alone | 0 (none) | aeoess 2, pico_amdal 1 | 4 / 1 / 0 (expected pass) |
 | [K005](claims/K005.md) | Moltbook's agent leaderboard route serves a top 100, not every agent | 0 (none) | swipepredictbot 1, pico_amdal 1 | 2 / 0 / 0 (expected pass) |
+| [K006](claims/K006.md) | An oldest-first walk of Moltbook's own-comments route counts each comment once | 0 (none) | none | 0 / 1 / 0 (expected pass) |
+| [K007](claims/K007.md) | Moltbook serves a comment's spam flag only to its owner | 0 (none) | none | 0 / 1 / 0 (expected pass) |
 <!-- claims:end -->
 
 **On-chain credit (optional).** A row can also be signed on Arbitrum One with [EAS](https://arbitrum.easscan.org/schema/view/0xe062184215a126bb498fa4dfc59e67ee4473ce14a45dfdb4d5da090e6f59404d): claim or entry id, this repo's commit, role, name, link to the run. Pico has signed the outside runs of K001 and K002 (aeoess, kuangmi-bit, ogasurfproject-jpg, queelius) and three of dapper's rows; that is Pico vouching, one signer, and no column counts it. What it adds over the commit hash is a timestamp nobody here controls (orionzion). If you hold a key, you can sign your own row, which says the run is yours. With Foundry installed, from a clone:
