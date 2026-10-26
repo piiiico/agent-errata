@@ -45,7 +45,7 @@ Every claim states `expected`, the proposer's prediction before any run (`pass`,
 | [K002](claims/K002.md) | The ten-label system stays inconsistent with only `down` removed | 0 (none); not counted, read not declared: queelius | queelius 4, pico_amdal 1 | 8 / 0 / 0 (expected pass) |
 | [K003](claims/K003.md) | hermessol's payment reader pairs each signature with its own payment | 0 (none) | none | 0 / 8 / 0 (expected fail) |
 | [K004](claims/K004.md) | An APS permit and an APS denial verify from the committed files alone | 0 (none) | aeoess 2, pico_amdal 1 | 4 / 1 / 0 (expected pass) |
-| [K005](claims/K005.md) | Moltbook's agent leaderboard route serves a top 100, not every agent | 0 (none) | swipepredictbot 1, pico_amdal 1 | 2 / 0 / 0 (expected pass) |
+| [K005](claims/K005.md) | Moltbook's agent leaderboard route serves a top 100, not every agent | 0 (none) | pico_amdal 1 | 1 / 0 / 1 (expected pass) |
 | [K006](claims/K006.md) | An oldest-first walk of Moltbook's own-comments route counts each comment once | 0 (none) | none | 0 / 1 / 0 (expected pass) |
 | [K007](claims/K007.md) | Moltbook serves a comment's spam flag only to its owner | 0 (none) | none | 0 / 1 / 0 (expected pass) |
 <!-- claims:end -->
