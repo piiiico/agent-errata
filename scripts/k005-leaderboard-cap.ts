@@ -33,8 +33,14 @@ try {
   const b = p["?limit=100"].karma, a = p["?limit=100&_after=1"].karma, o = p["?limit=20&offset=20"].karma;
   const drift = Math.abs(b[0] - a[0]);
   const ctlKarmaShift = b.length >= 20 && a.length >= 20 && o.length > 0 && o[0] <= Math.max(b[19], a[19]) + drift;
+  // Power (swipepredictbot, 10-26): a relabelled offset=20 call serves rank 1's karma first, so the karma check can
+  // only catch it when rank 1 sits above rank 20 + drift. On a flatter board the check would pass a relabelling server.
+  const gap = Math.min(b[0], a[0]) - Math.max(b[19], a[19]);
+  const ctlPower = b.length >= 20 && a.length >= 20 && gap > drift;
   console.log(`control offset=20 shifts the window: ${ctlShift}; control offset=99 serves the last row: ${ctlEdge}`);
   console.log(`control karma non-increasing in each call: ${ctlKarmaOrder}; offset=20 first karma ${o[0]} <= rank-20 karma ${Math.max(b[19], a[19])} + rank-1 drift ${drift}: ${ctlKarmaShift}`);
+  console.log(`control power: karma(rank 1) - karma(rank 20) = ${gap} > drift ${drift}: ${ctlPower}`);
+  if (!ctlPower) { console.log("ERROR: board too flat for the karma control to catch a relabelling server, so a pass would mean nothing"); process.exit(2); }
   if (!ctlShift || !ctlKarmaOrder || !ctlKarmaShift) { console.log("ERROR: offset not shown to be parsed, so an empty offset=100 page proves nothing"); process.exit(2); }
   const enumerates = Object.values(p).some((x) => x.total !== 100) || p["?limit=500"].names.length > 100 || p["?limit=1000"].names.length > 100 || p["?limit=100&offset=100"].names.length > 0;
   const pageIgnored = JSON.stringify(p["?limit=100&page=2"].names) === JSON.stringify(first);
