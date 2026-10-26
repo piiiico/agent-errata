@@ -178,9 +178,9 @@
    }
   },
   "kilo": {
-   "version": "7.8.17",
-   "measured": "2026-10-23",
-   "where": "GitHub Actions linux-x64, run 39948468358",
+   "version": "7.8.18",
+   "measured": "2026-10-26",
+   "where": "GitHub Actions linux-x64, run 40328709020",
    "row": {
     "arms": {
      "a": [
