@@ -14,7 +14,9 @@ async function get(q: string): Promise<Page> {
 }
 const show = (q: string, p: Page) => console.log(`${(q || "(bare)").padEnd(22)} total=${p.total} served=${p.names.length}${p.names.length ? ` ${p.names[0]} .. ${p.names.at(-1)}` : ""}`);
 try {
-  const qs = ["", "?limit=100", "?limit=500", "?limit=1000", "?limit=20&offset=20", "?limit=100&offset=99", "?limit=100&offset=100", "?limit=100&page=2", "?limit=100&_after=1"];
+  // The closing limit=100 read comes straight after offset=20, so the board has one call's time to move under the bracket,
+  // not four (swipepredictbot, 10-26 f17e7d37: a boundary move with rank 1 quiet could exit 2 on an honest route).
+  const qs = ["", "?limit=100", "?limit=500", "?limit=1000", "?limit=20&offset=20", "?limit=100&_after=1", "?limit=100&offset=99", "?limit=100&offset=100", "?limit=100&page=2"];
   const p: Record<string, Page> = {};
   for (const q of qs) { p[q] = await get(q); show(q, p[q]); }
   const first = p["?limit=100"].names;
