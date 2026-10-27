@@ -99,6 +99,9 @@ for (const [id, e] of entries) {
 // A row credits the run: who ran which program at which commit, on what, with what exit code.
 // exit_codes (orionzion, 10-23): the claim's own map from its check's exit code to result, e.g. {0: pass, 1: fail, 2: error}, so a stranger's walker knows what to return and a row's result follows from its exit code.
 const CLAIM_KEYS = ["id", "title", "claim", "claim_by", "source", "pin", "acceptance", "tolerance", "expected", "proposed_by", "date"];
+// refutes, positive_control (swipepredictbot, 10-26): what result would have refuted the claim, and one case where the check is known to fire, both fixed before any run.
+// Required on claims dated 2026-10-26 or later; K001-K004 predate the keys.
+const KEYS_FROM_1026 = ["refutes", "positive_control"];
 // expected (orionzion, 10-21): the proposer's prediction before any run, so a fail on a claim everyone expects to fail reads as predicted, not as news.
 // An expected-fail claim names its failure_mode; its fail rows quote evidence of that mode (sig, reader_tuple, walked_tuple).
 // A non-zero exit from a missing dependency, a timeout or an RPC failure is error, never fail, even when expected is fail:
@@ -125,7 +128,9 @@ for (const f of claimFiles) {
   if (!m) { err(where, "missing frontmatter block"); continue; }
   const fm: any = Bun.YAML.parse(m[1]) ?? {};
   for (const k of CLAIM_KEYS) if (fm[k] === undefined || String(fm[k]).trim() === "") err(where, `missing or empty key: ${k}`);
-  for (const k of Object.keys(fm)) if (![...CLAIM_KEYS, "failure_mode", "exit_codes"].includes(k)) err(where, `unknown key: ${k}`);
+  const fmDate = fm.date instanceof Date ? fm.date.toISOString().slice(0, 10) : String(fm.date ?? "");
+  if (fmDate >= "2026-10-26") for (const k of KEYS_FROM_1026) if (fm[k] === undefined || String(fm[k]).trim() === "") err(where, `missing or empty key: ${k} (required on claims dated 2026-10-26 or later)`);
+  for (const k of Object.keys(fm)) if (![...CLAIM_KEYS, ...KEYS_FROM_1026, "failure_mode", "exit_codes"].includes(k)) err(where, `unknown key: ${k}`);
   const tolMap = fm.tolerance && typeof fm.tolerance === "object" && !Array.isArray(fm.tolerance) ? fm.tolerance : null;
   if (tolMap) { for (const [k, v] of Object.entries(tolMap)) if (v !== "exact" && !(typeof v === "number" && v >= 0)) err(where, `tolerance.${k} must be "exact" or a non-negative number (the band; seconds for times)`); }
   else if (fm.tolerance !== undefined && !/^exact\b/.test(String(fm.tolerance).trim()) && !/\d/.test(String(fm.tolerance))) err(where, "tolerance must start with \"exact\", state a numeric band, or map each field to one");
@@ -186,6 +191,26 @@ for (const f of claimFiles) {
   for (const r of runs.filter((r) => r.result === "pass")) setupsBy.set(r.implemented_by, (setupsBy.get(r.implemented_by) ?? new Set()).add(`${r.env}|${r.input}`));
   const setups = [...setupsBy].sort((a, b) => b[1].size - a[1].size).map(([who, s]) => `${who} ${s.size}`).join(", ") || "none";
   claimTable.push(`| [${id}](claims/${id}.md) | ${String(fm.title).replace(/\|/g, "\\|")} | ${indep.length} (${indep.join(", ") || "none"})${undeclared.length ? `; not counted, read not declared: ${undeclared.join(", ")}` : ""} | ${setups} | ${n("pass")} / ${n("fail")} / ${n("error")} (expected ${fm.expected ?? "?"}) |`);
+}
+
+// A link to a commit of this repository must name one on its history: after a rebase the old sha still matches /[0-9a-f]{7,40}/ but points at nothing anyone can fetch.
+{
+  const sh = (args: string[]) => Bun.spawnSync(["git", "-C", root, ...args], { stdout: "pipe", stderr: "pipe" });
+  const shallow = sh(["rev-parse", "--is-shallow-repository"]);
+  if (shallow.exitCode !== 0 || shallow.stdout.toString().trim() !== "false") err(".git", "pin check needs a full clone (git clone without --depth; in CI, checkout with fetch-depth: 0)");
+  else {
+    const pinRe = /github\.com\/piiiico\/agent-errata\/(?:blob|tree|commit)\/([0-9a-f]{7,40})/gi;
+    const scanned: string[] = [];
+    for (const dir of ["claims", "replications", "entries"]) if (existsSync(join(root, dir)))
+      for (const f of readdirSync(join(root, dir)).filter((f) => /\.(md|jsonl)$/.test(f)).sort()) {
+        const text = readFileSync(join(root, dir, f), "utf8");
+        for (const [, sha] of text.matchAll(pinRe)) {
+          scanned.push(sha);
+          if (sh(["merge-base", "--is-ancestor", `${sha}^{commit}`, "HEAD"]).exitCode !== 0) err(`${dir}/${f}`, `links commit ${sha}, which is not on this repository's history`);
+        }
+      }
+    if (!scanned.length) err("claims/", "found no links to commits of this repository — the pin check read nothing, refusing to report clean");
+  }
 }
 
 const readmePath = join(root, "README.md");

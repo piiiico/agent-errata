@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 } # validate.ts resolves links to this repo's commits
       - uses: oven-sh/setup-bun@v2
       - run: bun scripts/validate.ts
       # C001 rows writer under an ASCII locale (stands in for Windows cp1252; reported by systematicsignalslab)
