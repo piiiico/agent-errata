@@ -1,5 +1,5 @@
 // Mock leaderboards for K005: enumerate150, ignoreOffset (true ranks), movingNames (ranks right, names churn), relabel (ignores offset, ranks = offset+i), flatRelabel (relabel on a board whose top 20 share one karma), and four honest boards that move at rank 20 with rank 1 still (below)
-// Run: bun scripts/k005-mocks.ts, then K005_BASE=http://localhost:8799/<mode> bun scripts/k005-leaderboard-cap.ts. Expected exits: honest 0, enumerate150 1, ignoreOffset 2, movingNames 0, relabel 2, flatRelabel 2, overtake 0, doubleRise 0, riseThenRevertLate 0, riseThenRevert 2.
+// Run: bun scripts/k005-mocks.ts, then K005_BASE=http://localhost:8799/<mode> bun scripts/k005-leaderboard-cap.ts. Expected exits: honest 0, enumerate150 1, ignoreOffset 2, movingNames 0, relabel 2, flatRelabel 2, overtake 0, doubleRise 0, riseThenRevertLate 0, riseThenRevert 0 (control fails once, the re-run holds, NOTE line; 2 before the re-run).
 const N = 100;
 let call = 0, lastMode = ""; // call counts per mode, so each run of the check starts at call 1
 const mk = (n: number, tag = "") => Array.from({ length: n }, (_, i) => ({ name: `a${i + 1}${tag}`, rank: i + 1, karma: 1_000_000 - i * 1000 }));
