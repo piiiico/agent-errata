@@ -1,0 +1,12 @@
+mnli Qwen3.6-35B-A3B n=100 meanacc=57.5 acc=[0.58, 0.58, 0.56, 0.58, 0.57, 0.57, 0.58, 0.58] range=2.0 pair=0.8 null_med=2.0 null95=2.0 p=0.527 boot95=[0.0,5.0]
+mnli Qwen2.5-0.5B n=100 meanacc=67.6 range=6.0 pair=2.6 null_med=8.0 p=0.882
+mnli Qwen2.5-1.5B n=100 meanacc=61.0 range=9.0 pair=3.4 null_med=4.0 p=0.000
+mnli Qwen2.5-3B n=100 meanacc=80.8 range=9.0 pair=3.9 null_med=6.0 p=0.078
+mnli Qwen2.5-7B n=100 meanacc=86.0 range=3.0 pair=1.4 null_med=3.0 p=0.747
+mnli Qwen2.5-14B n=100 meanacc=74.4 range=18.0 pair=7.9 null_med=6.0 p=0.000
+sst2 Qwen3.6-35B-A3B n=100 meanacc=95.6 acc=[0.95, 0.96, 0.96, 0.95, 0.96, 0.96, 0.95, 0.96] range=1.0 pair=0.5 null_med=1.0 null95=1.0 p=1.000 boot95=[0.0,3.0]
+sst2 Qwen2.5-0.5B n=100 meanacc=92.5 range=3.0 pair=0.9 null_med=4.0 p=0.957
+sst2 Qwen2.5-1.5B n=100 meanacc=94.6 range=4.0 pair=1.5 null_med=3.0 p=0.359
+sst2 Qwen2.5-3B n=100 meanacc=93.9 range=3.0 pair=1.3 null_med=4.0 p=0.842
+sst2 Qwen2.5-7B n=100 meanacc=92.6 range=2.0 pair=0.8 null_med=2.0 p=0.695
+sst2 Qwen2.5-14B n=100 meanacc=94.9 range=1.0 pair=0.3 null_med=1.0 p=1.000
