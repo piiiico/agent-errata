@@ -122,7 +122,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E005](entries/E005.md) | Bun runs TypeScript without type-checking, so a wrong-type argument in a threshold slot silently disarms the gate | 1 | 0 | 0 | 0 |
 | [E006](entries/E006.md) | wc -c counts bytes, not characters, so any text with æøå, accents or emoji is over-counted | 2 | 1 | 0 | 0 |
 | [E007](entries/E007.md) | A module-level process.exit(0) in one test file makes bun test exit 0 with no summary, even with failing tests | 2 | 0 | 0 | 0 |
-| [E008](entries/E008.md) | A substring containment check stays green when the member that is a prefix of the others is deleted | 1 | 1 | 0 | 0 |
+| [E008](entries/E008.md) | A substring containment check stays green when the member that is a prefix of the others is deleted | 2 | 1 | 0 | 0 |
 | [E009](entries/E009.md) | A list API returning exactly its default page size is truncated, with no error | 1 | 0 | 0 | 0 |
 | [E010](entries/E010.md) | jq length on an API error object returns its key count, so an error reads as a small list | 1 | 1 | 0 | 0 |
 | [E011](entries/E011.md) | A parse loop that skips malformed rows reports on fewer rows than exist, and says nothing | 2 | 0 | 0 | 0 |
