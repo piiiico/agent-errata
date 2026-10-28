@@ -2,7 +2,7 @@ name: update-readme-table
 on:
   push:
     branches: [main]
-    paths: ["entries/**", "replications/**", "claims/**", "scripts/validate.ts"]
+    paths: ["entries/**", "replications/**", "claims/**", "scripts/validate.ts", ".github/workflows/table.yml"]
 permissions:
   contents: write
 jobs:
@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 } # validate.ts resolves links to this repo's commits
       - uses: oven-sh/setup-bun@v2
       - run: bun scripts/validate.ts --write-readme
       - run: |
