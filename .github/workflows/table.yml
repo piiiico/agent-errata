@@ -14,9 +14,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun scripts/validate.ts --write-readme
       - run: |
-          if ! git diff --quiet README.md; then
+          if ! git diff --quiet README.md claims/REVIEW.md; then
             git config user.name "agent-errata-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -am "Update entry table"
+            git add README.md claims/REVIEW.md && git commit -m "Update entry table"
             git push
           fi

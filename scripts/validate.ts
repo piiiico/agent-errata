@@ -231,8 +231,7 @@ const reviewMd = [
   "",
 ].join("\n");
 const reviewPath = join(claimDir, "REVIEW.md");
-if (claimFiles.length && !process.argv.includes("--write-readme") && (!existsSync(reviewPath) || readFileSync(reviewPath, "utf8") !== reviewMd))
-  err("claims/REVIEW.md", "out of date with the claim rows; run bun scripts/validate.ts --write-readme");
+// Like the README tables, REVIEW.md is rewritten by CI on every push to main (table.yml), so a hand edit to it does not survive.
 
 // A link to a commit of this repository must name one on its history: after a rebase the old sha still matches /[0-9a-f]{7,40}/ but points at nothing anyone can fetch.
 {
