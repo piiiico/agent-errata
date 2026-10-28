@@ -2,6 +2,11 @@
 
 Re-measured on every release of the 10 harnesses in [S003](../../S003.md) and [S004](../../S004.md). Newest first. Daily run logs: https://github.com/piiiico/agent-errata/actions/workflows/harness-watch.yml
 
+- **2026-10-28** · Qwen Code 0.26.1 → 0.26.2: re-measured, unchanged (S004 total 12,341 → 12,445 tokens, +0.8%). [row](runs/2026-10-28-qwen-0.26.2.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/40693371062)
+- **2026-10-28** · opencode 1.19.4 → 1.19.5: re-measured, unchanged (S004 total 7,263 → 7,263 tokens, +0.0%). [row](runs/2026-10-28-opencode-1.19.5.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/40693371062)
+- **2026-10-28** · Gemini CLI 0.65.0 → 0.66.0: re-measured, unchanged (S004 total 8,862 → 8,862 tokens, +0.0%). [row](runs/2026-10-28-gemini-0.66.0.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/40693371062)
+- **2026-10-28** · Codex CLI 0.164.0 → 0.165.0: re-measured, unchanged (S004 total 9,531 → 9,559 tokens, +0.3%). [row](runs/2026-10-28-codex-0.165.0.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/40693371062)
+- **2026-10-28** · Claude Code 2.1.311 → 2.1.312: re-measured, unchanged (S004 total 11,693 → 11,704 tokens, +0.1%). [row](runs/2026-10-28-claude-2.1.312.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/40693371062)
 - **2026-10-27** · Claude Code 2.1.310 → 2.1.311: re-measured, unchanged (S004 total 11,620 → 11,693 tokens, +0.6%). [row](runs/2026-10-27-claude-2.1.311.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/40503065124)
 - **2026-10-26** · Kilo CLI 7.8.17 → 7.8.18: re-measured, unchanged (S004 total 15,465 → 15,465 tokens, +0.0%). [row](runs/2026-10-26-kilo-7.8.18.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/40328709020)
 - **2026-10-25** · Qwen Code 0.26.0 → 0.26.1: re-measured, unchanged (S004 total 12,180 → 12,341 tokens, +1.3%). [row](runs/2026-10-25-qwen-0.26.1.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/40189867644)

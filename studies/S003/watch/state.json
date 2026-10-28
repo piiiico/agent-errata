@@ -2,9 +2,9 @@
  "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
  "harnesses": {
   "claude": {
-   "version": "2.1.311",
-   "measured": "2026-10-27",
-   "where": "GitHub Actions linux-x64, run 40503065124",
+   "version": "2.1.312",
+   "measured": "2026-10-28",
+   "where": "GitHub Actions linux-x64, run 40693371062",
    "row": {
     "arms": {
      "a": [
@@ -31,18 +31,18 @@
      }
     },
     "tools": 12,
-    "bytes_b": 47815,
+    "bytes_b": 47814,
     "s004": {
-     "total": 11693,
+     "total": 11704,
      "tools": 7336,
-     "system": 3718
+     "system": 3719
     }
    }
   },
   "codex": {
-   "version": "0.164.0",
-   "measured": "2026-10-23",
-   "where": "GitHub Actions linux-x64, run 39948468358",
+   "version": "0.165.0",
+   "measured": "2026-10-28",
+   "where": "GitHub Actions linux-x64, run 40693371062",
    "row": {
     "arms": {
      "a": [
@@ -70,16 +70,16 @@
     "tools": 9,
     "bytes_b": 39831,
     "s004": {
-     "total": 9531,
+     "total": 9559,
      "tools": 4038,
-     "system": 4575
+     "system": 4572
     }
    }
   },
   "gemini": {
-   "version": "0.65.0",
-   "measured": "2026-10-21",
-   "where": "GitHub Actions linux-x64, run 39595986218",
+   "version": "0.66.0",
+   "measured": "2026-10-28",
+   "where": "GitHub Actions linux-x64, run 40693371062",
    "row": {
     "arms": {
      "a": [
@@ -103,9 +103,9 @@
    }
   },
   "qwen": {
-   "version": "0.26.1",
-   "measured": "2026-10-25",
-   "where": "GitHub Actions linux-x64, run 40189867644",
+   "version": "0.26.2",
+   "measured": "2026-10-28",
+   "where": "GitHub Actions linux-x64, run 40693371062",
    "row": {
     "arms": {
      "a": [
@@ -132,18 +132,18 @@
      }
     },
     "tools": 6,
-    "bytes_b": 54030,
+    "bytes_b": 54436,
     "s004": {
-     "total": 12341,
+     "total": 12445,
      "tools": 2182,
-     "system": 7049
+     "system": 7063
     }
    }
   },
   "opencode": {
-   "version": "1.19.4",
-   "measured": "2026-10-23",
-   "where": "GitHub Actions linux-x64, run 39948468358",
+   "version": "1.19.5",
+   "measured": "2026-10-28",
+   "where": "GitHub Actions linux-x64, run 40693371062",
    "row": {
     "arms": {
      "a": [
