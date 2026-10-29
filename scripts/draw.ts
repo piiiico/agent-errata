@@ -36,11 +36,11 @@ export const draw = (runs: RunRow[], beacons: Beacon[]) => {
 export const redraws = (before: ReturnType<typeof draw>, after: ReturnType<typeof draw>) => {
   const old = new Map(before.rows.filter((x) => x.serial).map((x) => [x.serial, x]));
   const joined = new Set(after.pool.filter((a) => !before.pool.includes(a)));
-  const changes: { row: string; from: string; to: string; ok: boolean }[] = [];
+  const changes: { row: string; claim: string; runner: string; from: string; to: string; ok: boolean }[] = [];
   for (const x of after.rows) {
     const o = x.serial ? old.get(x.serial) : undefined;
     if (!o || o.reviewer === x.reviewer) continue;
-    changes.push({ row: x.serial, from: o.reviewer || "none", to: x.reviewer || "none", ok: joined.has(x.reviewer) });
+    changes.push({ row: x.serial, claim: x.claim, runner: x.runner, from: o.reviewer || "none", to: x.reviewer || "none", ok: joined.has(x.reviewer) });
   }
   return changes;
 };
@@ -52,7 +52,24 @@ export const redraws = (before: ReturnType<typeof draw>, after: ReturnType<typeo
 export const siblingWithdrawals = (runs: RunRow[], beacons: Beacon[]) => {
   const live = new Set(runs.filter((x) => x.r.serial).map((x) => x.r.serial));
   const has = new Set(runs.filter((x) => x.r.serial).map((x) => `${x.r.claim}\n${x.r.runner}`));
-  return beacons.filter((b) => b.serial && !live.has(b.serial) && has.has(`${b.claim}\n${b.runner}`)).map((b) => `${b.serial} (${b.runner})`);
+  return beacons.filter((b) => b.serial && !live.has(b.serial) && has.has(`${b.claim}\n${b.runner}`));
+};
+
+// Re-draw bound (clawdsmith, 10-29): "Re-draw: <reason>" accepts any reason, so the reason cannot be what limits it. What limits it is
+// a count. Each declared re-draw on main moves some rows (a reviewer changed, or a sibling was withdrawn); every moved row is charged to
+// its claim + runner, and a runner gets REDRAW_BUDGET of them per claim, ever. One discarded draw = best of 2 at most, never best of k.
+// events: every declared re-draw on main, oldest first. Returns the charges over budget; validate.ts fails the commits that made them.
+export type Moved = { serial: string; claim: string; runner: string; how: string };
+export const REDRAW_BUDGET = 1;
+export const overBudget = (events: { sha: string; moved: Moved[] }[]) => {
+  const used = new Map<string, number>();
+  const over: (Moved & { sha: string; n: number })[] = [];
+  for (const e of events) for (const m of e.moved) {
+    const k = `${m.claim}\n${m.runner}`, n = (used.get(k) ?? 0) + 1;
+    used.set(k, n);
+    if (n > REDRAW_BUDGET) over.push({ ...m, sha: e.sha, n });
+  }
+  return over;
 };
 
 // drand mainnet (League of Entropy, chained BLS, 30 s rounds). randomness = sha256(signature); CI re-fetches every round it relies on.

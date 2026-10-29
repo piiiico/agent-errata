@@ -1,10 +1,10 @@
 // Grind check for the reviewer draw (swipepredictbot, clawdsmith 10-28). Run: bun scripts/grind-check.ts [path/to/draw.ts]
 // Simulates filers who grind what they control offline (a new runner name; a row's env) to win one target row, then get the beacon CI
 // writes after their push. Fails unless the grinders' hit rate stays near 1/eligible-pool, and unless editing or moving a row keeps its reviewer.
-// Point it at a draw.ts with the name beacon removed from the hash and it must fail: that is the check that it can see a grind.
+// Point it at a draw.ts with the name beacon removed from the hash, or with overBudget returning [], and it must fail: that is the check that it can see a grind.
 import { resolve } from "node:path";
 const mod = await import(resolve(process.argv[2] ?? `${import.meta.dir}/draw.ts`));
-const { draw, redraws, siblingWithdrawals, sha } = mod;
+const { draw, redraws, siblingWithdrawals, overBudget, sha } = mod;
 const rnd = () => sha(String(Math.random()) + performance.now());
 const pool = ["aeoess", "kuangmi-bit", "ogasurfproject-jpg", "pico_amdal", "queelius", "swipepredictbot", "coordinator-claude"];
 const names = pool.map((name) => ({ name, round: 1, randomness: rnd(), run: "sim" }));
@@ -72,4 +72,25 @@ for (const key of ["parallel", "reworded"] as const) {
   const h = runs5.filter((x) => x[key]).length;
   check(Math.abs(h / n - q) < 4 * qse, `${key === "parallel" ? `parallel filer (${k} rows, keep the best)` : "reworded refiler (5 refiles)"}: ${h} of ${n} got ${wanted} (${(h / n).toFixed(3)}; ${band})`);
 }
+// 6. Placeholder re-drawer (clawdsmith, 10-29): "Re-draw: x" passes any reason check, so the filer files a fresh row on the claim,
+// keeps whichever row drew the wanted reviewer and withdraws the other under "Re-draw: x", up to 5 times. Each withdrawal is charged to
+// claim + runner (overBudget); CI fails the commit over budget, so the filer keeps what it had. Bound in place: best of 2, 1-(1-q)^2.
+// Bound removed: best of 6, about 0.67, and this check goes red.
+const redrawer = () => {
+  const names = pool.map((name) => ({ name, round: 1, randomness: rnd(), run: "sim" }));
+  const fresh = (i: number) => { const r = { ...target, serial: `K001-0${i}` }; return { r, b: { serial: r.serial, claim: "K001", runner: "aeoess", round: 1, randomness: rnd(), run: "sim" } }; };
+  let kept = fresh(1), all: any[] = [...names, kept.b];
+  const events: any[] = [];
+  for (let t = 2; t <= 6 && draw([run(kept.r)], all).rows[0].reviewer !== wanted; t++) {
+    const next = fresh(t);
+    all = [...all, next.b];
+    const ev = { sha: `c${t}`, moved: [{ serial: kept.r.serial, claim: "K001", runner: "aeoess", how: "withdrawn" }] };
+    if (overBudget([...events, ev]).some((o: any) => o.sha === ev.sha)) break; // CI fails it; both rows stay, the first keeps its reviewer
+    events.push(ev);
+    kept = next;
+  }
+  return draw([run(kept.r)], all).rows[0].reviewer === wanted;
+};
+const hr = Array.from({ length: n }, redrawer).filter(Boolean).length, q2 = 1 - (1 - q) ** 2, q2se = Math.sqrt((q2 * (1 - q2)) / n);
+check(Math.abs(hr / n - q2) < 4 * q2se, `placeholder re-drawer (up to 5 "Re-draw: x"): ${hr} of ${n} got ${wanted} (${(hr / n).toFixed(3)}; best of 2 = ${q2.toFixed(3)}, fail outside ${(q2 - 4 * q2se).toFixed(3)}-${(q2 + 4 * q2se).toFixed(3)})`);
 if (fails) { console.log(`${fails} check(s) failed`); process.exit(1); }
