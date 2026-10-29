@@ -128,7 +128,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E010](entries/E010.md) | jq length on an API error object returns its key count, so an error reads as a small list | 2 | 1 | 0 | 0 |
 | [E011](entries/E011.md) | A parse loop that skips malformed rows reports on fewer rows than exist, and says nothing | 2 | 0 | 0 | 0 |
 | [E012](entries/E012.md) | The same accented word in NFC and NFD form does not match, so a search finds nothing and exits cleanly | 2 | 0 | 0 | 0 |
-| [E013](entries/E013.md) | A hyphen needle misses the en dash that typeset text actually contains | 1 | 1 | 0 | 0 |
+| [E013](entries/E013.md) | A hyphen needle misses the en dash that typeset text actually contains | 2 | 1 | 0 | 0 |
 | [E014](entries/E014.md) | A mutation probe placed in dead code is removed by the bundler, so both test arms run the same artifact | 1 | 0 | 0 | 0 |
 | [E015](entries/E015.md) | A grep for pretty-printed JSON finds nothing in compact JSON | 2 | 0 | 0 | 0 |
 | [E016](entries/E016.md) | One malformed JSON row makes SQLite json_extract fail the whole query, while a per-row parser skips it | 1 | 0 | 0 | 0 |
