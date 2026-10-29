@@ -45,6 +45,16 @@ export const redraws = (before: ReturnType<typeof draw>, after: ReturnType<typeo
   return changes;
 };
 
+// Sibling withdrawals (swipepredictbot, 10-29): a withdrawn serial whose runner still has a live row on the same claim. A runner who
+// files k rows on one claim in one push gets k draws; keeping the row with the reviewer they want and deleting the rest leaves exactly
+// these. Withdrawing your only row is free (the refile gets the serial back); a commit that adds a sibling withdrawal fails CI unless
+// it says "Re-draw: <reason>". Keyed on claim + runner, never on row text, so rewording a row changes nothing here.
+export const siblingWithdrawals = (runs: RunRow[], beacons: Beacon[]) => {
+  const live = new Set(runs.filter((x) => x.r.serial).map((x) => x.r.serial));
+  const has = new Set(runs.filter((x) => x.r.serial).map((x) => `${x.r.claim}\n${x.r.runner}`));
+  return beacons.filter((b) => b.serial && !live.has(b.serial) && has.has(`${b.claim}\n${b.runner}`)).map((b) => `${b.serial} (${b.runner})`);
+};
+
 // drand mainnet (League of Entropy, chained BLS, 30 s rounds). randomness = sha256(signature); CI re-fetches every round it relies on.
 export const DRAND = { genesis: 1595431050, period: 30, urls: ["https://api.drand.sh", "https://drand.cloudflare.com", "https://api2.drand.sh"] };
 export const roundTime = (round: number) => DRAND.genesis + (round - 1) * DRAND.period;

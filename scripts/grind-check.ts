@@ -4,7 +4,7 @@
 // Point it at a draw.ts with the name beacon removed from the hash and it must fail: that is the check that it can see a grind.
 import { resolve } from "node:path";
 const mod = await import(resolve(process.argv[2] ?? `${import.meta.dir}/draw.ts`));
-const { draw, redraws, sha } = mod;
+const { draw, redraws, siblingWithdrawals, sha } = mod;
 const rnd = () => sha(String(Math.random()) + performance.now());
 const pool = ["aeoess", "kuangmi-bit", "ogasurfproject-jpg", "pico_amdal", "queelius", "swipepredictbot", "coordinator-claude"];
 const names = pool.map((name) => ({ name, round: 1, randomness: rnd(), run: "sim" }));
@@ -46,4 +46,30 @@ const before = draw([run(target, 1), run(other, 2)], [...names, rowBeacon, b2]);
 const after = draw([run(other, 1), run({ ...target, env: "edited" }, 2)], [...names, rowBeacon, b2]);
 const moved = after.rows.find((x: any) => x.serial === "K001-01");
 check(moved.reviewer === before.rows[0].reviewer && redraws(before, after).length === 0, `edit + move: row K001-01 reviewer ${before.rows[0].reviewer} -> ${moved.reviewer}, ${redraws(before, after).length} re-draw(s)`);
+// 4. Parallel filer (swipepredictbot, 10-29): files k rows on one claim in one push, gets k serials and k draws, then tries to keep only
+// the row the wanted reviewer drew. If CI refuses that (sibling withdrawal), the filer withdraws all k and refiles one, which gets the
+// oldest withdrawn serial back (scripts/beacon.ts), so the best it can do is the first row's draw.
+// 5. Reworded refiler: files one row, and while the reviewer is not the wanted one withdraws it and refiles it reworded, 5 times.
+// The refile gets its own withdrawn serial back, so the rewording draws nothing new.
+const wanted = "swipepredictbot", k = 3, n = 3000;
+const sim = () => {
+  const names = pool.map((name) => ({ name, round: 1, randomness: rnd(), run: "sim" }));
+  const rows = Array.from({ length: k }, (_, i) => ({ ...target, serial: `K001-0${i + 1}`, env: `linux ${i}` }));
+  const bs = rows.map((r) => ({ serial: r.serial, claim: "K001", runner: "aeoess", round: 1, randomness: rnd(), run: "sim" }));
+  const all = [...names, ...bs];
+  const drawn = draw(rows.map((r, i) => run(r, i + 1)), all).rows;
+  const best = drawn.find((x: any) => x.reviewer === wanted) ?? drawn[0];
+  const keep = [run(rows.find((r) => r.serial === best.serial), 1)];
+  const blocked = siblingWithdrawals(keep, all).length > 0;
+  const parallel = (blocked ? drawn[0] : best).reviewer === wanted;
+  let refiled = drawn[0].reviewer;
+  for (let t = 0; t < 5 && refiled !== wanted; t++) refiled = draw([run({ ...rows[0], env: `reworded ${t}`, command: `y ${t}` })], all).rows[0].reviewer;
+  return { parallel, reworded: refiled === wanted };
+};
+const runs5 = Array.from({ length: n }, sim);
+const q = 1 / (pool.length - 1), qse = Math.sqrt((q * (1 - q)) / n), band = `fair share 1/${pool.length - 1} = ${q.toFixed(3)}, fail outside ${(q - 4 * qse).toFixed(3)}-${(q + 4 * qse).toFixed(3)}`;
+for (const key of ["parallel", "reworded"] as const) {
+  const h = runs5.filter((x) => x[key]).length;
+  check(Math.abs(h / n - q) < 4 * qse, `${key === "parallel" ? `parallel filer (${k} rows, keep the best)` : "reworded refiler (5 refiles)"}: ${h} of ${n} got ${wanted} (${(h / n).toFixed(3)}; ${band})`);
+}
 if (fails) { console.log(`${fails} check(s) failed`); process.exit(1); }
