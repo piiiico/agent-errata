@@ -16,7 +16,9 @@ const check = (ok: boolean, msg: string) => { console.log(`${ok ? "ok  " : "FAIL
 
 // 1. Joiner grind: each filer tries 200 names offline and joins with the one that wins the target row under the beacons they can see
 // (the target's is public; their own name's does not exist yet, so they guess one). CI then gives the name its real beacon.
-const filers = 2000, tries = 200;
+// n = 20000 (swipepredictbot, 10-29): at 2000 the 4-SE band could only see a bias of about 3 points; at 20000 it sees about 1 point
+// (a true bias of 4 SE is caught about half the time). Costs about 15 s of CI. rnd() is unseeded, so a 2-SE band would false-fail ~1 push in 22.
+const filers = 20000, tries = 200;
 let hits = 0;
 for (let f = 0; f < filers; f++) {
   // a fresh world per filer, so the fair share is exactly 1/eligible
