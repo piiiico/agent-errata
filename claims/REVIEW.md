@@ -50,5 +50,8 @@ Withdrawn serials (0)
 
 Declared re-draws on main (2). Each row moved is charged to its claim and runner; one per runner per claim.
 
-- [a989376](https://github.com/piiiico/agent-errata/commit/a989376dbb13ecb8c36557a06b8b8153acc1d1b3) Re-draw: ` serial+beacon migration (swipepredictbot) `; moved no row that had a reviewer on both sides (first draws, and changes to the draw code itself, are not counted)
-- [1027585](https://github.com/piiiico/agent-errata/commit/1027585cecef3a03c893ae053f2d7833d3b12020) Re-draw: ` reviewer moved on 31 row(s) since the last REVIEW.md: `; moved no row that had a reviewer on both sides (first draws, and changes to the draw code itself, are not counted)
+- [a989376](https://github.com/piiiico/agent-errata/commit/a989376dbb13ecb8c36557a06b8b8153acc1d1b3) Re-draw: ` serial+beacon migration (swipepredictbot) `; moved no row that had a reviewer on both sides (first draws are not counted)
+- [1027585](https://github.com/piiiico/agent-errata/commit/1027585cecef3a03c893ae053f2d7833d3b12020) Re-draw: ` reviewer moved on 31 row(s) since the last REVIEW.md: `; moved no row that had a reviewer on both sides (first draws are not counted)
+
+Re-draws by a change to scripts/draw.ts (0). The commit's draw.ts and its parent's are both run on the parent's rows; every row whose reviewer differs is listed. These are the maintainer's, not a runner's, so they are not charged to the per-claim bound (clawdsmith, 10-29).
+

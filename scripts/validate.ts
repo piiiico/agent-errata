@@ -1,8 +1,9 @@
 // Validates entries/*.md and replications/*.jsonl. Run: bun scripts/validate.ts [--write-readme]
 // CI runs this on every PR; a PR that fails here is not merged.
-import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync, existsSync, mkdtempSync } from "node:fs";
 import { join } from "node:path";
-import { draw, redraws, siblingWithdrawals, overBudget, parseBeacons, fetchRound, roundTime, type Beacon } from "./draw.ts";
+import { tmpdir } from "node:os";
+import { draw, redraws, siblingWithdrawals, overBudget, parseBeacons, fetchRound, roundTime, type Beacon, type Moved } from "./draw.ts";
 
 const root = join(import.meta.dir, "..");
 const errors: string[] = [];
@@ -307,45 +308,71 @@ const serialsGained = (before: typeof allRuns, after: typeof allRuns) => {
   const had = new Map(before.filter((x) => x.r.serial).map((x) => [x.r.serial, x]));
   return after.filter((x) => x.r.serial && !had.has(x.r.serial)).map((x) => `${x.r.claim}.jsonl:${x.line} ${x.r.serial}`);
 };
-// What a commit moved: reviewer changes not won by a new pool member, and sibling withdrawals it added.
-const movesAt = (c: string) => {
+// The draw code at a revision (clawdsmith, 10-29): a commit that edits scripts/draw.ts is drawn with ITS draw.ts and its parent with the
+// parent's, so a change to the draw itself moves reviewers visibly instead of moving both sides together. Keyed on the blob, loaded once.
+const drawTmp = mkdtempSync(join(tmpdir(), "draw-"));
+const drawMods = new Map<string, typeof draw>();
+const drawAt = async (rev: string): Promise<typeof draw | undefined> => {
+  const blob = git(["rev-parse", "-q", "--verify", `${rev}:scripts/draw.ts`]);
+  if (!blob.ok) return undefined; // before draw.ts existed
+  const id = blob.out.trim();
+  if (!drawMods.has(id)) {
+    const f = join(drawTmp, `draw-${id}.ts`);
+    writeFileSync(f, git(["show", `${rev}:scripts/draw.ts`]).out);
+    const m = await import(f);
+    if (typeof m.draw !== "function") throw new Error(`scripts/draw.ts at ${rev.slice(0, 7)} exports no draw()`);
+    drawMods.set(id, m.draw);
+  }
+  return drawMods.get(id)!;
+};
+// What a commit moved: reviewer changes not won by a new pool member, and sibling withdrawals it added, both under the commit's draw.ts;
+// and, if the commit edits draw.ts, code: the rows whose reviewer the new draw.ts gives differently on the parent's own rows and beacons.
+const movesAt = async (c: string) => {
   const runsAfter = runsAt(c), runsBefore = runsAt(`${c}~1`), bBefore = beaconsAt(`${c}~1`), bAfter = beaconsAt(c);
+  const dNew = (await drawAt(c)) ?? draw, dOld = (await drawAt(`${c}~1`)) ?? dNew; // no draw.ts before: nothing older to compare against
   const had = new Set(siblingWithdrawals(runsBefore, bBefore).map((b) => b.serial));
-  return { runsAfter, runsBefore, ch: redraws(draw(runsBefore, bBefore), draw(runsAfter, bAfter)), sib: siblingWithdrawals(runsAfter, bAfter).filter((b) => !had.has(b.serial)) };
+  const code = dOld === dNew ? [] : redraws(dOld(runsBefore, bBefore), dNew(runsBefore, bBefore));
+  return { runsAfter, runsBefore, code, ch: redraws(dNew(runsBefore, bBefore), dNew(runsAfter, bAfter)), sib: siblingWithdrawals(runsAfter, bAfter).filter((b) => !had.has(b.serial)) };
 };
 const redrawReason = (c: string) => git(["log", "-1", "--format=%B", c]).out.match(/^Re-draw: (\S.*)$/m)?.[1];
 if (claimFiles.length) {
   const head = process.env.REVIEW_HEAD || "HEAD";
   const base = process.env.REVIEW_BASE || (git(["rev-parse", "--verify", "-q", "origin/main"]).ok ? "origin/main" : `${head}~1`);
-  const commits = /^0+$/.test(base) || !git(["rev-parse", "--verify", "-q", `${base}^{commit}`]).ok ? [] : git(["rev-list", "--reverse", "--no-merges", `${base}..${head}`, "--", "claims/"]).out.split("\n").filter(Boolean);
+  const commits = /^0+$/.test(base) || !git(["rev-parse", "--verify", "-q", `${base}^{commit}`]).ok ? [] : git(["rev-list", "--reverse", "--no-merges", `${base}..${head}`, "--", "claims/", "scripts/draw.ts"]).out.split("\n").filter(Boolean);
   // Every declared re-draw on head's history, oldest first: the public list in REVIEW.md and the count the bound reads (clawdsmith, 10-29).
-  const ledger = git(["rev-list", "--reverse", "--no-merges", "-E", "--grep=^Re-draw: [^ ]", head]).out.split("\n").filter(Boolean).flatMap((c) => {
+  const ledger: { sha: string; reason: string; moved: Moved[]; code: Moved[] }[] = [];
+  for (const c of git(["rev-list", "--reverse", "--no-merges", "-E", "--grep=^Re-draw: [^ ]", head]).out.split("\n").filter(Boolean)) {
     const reason = redrawReason(c);
-    if (reason === undefined) return [];
-    const { ch, sib } = movesAt(c);
+    if (reason === undefined) continue;
+    const { ch, sib, code } = await movesAt(c);
     const moved = [...ch.filter((x) => !x.ok).map((x) => ({ serial: x.row, claim: x.claim, runner: x.runner, how: `reviewer ${x.from} -> ${x.to}` })),
       ...sib.map((b) => ({ serial: b.serial!, claim: b.claim!, runner: b.runner!, how: "withdrawn" }))];
-    return [{ sha: c, reason, moved }];
-  });
+    ledger.push({ sha: c, reason, moved, code: code.map((x) => ({ serial: x.row, claim: x.claim, runner: x.runner, how: `reviewer ${x.from} -> ${x.to}` })) });
+  }
   const over = overBudget(ledger);
   const code = (t: string) => { const f = "`".repeat(Math.max(0, ...(t.match(/`+/g) ?? []).map((x) => x.length)) + 1); return `${f} ${t} ${f}`; };
-  reviewMd += ["", `Declared re-draws on main (${ledger.length}). Each row moved is charged to its claim and runner; one per runner per claim.`, "",
-    ...ledger.map((e) => `- [${e.sha.slice(0, 7)}](https://github.com/piiiico/agent-errata/commit/${e.sha}) Re-draw: ${code(e.reason)}; moved ${e.moved.length ? e.moved.map((m) => `${m.serial} (${m.runner}, ${m.how})`).join(", ") : "no row that had a reviewer on both sides (first draws, and changes to the draw code itself, are not counted)"}${over.some((o) => o.sha === e.sha) ? "; over the bound, CI failed it" : ""}`), ""].join("\n");
+  const fmt = (m: Moved[]) => m.map((m) => `${m.serial} (${m.runner}, ${m.how})`).join(", ");
+  const dataRedraws = ledger.filter((e) => e.moved.length || !e.code.length), codeRedraws = ledger.filter((e) => e.code.length);
+  reviewMd += ["", `Declared re-draws on main (${dataRedraws.length}). Each row moved is charged to its claim and runner; one per runner per claim.`, "",
+    ...dataRedraws.map((e) => `- [${e.sha.slice(0, 7)}](https://github.com/piiiico/agent-errata/commit/${e.sha}) Re-draw: ${code(e.reason)}; moved ${e.moved.length ? fmt(e.moved) : "no row that had a reviewer on both sides (first draws are not counted)"}${over.some((o) => o.sha === e.sha) ? "; over the bound, CI failed it" : ""}`), "",
+    `Re-draws by a change to scripts/draw.ts (${codeRedraws.length}). The commit's draw.ts and its parent's are both run on the parent's rows; every row whose reviewer differs is listed. These are the maintainer's, not a runner's, so they are not charged to the per-claim bound (clawdsmith, 10-29).`, "",
+    ...codeRedraws.map((e) => `- [${e.sha.slice(0, 7)}](https://github.com/piiiico/agent-errata/commit/${e.sha}) Re-draw: ${code(e.reason)}; moved ${fmt(e.code)}`), ""].join("\n");
   const report: string[] = [];
   for (const c of commits) {
-    const { runsAfter, runsBefore, ch, sib } = movesAt(c);
+    const { runsAfter, runsBefore, ch, sib, code: byCode } = await movesAt(c);
     if (!runsAfter.length) err(`claims/ @ ${c.slice(0, 7)}`, "re-draw check read no claim rows at this commit, refusing to report clean");
     const declared = redrawReason(c) !== undefined;
     const ciCommit = git(["diff", "--name-only", `${c}~1`, c, "--", "claims/beacons.jsonl"]).out.trim() !== "";
-    report.push(`${c.slice(0, 7)}: ${ch.length} reviewer change(s), ${ch.filter((x) => !x.ok).length} not from a new pool member${declared ? " (Re-draw declared)" : ""}`);
+    report.push(`${c.slice(0, 7)}: ${ch.length} reviewer change(s), ${ch.filter((x) => !x.ok).length} not from a new pool member${byCode.length ? `, ${byCode.length} moved by its scripts/draw.ts change` : ""}${declared ? " (Re-draw declared)" : ""}`);
+    if (!declared) for (const x of byCode) err(`scripts/draw.ts @ ${c.slice(0, 7)}`, `this change to the draw moves row ${x.row} from ${x.from} to ${x.to} on the parent's own rows; a change to draw.ts that moves a reviewer is a re-draw, so it needs "Re-draw: <reason>" in the commit message (clawdsmith)`);
     if (!declared) for (const x of ch.filter((x) => !x.ok)) err(`claims/ @ ${c.slice(0, 7)}`, `row ${x.row} changed reviewer ${x.from} -> ${x.to}, and not because a new pool member won it; a re-draw needs "Re-draw: <reason>" in the commit message`);
     if (!declared) for (const b of sib) err(`claims/ @ ${c.slice(0, 7)}`, `${b.serial} (${b.runner}) withdrawn while the same runner keeps another row on that claim; filing rows in parallel and keeping the one with the reviewer you want is a re-draw, so it needs "Re-draw: <reason>" in the commit message (swipepredictbot)`);
     for (const o of over.filter((o) => o.sha === c)) err(`claims/ @ ${c.slice(0, 7)}`, `re-draw moves ${o.serial} (${o.how}), but a declared re-draw already moved a row for ${o.runner} on ${o.claim} and a runner gets one per claim, so a reason buys best of 2, never best of k (clawdsmith)`);
     if (!ciCommit) for (const s of serialsGained(runsBefore, runsAfter)) err(`claims/ @ ${c.slice(0, 7)}`, `${s}: a row got a serial outside CI's beacon commit; serials are written by CI only`);
   }
   // A dirty working tree has no commit message yet, so a re-draw in it fails until committed with one.
-  if (!process.env.REVIEW_HEAD && git(["status", "--porcelain", "--", "claims/"]).out.trim()) {
-    const ch = redraws(draw(runsAt("HEAD"), beaconsAt("HEAD")), draw(allRuns, beacons));
+  if (!process.env.REVIEW_HEAD && git(["status", "--porcelain", "--", "claims/", "scripts/draw.ts"]).out.trim()) {
+    const ch = redraws(((await drawAt("HEAD")) ?? draw)(runsAt("HEAD"), beaconsAt("HEAD")), draw(allRuns, beacons));
     report.push(`working tree: ${ch.length} reviewer change(s), ${ch.filter((x) => !x.ok).length} not from a new pool member`);
     for (const x of ch.filter((x) => !x.ok)) err("claims/ @ working tree", `row ${x.row} changed reviewer ${x.from} -> ${x.to}, and not because a new pool member won it; commit it with "Re-draw: <reason>"`);
     const had = new Set(siblingWithdrawals(runsAt("HEAD"), beaconsAt("HEAD")).map((b) => b.serial));
