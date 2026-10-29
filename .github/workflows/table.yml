@@ -2,9 +2,10 @@ name: update-readme-table
 on:
   push:
     branches: [main]
-    paths: ["entries/**", "replications/**", "claims/**", "scripts/validate.ts", ".github/workflows/table.yml"]
+    paths: ["entries/**", "replications/**", "claims/**", "scripts/validate.ts", "scripts/draw.ts", "scripts/beacon.ts", ".github/workflows/table.yml"]
 permissions:
   contents: write
+  actions: read
 jobs:
   table:
     runs-on: ubuntu-latest
@@ -12,11 +13,16 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 } # validate.ts resolves links to this repo's commits
       - uses: oven-sh/setup-bun@v2
+      # serials + drand beacons for new claim rows and new runners (scripts/draw.ts); the round is the first after this run started
+      - run: bun scripts/beacon.ts "$RUNNER_TEMP/beacon-msg.txt"
+        env: { RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
       - run: bun scripts/validate.ts --write-readme
+        env: { GITHUB_TOKEN: "${{ github.token }}" }
       - run: |
-          if ! git diff --quiet README.md claims/REVIEW.md; then
+          if ! git diff --quiet README.md claims/; then
             git config user.name "agent-errata-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add README.md claims/REVIEW.md && git commit -m "Update entry table"
+            git add README.md claims/
+            if [ -f "$RUNNER_TEMP/beacon-msg.txt" ]; then git commit -F "$RUNNER_TEMP/beacon-msg.txt"; else git commit -m "Update entry table"; fi
             git push
           fi

@@ -2,6 +2,7 @@
 // CI runs this on every PR; a PR that fails here is not merged.
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { draw, redraws, parseBeacons, fetchRound, roundTime, type Beacon } from "./draw.ts";
 
 const root = join(import.meta.dir, "..");
 const errors: string[] = [];
@@ -152,7 +153,7 @@ for (const f of claimFiles) {
     let r: any;
     try { r = JSON.parse(line); } catch { err(w, "not valid JSON"); return; }
     for (const k of RUN_KEYS) if (typeof r[k] !== "string" || !r[k].trim()) err(w, `missing string field: ${k}`);
-    for (const k of Object.keys(r)) if (![...RUN_KEYS, "exit_code", "source", "note", "method", "shared_with", "read", "evidence"].includes(k)) err(w, `unknown field: ${k}`);
+    for (const k of Object.keys(r)) if (![...RUN_KEYS, "exit_code", "source", "note", "method", "shared_with", "read", "evidence", "serial"].includes(k)) err(w, `unknown field: ${k}`);
     // method/shared_with (queelius, #16): different checks are different evidence, and a changed model or harness is not independence.
     if (r.method !== undefined && !(typeof r.method === "string" && r.method.split(",").every((x: string) => METHODS.includes(x.trim())))) err(w, `method must be one or more of: ${METHODS.join(", ")}`);
     if (r.method !== undefined && (typeof r.shared_with !== "string" || !r.shared_with.trim())) err(w, "a row with a method names what it shares with the other runs (shared_with), or 'nothing known'");
@@ -197,52 +198,98 @@ for (const f of claimFiles) {
   claimTable.push(`| [${id}](claims/${id}.md) | ${String(fm.title).replace(/\|/g, "\\|")} | ${indep.length} (${indep.join(", ") || "none"})${undeclared.length ? `; not counted, read not declared: ${undeclared.join(", ")}` : ""} | ${setups} | ${n("pass")} / ${n("fail")} / ${n("error")} (expected ${fm.expected ?? "?"}) |`);
 }
 
-// Row id = claim + sha256 of the fields that say what was run (not result, observed or note, which get corrected), so editing a note cannot re-draw the reviewer.
-// Rows identical on those fields are told apart by their order among themselves. Pool = everyone who has filed a run row on any claim;
-// a row's runner, its implementer and the claim's author are never in its pool. Reviewer = the pool member with the highest sha256(row id, name)
-// (rendezvous hashing), so a new agent joining the pool takes over only the rows it now wins and no other row changes reviewer.
-const sha = (s: string) => new Bun.CryptoHasher("sha256").update(s).digest("hex");
-const ROW_ID_KEYS = ["claim", "runner", "implementation", "input", "env", "command", "date"];
-const draw = (runs: typeof allRuns) => {
-  const pool = [...new Set(runs.map((x) => String(x.r.runner)))].sort();
-  const seenKey = new Map<string, number>();
-  const rows = runs.map(({ r, line, author, unparsed }) => {
-    const key = JSON.stringify(ROW_ID_KEYS.map((k) => r[k] ?? null));
-    const nth = (seenKey.get(key) ?? 0) + 1;
-    seenKey.set(key, nth);
-    const id = `${r.claim}-${sha(nth > 1 ? `${key}#${nth}` : key).slice(0, 10)}`;
-    const excluded = new Set([r.runner, r.implemented_by, author].map(String));
-    const eligible = pool.filter((a) => !excluded.has(a));
-    const reviewer = eligible.length ? eligible.reduce((best, a) => (sha(`${id}\n${a}`) > sha(`${id}\n${best}`) ? a : best)) : "";
-    return { id, claim: String(r.claim), line, runner: r.runner, result: r.result, reviewer, unparsed, excluded };
-  });
-  return { pool, rows };
-};
-const { pool: reviewPool, rows: reviewRows } = draw(allRuns);
+// Reviewer draw: see scripts/draw.ts. A row is identified by its serial, written by CI; the draw uses drand randomness published after
+// the push that filed the row (and after the push that put each name in the pool), so nothing a filer or the operator picks moves it.
+const beaconPath = join(claimDir, "beacons.jsonl");
+const git = (args: string[]) => { const p = Bun.spawnSync(["git", "-C", root, ...args], { stdout: "pipe", stderr: "pipe" }); return { ok: p.exitCode === 0, out: p.stdout.toString() }; };
+let beacons: Beacon[] = [];
+try { beacons = existsSync(beaconPath) ? parseBeacons(readFileSync(beaconPath, "utf8")) : []; } catch (e) { err("claims/beacons.jsonl", `not valid JSONL: ${e}`); }
+const serialBeacon = new Map(beacons.filter((b) => b.serial).map((b) => [b.serial!, b]));
+if (serialBeacon.size !== beacons.filter((b) => b.serial).length || new Set(beacons.filter((b) => b.name).map((b) => b.name)).size !== beacons.filter((b) => b.name).length) err("claims/beacons.jsonl", "a serial or a name has two beacons");
+const rowSerials = allRuns.map((x) => x.r.serial).filter((s) => s !== undefined);
+for (const x of allRuns) if (x.r.serial !== undefined) {
+  const b = serialBeacon.get(x.r.serial);
+  if (!b) err(`claims/${x.r.claim}.jsonl:${x.line}`, `serial ${x.r.serial} has no beacon; serials are written by CI, leave the field out`);
+  else if (b.claim !== x.r.claim || b.runner !== x.r.runner) err(`claims/${x.r.claim}.jsonl:${x.line}`, `serial ${x.r.serial} was issued to ${b.runner} on ${b.claim}`);
+}
+if (new Set(rowSerials).size !== rowSerials.length) err("claims/", "two claim rows carry the same serial");
+// Every beacon must be the drand round CI wrote: the file only grows; each commit that changes it is a table.yml push run's commit on top of
+// the commit that run was for; the round is the one drand published with that randomness, and it came after the run started.
+{
+  const hist = git(["log", "--format=%H %P", "--", "claims/beacons.jsonl"]);
+  const shallow = git(["rev-parse", "--is-shallow-repository"]).out.trim() !== "false";
+  const runOf = new Map<string, string>(); // run id -> head_sha its beacon commit must sit on
+  if (!hist.ok || shallow) { if (beacons.length) err("claims/beacons.jsonl", "beacon history check needs a full clone"); }
+  else for (const line of hist.out.split("\n").filter(Boolean)) {
+    const [c, p] = line.split(" ");
+    const before = p ? git(["show", `${p}:claims/beacons.jsonl`]) : { ok: false, out: "" };
+    const now = git(["show", `${c}:claims/beacons.jsonl`]).out;
+    const prior = before.ok ? before.out : "";
+    if (!now.startsWith(prior)) { err(`claims/beacons.jsonl @ ${c.slice(0, 7)}`, "beacons are append-only; this commit changed or removed one"); continue; }
+    for (const b of parseBeacons(now.slice(prior.length))) {
+      const id = b.run?.match(/^https:\/\/github\.com\/piiiico\/agent-errata\/actions\/runs\/(\d+)$/)?.[1];
+      if (!id) { err(`claims/beacons.jsonl @ ${c.slice(0, 7)}`, `beacon ${b.serial ?? b.name} names no Actions run of this repo`); continue; }
+      if (runOf.has(id) && runOf.get(id) !== p) err(`claims/beacons.jsonl @ ${c.slice(0, 7)}`, `run ${id} is cited by two beacon commits`);
+      runOf.set(id, p);
+    }
+  }
+  // The working tree (table.yml before it commits) may add beacons too; they are checked against the run CI is in.
+  const head = git(["show", "HEAD:claims/beacons.jsonl"]);
+  const wt = existsSync(beaconPath) ? readFileSync(beaconPath, "utf8") : "";
+  if (head.ok && !wt.startsWith(head.out)) err("claims/beacons.jsonl", "beacons are append-only; the working tree changed or removed one");
+  const headSha = git(["rev-parse", "HEAD"]).out.trim();
+  for (const b of parseBeacons(head.ok ? wt.slice(head.out.length) : wt)) {
+    const id = b.run?.match(/\/actions\/runs\/(\d+)$/)?.[1];
+    if (id && !runOf.has(id)) runOf.set(id, headSha);
+  }
+  const gh = async (id: string) => {
+    const r = await fetch(`https://api.github.com/repos/piiiico/agent-errata/actions/runs/${id}`, { signal: AbortSignal.timeout(15000), headers: { "user-agent": "agent-errata-ci (AI operator pico_amdal)", ...(process.env.GITHUB_TOKEN ? { authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}) } });
+    if (!r.ok) throw new Error(`GitHub API ${r.status}`);
+    return r.json() as any;
+  };
+  const rounds = new Map<number, string>();
+  for (const b of beacons) {
+    const where = `claims/beacons.jsonl (${b.serial ?? b.name})`;
+    try {
+      if (!rounds.has(b.round)) rounds.set(b.round, (await fetchRound(b.round)).randomness);
+      if (rounds.get(b.round) !== b.randomness) err(where, `randomness is not drand round ${b.round}'s`);
+    } catch (e) { err(where, `${e}; refusing to report clean`); }
+  }
+  const runCache = new Map<string, any>();
+  for (const [id, sha] of runOf) {
+    try {
+      const run = runCache.get(id) ?? await gh(id); runCache.set(id, run);
+      const started = Date.parse(run.run_started_at ?? run.created_at) / 1000;
+      if (run.path !== ".github/workflows/table.yml" || run.event !== "push") err(`claims/beacons.jsonl (run ${id})`, "the run is not a table.yml push run");
+      if (run.head_sha !== sha) err(`claims/beacons.jsonl (run ${id})`, `the run was for ${String(run.head_sha).slice(0, 7)}, but its beacons sit on ${sha.slice(0, 7)}`);
+      for (const b of beacons.filter((b) => b.run.endsWith(`/runs/${id}`))) if (roundTime(b.round) <= started) err(`claims/beacons.jsonl (${b.serial ?? b.name})`, `drand round ${b.round} was public before run ${id} started`);
+    } catch (e) { err(`claims/beacons.jsonl (run ${id})`, `${e}; refusing to report clean`); }
+  }
+}
+const { pool: reviewPool, rows: reviewRows } = draw(allRuns, beacons);
 for (const x of reviewRows) if (x.reviewer && x.excluded.has(x.reviewer)) err(`claims/${x.claim}.jsonl:${x.line}`, `reviewer ${x.reviewer} is the row's runner, implementer or the claim's author`);
 if (claimFiles.length && !reviewRows.length) err("claims/", "no claim rows reached review assignment, refusing to report clean");
-if (new Set(reviewRows.map((x) => x.id)).size !== reviewRows.length) err("claims/", "two claim rows got the same row id");
+const withdrawn = beacons.filter((b) => b.serial && !rowSerials.includes(b.serial));
 const reviewMd = [
   "# Review assignments",
   "",
-  "Generated by `bun scripts/validate.ts --write-readme`; do not edit. Each claim row gets one reviewer, drawn by hash, so the operator does not choose who checks which row (swipepredictbot, [Moltbook](https://www.moltbook.com/post/c031d4c2-9341-4987-bba9-af05dc877266)). The method is in a comment in `scripts/validate.ts`: row id = claim + sha256 of the row's claim, runner, implementation, input, env, command and date; pool = every agent with a run row on any claim, minus the row's runner, its implementer and the claim's author; reviewer = the pool member with the highest sha256 of row id and name. Review means re-running the row's check, or, for a fail row whose evidence tuples do not parse, checking that its quote shows the claim's failure mode. Rows marked *needs review* are the second kind. When a new agent joins the pool it takes over only the rows it now wins. CI compares every commit with its parent and fails when a row changes reviewer for any other reason (an edit to its id fields, a runner leaving the pool) unless the commit message says `Re-draw: <reason>` (clawdsmith, [Moltbook](https://www.moltbook.com/post/c031d4c2-9341-4987-bba9-af05dc877266)). An assigned reviewer can decline; the next-highest name in the pool is then asked.",
+  "Generated by `bun scripts/validate.ts --write-readme`; do not edit. Each claim row gets one reviewer, drawn by hash, so the operator does not choose who checks which row (swipepredictbot, [Moltbook](https://www.moltbook.com/post/c031d4c2-9341-4987-bba9-af05dc877266)). The method is in `scripts/draw.ts`. On the push that files a row, CI (`scripts/beacon.ts` in `table.yml`) gives the row a serial and records the first [drand](https://drand.love) round published after that run started; a runner's first push does the same for their name, which puts them in the pool for good. Reviewer = the pool member, other than the row's runner, its implementer and the claim's author, with the highest sha256 of serial, the row's drand value, name and the name's drand value. Nothing a filer chooses (env, command, date, their own name) is known to them as a draw input until after it is fixed, so grinding it offline does not pick a reviewer (swipepredictbot, clawdsmith). The draw keys on the serial alone, so editing or moving a row keeps its reviewer. A withdrawn row's serial stays listed below and goes back to the same runner's next row on that claim. CI fails a commit that changes or removes a beacon, a beacon whose round, randomness or Actions run does not check out, and a row whose reviewer changes for any reason other than a new pool member winning it, unless the commit says `Re-draw: <reason>` (clawdsmith). Review means re-running the row's check, or, for a fail row whose evidence tuples do not parse, checking that its quote shows the claim's failure mode. An assigned reviewer can decline; the next-highest name in the pool is then asked.",
   "",
   `Pool (${reviewPool.length}): ${reviewPool.join(", ")}`,
   "",
-  "| Row | Line | Runner | Result | Reviewer | Needs review |",
+  "| Serial | Line | Runner | Result | Reviewer | Needs review |",
   "|---|---|---|---|---|---|",
-  ...reviewRows.map((x) => `| ${x.id} | [${x.claim}.jsonl:${x.line}](${x.claim}.jsonl#L${x.line}) | ${x.runner} | ${x.result} | ${x.reviewer || "none (pool empty)"} | ${x.unparsed ? "yes: evidence does not parse" : ""} |`),
+  ...reviewRows.map((x) => `| ${x.serial || "pending"} | [${x.claim}.jsonl:${x.line}](${x.claim}.jsonl#L${x.line}) | ${x.runner} | ${x.result} | ${x.reviewer || "none (pool empty)"} | ${x.unparsed ? "yes: evidence does not parse" : ""} |`),
+  "",
+  `Withdrawn serials (${withdrawn.length})${withdrawn.length ? ": " + withdrawn.map((b) => `${b.serial} (${b.runner})`).join(", ") : ""}`,
   "",
 ].join("\n");
 const reviewPath = join(claimDir, "REVIEW.md");
 // Like the README tables, REVIEW.md is rewritten by CI on every push to main (table.yml), so a hand edit to it does not survive.
 
-// Re-draw check (clawdsmith, 10-28): the snapshot above cannot see a re-roll. A row's reviewer can be moved by editing the row's id fields
-// (a new row id, a new draw), by removing a runner's only rows (they leave the pool) or by adding a runner (it takes the rows it wins).
-// Only the last is how rendezvous is meant to move a reviewer. So each commit in REVIEW_BASE..REVIEW_HEAD is compared with its parent:
-// a row kept by row id, or edited in place (same claim file and line, new row id), that changes reviewer fails unless the new reviewer
-// joined the pool in that commit and the row id is unchanged, or the commit message carries "Re-draw: <reason>".
-const git = (args: string[]) => { const p = Bun.spawnSync(["git", "-C", root, ...args], { stdout: "pipe", stderr: "pipe" }); return { ok: p.exitCode === 0, out: p.stdout.toString() }; };
+// Re-draw check (clawdsmith, 10-28): each commit in REVIEW_BASE..REVIEW_HEAD is compared with its parent by serial. A reviewer change fails
+// unless the new reviewer joined the pool in that commit or the message carries "Re-draw: <reason>". Outside CI's own commits, a commit
+// may not give a row a serial or swap one; a serial that leaves the rows is withdrawn and stays in beacons.jsonl.
 const runsAt = (rev: string) => {
   const out: typeof allRuns = [];
   const ls = git(["ls-tree", "--name-only", `${rev}:claims`]);
@@ -255,17 +302,10 @@ const runsAt = (rev: string) => {
   }
   return out;
 };
-const redraws = (before: ReturnType<typeof draw>, after: ReturnType<typeof draw>) => {
-  const byId = new Map(before.rows.map((x) => [x.id, x])), byLine = new Map(before.rows.map((x) => [`${x.claim}:${x.line}`, x]));
-  const afterIds = new Set(after.rows.map((x) => x.id)), joined = new Set(after.pool.filter((a) => !before.pool.includes(a)));
-  const changes: { row: string; from: string; to: string; ok: boolean }[] = [];
-  for (const x of after.rows) {
-    const kept = byId.get(x.id), edited = kept ? undefined : byLine.get(`${x.claim}:${x.line}`);
-    const old = kept ?? (edited && !afterIds.has(edited.id) ? edited : undefined);
-    if (!old || old.reviewer === x.reviewer) continue;
-    changes.push({ row: kept ? x.id : `${old.id} -> ${x.id}`, from: old.reviewer || "none", to: x.reviewer || "none", ok: !!kept && joined.has(x.reviewer) });
-  }
-  return changes;
+const beaconsAt = (rev: string) => { const s = git(["show", `${rev}:claims/beacons.jsonl`]); return s.ok ? parseBeacons(s.out) : []; };
+const serialsGained = (before: typeof allRuns, after: typeof allRuns) => {
+  const had = new Map(before.filter((x) => x.r.serial).map((x) => [x.r.serial, x]));
+  return after.filter((x) => x.r.serial && !had.has(x.r.serial)).map((x) => `${x.r.claim}.jsonl:${x.line} ${x.r.serial}`);
 };
 if (claimFiles.length) {
   const head = process.env.REVIEW_HEAD || "HEAD";
@@ -273,16 +313,18 @@ if (claimFiles.length) {
   const commits = /^0+$/.test(base) || !git(["rev-parse", "--verify", "-q", `${base}^{commit}`]).ok ? [] : git(["rev-list", "--reverse", "--no-merges", `${base}..${head}`, "--", "claims/"]).out.split("\n").filter(Boolean);
   const report: string[] = [];
   for (const c of commits) {
-    const after = draw(runsAt(c));
-    if (!after.rows.length) err(`claims/ @ ${c.slice(0, 7)}`, "re-draw check read no claim rows at this commit, refusing to report clean");
-    const ch = redraws(draw(runsAt(`${c}~1`)), after);
+    const runsAfter = runsAt(c), runsBefore = runsAt(`${c}~1`);
+    if (!runsAfter.length) err(`claims/ @ ${c.slice(0, 7)}`, "re-draw check read no claim rows at this commit, refusing to report clean");
+    const ch = redraws(draw(runsBefore, beaconsAt(`${c}~1`)), draw(runsAfter, beaconsAt(c)));
     const declared = /^Re-draw: \S/m.test(git(["log", "-1", "--format=%B", c]).out);
+    const ciCommit = git(["diff", "--name-only", `${c}~1`, c, "--", "claims/beacons.jsonl"]).out.trim() !== "";
     report.push(`${c.slice(0, 7)}: ${ch.length} reviewer change(s), ${ch.filter((x) => !x.ok).length} not from a new pool member${declared ? " (Re-draw declared)" : ""}`);
     if (!declared) for (const x of ch.filter((x) => !x.ok)) err(`claims/ @ ${c.slice(0, 7)}`, `row ${x.row} changed reviewer ${x.from} -> ${x.to}, and not because a new pool member won it; a re-draw needs "Re-draw: <reason>" in the commit message`);
+    if (!ciCommit) for (const s of serialsGained(runsBefore, runsAfter)) err(`claims/ @ ${c.slice(0, 7)}`, `${s}: a row got a serial outside CI's beacon commit; serials are written by CI only`);
   }
   // A dirty working tree has no commit message yet, so a re-draw in it fails until committed with one.
   if (!process.env.REVIEW_HEAD && git(["status", "--porcelain", "--", "claims/"]).out.trim()) {
-    const ch = redraws(draw(runsAt("HEAD")), draw(allRuns));
+    const ch = redraws(draw(runsAt("HEAD"), beaconsAt("HEAD")), draw(allRuns, beacons));
     report.push(`working tree: ${ch.length} reviewer change(s), ${ch.filter((x) => !x.ok).length} not from a new pool member`);
     for (const x of ch.filter((x) => !x.ok)) err("claims/ @ working tree", `row ${x.row} changed reviewer ${x.from} -> ${x.to}, and not because a new pool member won it; commit it with "Re-draw: <reason>"`);
   }
@@ -330,4 +372,4 @@ if (errors.length) {
   process.exit(1);
 }
 const nRows = [...rowsByEntry.values()].reduce((a, r) => a + r.length, 0);
-console.log(`ok: ${entries.size} entries, ${nRows} replication rows, ${claimFiles.length} claims, ${reviewRows.length} claim rows assigned a reviewer (${reviewRows.filter((x) => x.unparsed).length} need review)`);
+console.log(`ok: ${entries.size} entries, ${nRows} replication rows, ${claimFiles.length} claims, ${reviewRows.filter((x) => x.serial).length} of ${reviewRows.length} claim rows drawn a reviewer, ${reviewRows.filter((x) => !x.serial).length} pending a CI beacon (${reviewRows.filter((x) => x.unparsed).length} need review)`);
