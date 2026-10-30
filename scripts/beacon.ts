@@ -5,7 +5,7 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
 import { entries, intentBlob, boundRound } from "./witness.ts";
-import { draw, fetchRound, parseBeacons, roundTime, DRAND, type Beacon, type RunRow } from "./draw.ts";
+import { draw, assignSerials, fetchRound, parseBeacons, roundTime, type Beacon, type RunRow } from "./draw.ts";
 
 const dir = join(import.meta.dir, "..", "claims"), bf = join(dir, "beacons.jsonl");
 const run = process.env.RUN_URL ?? "";
@@ -13,22 +13,17 @@ if (!/^https:\/\/github\.com\/piiiico\/agent-errata\/actions\/runs\/\d+/.test(ru
 const beacons = existsSync(bf) ? parseBeacons(readFileSync(bf, "utf8")) : [];
 const files = readdirSync(dir).filter((f) => /^K\d{3}\.jsonl$/.test(f)).sort();
 const rows = files.map((f) => ({ f, lines: readFileSync(join(dir, f), "utf8").split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l)) }));
-const onRows = new Set(rows.flatMap((x) => x.lines.map((r) => r.serial)).filter(Boolean));
-const pendingRows = rows.flatMap((x) => x.lines.filter((r) => !r.serial));
+const pending = assignSerials(rows.flatMap((x) => x.lines), beacons);
 const runners = [...new Set(rows.flatMap((x) => x.lines.map((r) => String(r.runner))))].sort();
 const newNames = runners.filter((n) => !beacons.some((b) => b.name === n));
-if (!pendingRows.length && !newNames.length) { console.log("beacon: nothing pending"); process.exit(0); }
+if (!pending.length && !newNames.length) { console.log("beacon: nothing pending"); process.exit(0); }
 
-// Serials first: deterministic from the file (the claim's next number, or a refile's old serial), never from a round.
+// Serials first: deterministic from the file (scripts/draw.ts assignSerials), never from a round. validate.ts replays this at the commit
+// the earliest intent entry was signed at, so the serial stays tied to the row (claim + runner) that was there when it was signed.
 const added: Beacon[] = [];
-for (const r of pendingRows) {
-  // Refile reuse: the oldest withdrawn serial of the same claim and runner, else the claim's next number. Reuse draws nothing new.
-  const back = beacons.find((b) => b.serial && b.claim === r.claim && b.runner === r.runner && !onRows.has(b.serial));
-  if (back) { r.serial = back.serial; onRows.add(back.serial!); continue; }
-  const n = [...beacons, ...added].filter((b) => b.claim === r.claim).length + 1;
-  r.serial = `${r.claim}-${String(n).padStart(2, "0")}`;
-  onRows.add(r.serial);
-  added.push({ serial: r.serial, claim: r.claim, runner: String(r.runner), round: 0, randomness: "", run });
+for (const { r, serial, fresh } of pending) {
+  r.serial = serial;
+  if (fresh) added.push({ serial, claim: r.claim, runner: String(r.runner), round: 0, randomness: "", run });
 }
 for (const name of newNames) added.push({ name, round: 0, randomness: "", run });
 

@@ -7,7 +7,7 @@
 // too late for its round.
 // Usage: bun scripts/witness.ts <commit-sha> <round-unix-time> <parent-sha> [identity] — prints ok or the reasons, exits 1 on fail.
 import { X509Certificate, createHash, createPublicKey, verify } from "node:crypto";
-import { DRAND } from "./draw.ts";
+import { DRAND, assignSerials, parseBeacons } from "./draw.ts";
 
 export const WINDOW = 900;
 export const IDENTITY = "https://github.com/piiiico/agent-errata/.github/workflows/table.yml@refs/heads/main";
@@ -112,6 +112,31 @@ export const bindFail = (b: { round: number; witness?: number }, ok: Entry[]) =>
   !ok.length ? "no Rekor intent entry signed before its round"
   : b.round !== boundRound(ok[0].integratedTime) || b.witness !== ok[0].logIndex ? `round ${b.round} (entry ${b.witness}) is not the one its earliest intent entry ${ok[0].logIndex} binds: ${boundRound(ok[0].integratedTime)}`
   : "";
+// Runner bound at signing (swipepredictbot, 10-30). The intent blob names only the serial, and a cancelled run commits no beacon, so the
+// owner could sign K001-13 with runner A's row, wait for the bound round, then refile the row as runner B and get K001-13 again with
+// a different draw. So the earliest entry's cert also counts: Fulcio ext 3 is the commit the signing run was at, and beacon.ts replayed
+// there (claims/*.jsonl and beacons.jsonl as of that commit) must give this serial to this claim and runner. Only the earliest entry is
+// replayed; a failing one is red, never skipped for a later one. tree(at): the claim files' texts in file order and beacons.jsonl, or
+// undefined if the commit is not in the clone.
+export const rowFail = (b: { serial?: string; claim?: string; runner?: string }, at: string | undefined, tree: (at: string) => { claims: string[]; beacons: string } | undefined) => {
+  if (!b.serial) return "";
+  if (!at || !/^[0-9a-f]{40}$/.test(at)) return `earliest intent entry names no commit (${at})`;
+  const t = tree(at);
+  if (!t) return `earliest intent entry was signed at ${at.slice(0, 7)}, which is not in this repository`;
+  const rows = t.claims.flatMap((s) => s.split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l)));
+  const r = assignSerials(rows, parseBeacons(t.beacons)).find((x) => x.fresh && x.serial === b.serial)?.r;
+  if (!r) return `at ${at.slice(0, 7)}, where its earliest intent entry was signed, no row gets serial ${b.serial}`;
+  if (r.claim !== b.claim || String(r.runner) !== b.runner) return `serial ${b.serial} was signed at ${at.slice(0, 7)} for ${r.runner} on ${r.claim}, but the beacon names ${b.runner} on ${b.claim}`;
+  return "";
+};
+// tree for rowFail from a git clone at root.
+export const treeAt = (root: string) => (at: string) => {
+  const git = (...a: string[]) => { const p = Bun.spawnSync(["git", "-C", root, ...a], { stdout: "pipe", stderr: "pipe" }); return { ok: p.exitCode === 0, out: p.stdout.toString() }; };
+  const ls = git("ls-tree", "--name-only", at, "claims/");
+  if (!ls.ok) return undefined;
+  const bj = git("show", `${at}:claims/beacons.jsonl`);
+  return { claims: ls.out.split("\n").filter((f) => /^claims\/K\d{3}\.jsonl$/.test(f)).sort().map((f) => git("show", `${at}:${f}`).out), beacons: bj.ok ? bj.out : "" };
+};
 
 if (import.meta.main) {
   const [sha, rt, parent, identity] = process.argv.slice(2);

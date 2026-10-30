@@ -31,6 +31,21 @@ export const draw = (runs: RunRow[], beacons: Beacon[]) => {
   return { pool, rows };
 };
 
+// Serial assignment, run by beacon.ts and replayed by validate.ts at the commit an intent entry was signed at, so the two cannot fork.
+// rows: every claim row in file order (K001.jsonl first). Each row without a serial gets the oldest withdrawn serial of its claim and runner
+// (reuse, draws nothing new, fresh=false), else the claim's next number (beacons for the claim + new ones so far + 1).
+export const assignSerials = (rows: any[], beacons: Beacon[]) => {
+  const onRows = new Set(rows.map((r) => r.serial).filter(Boolean));
+  const out: { r: any; serial: string; fresh: boolean }[] = [];
+  for (const r of rows.filter((r) => !r.serial)) {
+    const back = beacons.find((b) => b.serial && b.claim === r.claim && b.runner === r.runner && !onRows.has(b.serial));
+    const serial = back?.serial ?? `${r.claim}-${String(beacons.filter((b) => b.claim === r.claim).length + out.filter((x) => x.fresh && x.r.claim === r.claim).length + 1).padStart(2, "0")}`;
+    onRows.add(serial);
+    out.push({ r, serial, fresh: !back });
+  }
+  return out;
+};
+
 // Reviewer changes between two states, matched by serial alone, so moving or editing a row cannot hide one (clawdsmith, 10-28).
 // A change is expected only when the new reviewer joined the pool in between; pending -> drawn is the first draw, not a change.
 export const redraws = (before: ReturnType<typeof draw>, after: ReturnType<typeof draw>) => {
