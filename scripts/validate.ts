@@ -1,12 +1,13 @@
 // Validates entries/*.md and replications/*.jsonl. Run: bun scripts/validate.ts [--write-readme]
-// CI runs this on every PR; a PR that fails here is not merged.
-import { readdirSync, readFileSync, writeFileSync, existsSync, mkdtempSync } from "node:fs";
+// CI runs main's copy of this on every PR (validate-pr.yml, pull_request_target), so a PR cannot edit the check it is held to (clawdsmith, 10-29).
+import { readdirSync, readFileSync, writeFileSync, existsSync, mkdtempSync, chmodSync, copyFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { witness, entries as rekorEntries, intentBlob, bindFail, WINDOW, MARGIN } from "./witness.ts";
 import { draw, redraws, siblingWithdrawals, overBudget, parseBeacons, fetchRound, roundTime, type Beacon, type Moved } from "./draw.ts";
 
-const root = join(import.meta.dir, "..");
+// VALIDATE_ROOT: the checkout to check, when this script is main's copy run over a PR's head (validate-pr.yml).
+const root = process.env.VALIDATE_ROOT || join(import.meta.dir, "..");
 const errors: string[] = [];
 const err = (where: string, msg: string) => errors.push(`${where}: ${msg}`);
 
@@ -218,7 +219,8 @@ for (const x of allRuns) if (x.r.serial !== undefined) {
 if (new Set(rowSerials).size !== rowSerials.length) err("claims/", "two claim rows carry the same serial");
 // Every beacon must be the drand round CI wrote: the file only grows; each commit that changes it is a table.yml push run's commit on top of
 // the commit that run was for; the round is the one drand published with that randomness, and it came after the run started.
-{
+// REDRAW_ONLY: the sandbox job in validate-pr.yml runs without a token and leaves this block to the job that has one.
+if (!process.env.REDRAW_ONLY) {
   const hist = git(["log", "--format=%H %P", "--", "claims/beacons.jsonl"]);
   const shallow = git(["rev-parse", "--is-shallow-repository"]).out.trim() !== "false";
   const runOf = new Map<string, string>(); // run id -> head_sha its beacon commit must sit on
@@ -317,7 +319,7 @@ let reviewMd = [
 const reviewPath = join(claimDir, "REVIEW.md");
 // Like the README tables, REVIEW.md is rewritten by CI on every push to main (table.yml), so a hand edit to it does not survive.
 
-// Re-draw check (clawdsmith, 10-28): each commit in REVIEW_BASE..REVIEW_HEAD is compared with its parent by serial. A reviewer change fails
+// Re-draw check (clawdsmith, 10-28): each commit from main's merge-base with REVIEW_HEAD up to it is compared with its parent by serial. A reviewer change fails
 // unless the new reviewer joined the pool in that commit or the message carries "Re-draw: <reason>". Outside CI's own commits, a commit
 // may not give a row a serial or swap one; a serial that leaves the rows is withdrawn and stays in beacons.jsonl.
 const runsAt = (rev: string) => {
@@ -339,18 +341,36 @@ const serialsGained = (before: typeof allRuns, after: typeof allRuns) => {
 };
 // The draw code at a revision (clawdsmith, 10-29): a commit that edits scripts/draw.ts is drawn with ITS draw.ts and its parent with the
 // parent's, so a change to the draw itself moves reviewers visibly instead of moving both sides together. Keyed on the blob, loaded once.
+// A draw.ts other than this one runs in a child process (scripts/draw-child.ts), never in this one, so it cannot patch process.exit or
+// anything else the check reports through (clawdsmith, 10-30). DRAW_SANDBOX prefixes that child (validate-pr.yml: another user, no token).
+// DRAW_FOREIGN=defer (the job that holds a token) does not run a draw.ts that is not on main's history; the sandbox job runs it.
 const drawTmp = mkdtempSync(join(tmpdir(), "draw-"));
+chmodSync(drawTmp, 0o755);
+copyFileSync(join(import.meta.dir, "draw-child.ts"), join(drawTmp, "draw-child.ts"));
+const ownDraw = readFileSync(join(import.meta.dir, "draw.ts"), "utf8");
+const childCmd = (process.env.DRAW_SANDBOX || process.execPath).split(" ").filter(Boolean);
+const onMain = new Set<string>();
+const deferred = new Set<string>();
+if (process.env.DRAW_FOREIGN === "defer") for (const c of git(["rev-list", process.env.REVIEW_MAIN || "origin/main", "--", "scripts/draw.ts"]).out.split("\n").filter(Boolean)) {
+  const b = git(["rev-parse", "-q", "--verify", `${c}:scripts/draw.ts`]);
+  if (b.ok) onMain.add(b.out.trim());
+}
 const drawMods = new Map<string, typeof draw>();
 const drawAt = async (rev: string): Promise<typeof draw | undefined> => {
   const blob = git(["rev-parse", "-q", "--verify", `${rev}:scripts/draw.ts`]);
   if (!blob.ok) return undefined; // before draw.ts existed
   const id = blob.out.trim();
+  const src = git(["show", `${rev}:scripts/draw.ts`]).out;
+  if (src === ownDraw) return draw;
+  if (process.env.DRAW_FOREIGN === "defer" && !onMain.has(id)) { deferred.add(rev); return draw; }
   if (!drawMods.has(id)) {
     const f = join(drawTmp, `draw-${id}.ts`);
-    writeFileSync(f, git(["show", `${rev}:scripts/draw.ts`]).out);
-    const m = await import(f);
-    if (typeof m.draw !== "function") throw new Error(`scripts/draw.ts at ${rev.slice(0, 7)} exports no draw()`);
-    drawMods.set(id, m.draw);
+    writeFileSync(f, src, { mode: 0o644 });
+    drawMods.set(id, ((runs: any, beacons: any) => {
+      const p = Bun.spawnSync([...childCmd, join(drawTmp, "draw-child.ts"), f], { cwd: drawTmp, stdin: Buffer.from(JSON.stringify({ runs, beacons })), stdout: "pipe", stderr: "pipe", timeout: 120_000 });
+      if (p.exitCode !== 0) throw new Error(`scripts/draw.ts at ${rev.slice(0, 7)}: child exited ${p.exitCode}: ${p.stderr.toString().slice(0, 500)}`);
+      return JSON.parse(p.stdout.toString());
+    }) as typeof draw);
   }
   return drawMods.get(id)!;
 };
@@ -365,9 +385,14 @@ const movesAt = async (c: string) => {
 };
 const redrawReason = (c: string) => git(["log", "-1", "--format=%B", c]).out.match(/^Re-draw: (\S.*)$/m)?.[1];
 if (claimFiles.length) {
+  // The range is every commit since head's merge-base with main, computed here (clawdsmith, 10-30): REVIEW_MAIN names main's tip (the PR
+  // job reads it from its own checkout of main; a push run passes the tip before the push), so a stale or retargeted PR base skips nothing.
   const head = process.env.REVIEW_HEAD || "HEAD";
-  const base = process.env.REVIEW_BASE || (git(["rev-parse", "--verify", "-q", "origin/main"]).ok ? "origin/main" : `${head}~1`);
-  const commits = /^0+$/.test(base) || !git(["rev-parse", "--verify", "-q", `${base}^{commit}`]).ok ? [] : git(["rev-list", "--reverse", "--no-merges", `${base}..${head}`, "--", "claims/", "scripts/draw.ts"]).out.split("\n").filter(Boolean);
+  const main = process.env.REVIEW_MAIN || (git(["rev-parse", "--verify", "-q", "origin/main"]).ok ? "origin/main" : "");
+  const mb = main && !/^0+$/.test(main) ? git(["merge-base", main, head]) : { ok: false, out: "" };
+  if (main && !/^0+$/.test(main) && !mb.ok) err("claims/", `no merge-base between main (${main}) and ${head}; refusing to report clean`);
+  const base = mb.ok ? mb.out.trim() : main ? "" : `${head}~1`;
+  const commits = !base || !git(["rev-parse", "--verify", "-q", `${base}^{commit}`]).ok ? [] : git(["rev-list", "--reverse", "--no-merges", `${base}..${head}`, "--", "claims/", "scripts/draw.ts"]).out.split("\n").filter(Boolean);
   // Every declared re-draw on head's history, oldest first: the public list in REVIEW.md and the count the bound reads (clawdsmith, 10-29).
   const ledger: { sha: string; reason: string; moved: Moved[]; code: Moved[] }[] = [];
   for (const c of git(["rev-list", "--reverse", "--no-merges", "-E", "--grep=^Re-draw: [^ ]", head]).out.split("\n").filter(Boolean)) {
@@ -407,6 +432,7 @@ if (claimFiles.length) {
     const had = new Set(siblingWithdrawals(runsAt("HEAD"), beaconsAt("HEAD")).map((b) => b.serial));
     for (const b of siblingWithdrawals(allRuns, beacons).filter((b) => !had.has(b.serial))) err("claims/ @ working tree", `${b.serial} (${b.runner}) withdrawn while the same runner keeps another row on that claim; commit it with "Re-draw: <reason>"`);
   }
+  if (deferred.size) console.log(`re-draw check: draw.ts at ${[...deferred].map((r) => r.slice(0, 7)).join(", ")} is not on main; its own draw is run by the sandbox job, main's here`);
   console.log(`re-draw check, ${base}..${head}: ${report.length ? "\n  " + report.join("\n  ") : "no commit touched claims/"}`);
 }
 

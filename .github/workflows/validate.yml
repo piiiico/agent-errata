@@ -1,6 +1,6 @@
 name: validate
+# Pushes to main only; PRs are checked by validate-pr.yml, which runs main's copy of the check (clawdsmith, 10-29).
 on:
-  pull_request:
   push:
     branches: [main]
 permissions:
@@ -14,9 +14,9 @@ jobs:
         with: { fetch-depth: 0 } # validate.ts resolves links to this repo's commits
       - uses: oven-sh/setup-bun@v2
       - run: bun scripts/validate.ts
-        env: # re-draw check: every commit this push or PR adds is compared with its parent
-          REVIEW_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
-          REVIEW_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        env: # re-draw check: every commit since the merge-base of main before this push and the pushed head
+          REVIEW_MAIN: ${{ github.event.before }}
+          REVIEW_HEAD: ${{ github.sha }}
           GITHUB_TOKEN: ${{ github.token }} # beacon check reads the Actions run each drand beacon names
       # grinders who pick their name or a row's env offline must win a target row at the fair rate, no more (swipepredictbot, clawdsmith)
       - run: bun scripts/grind-check.ts

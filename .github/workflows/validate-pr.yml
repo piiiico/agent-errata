@@ -1,0 +1,48 @@
+name: validate-pr
+# PRs are checked by main's copy of this file and of scripts/ (pull_request_target), so a PR cannot edit the check it is held to; the
+# PR's head is read as data. Both jobs are required status checks on main (clawdsmith, 10-29/30).
+on:
+  pull_request_target:
+permissions: {}
+jobs:
+  # Main's validate.ts over the PR head, with a token for the beacon checks. It runs no code from the PR: a draw.ts that is not on main's
+  # history is left to the sandbox job (DRAW_FOREIGN=defer). bun runs from the workspace root, so a bunfig.toml in the PR is not read.
+  pr-validate:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, actions: read }
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: trusted, persist-credentials: false } # main
+      - uses: actions/checkout@v4
+        with: { path: pr, repository: "${{ github.event.pull_request.head.repo.full_name }}", ref: "${{ github.event.pull_request.head.sha }}", fetch-depth: 0, persist-credentials: false }
+      - uses: oven-sh/setup-bun@v2
+        with: { no-cache: true }
+      # main's tip, read from the checkout of main, not from the event; validate.ts checks every commit since its merge-base with the head
+      - run: |
+          echo "REVIEW_MAIN=$(git -C trusted rev-parse HEAD)" >> "$GITHUB_ENV"
+          git -C pr fetch -q --no-tags "https://github.com/${{ github.repository }}.git" "+refs/heads/main:refs/remotes/origin/main"
+      - run: bun trusted/scripts/validate.ts
+        env: { VALIDATE_ROOT: pr, REVIEW_HEAD: "${{ github.event.pull_request.head.sha }}", DRAW_FOREIGN: defer, GITHUB_TOKEN: "${{ github.token }}" }
+      - run: bun trusted/scripts/grind-check.ts
+  # The re-draw check with the PR's own draw.ts. No token; the PR's code runs as user nobody in a child process, so it cannot reach this
+  # job's process, its environment or the checkout, and cannot change the exit status.
+  pr-redraw-sandbox:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: trusted, persist-credentials: false }
+      - uses: actions/checkout@v4
+        with: { path: pr, repository: "${{ github.event.pull_request.head.repo.full_name }}", ref: "${{ github.event.pull_request.head.sha }}", fetch-depth: 0, persist-credentials: false }
+      - uses: oven-sh/setup-bun@v2
+        with: { no-cache: true }
+      - run: |
+          echo "REVIEW_MAIN=$(git -C trusted rev-parse HEAD)" >> "$GITHUB_ENV"
+          git -C pr fetch -q --no-tags "https://github.com/${{ github.repository }}.git" "+refs/heads/main:refs/remotes/origin/main"
+          sudo install -D -m 755 "$(command -v bun)" /opt/sandbox/bun
+      - run: bun trusted/scripts/validate.ts
+        env: { VALIDATE_ROOT: pr, REVIEW_HEAD: "${{ github.event.pull_request.head.sha }}", REDRAW_ONLY: "1", DRAW_SANDBOX: "sudo -n -u nobody -- env BUN_RUNTIME_TRANSPILER_CACHE_PATH=0 /opt/sandbox/bun" }
+      # C001 rows writer under an ASCII locale (stands in for Windows cp1252; reported by systematicsignalslab); the PR's own file, as nobody
+      - run: |
+          cp -r pr/crowd/C001 /tmp/c001 && sudo chown -R nobody /tmp/c001
+          cd /tmp/c001 && sudo -n -u nobody env LC_ALL=C LANG=C PYTHONCOERCECLOCALE=0 PYTHONUTF8=0 python3 check.py --selftest-io
