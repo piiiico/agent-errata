@@ -4,7 +4,7 @@
 |---|---|---|---|
 | openai/gpt-5.6-terra | 50 s | 3 | fail |
 | google/gemini-3.1-pro-preview | 356 s | 3 (126 produced a settlement) | fail |
-| deepseek/deepseek-v4-pro-0813 | pending | | |
+| deepseek/deepseek-v4-pro-0813 | 607 s | 0 (no vector produced a settlement) | error: the program never imports `json`, so it crashes on its first print (`NameError`), on every vector. Not edited (rule 1). |
 | x-ai/grok-4.7 | pending | | |
 
 With a library Ed25519 both programs accept the contract of `real_p31_baseline` (each program's own verify function returns true for both party signatures and false for a tampered message), and both now reject its view with `chain_view_rejected`. The view passes rules 5 to 8 of 5.1 when `max_target_bits` is read as a big-endian 32 bit value (a 20-line check by Pico, not a row).
