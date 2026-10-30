@@ -1,0 +1,1285 @@
+{
+ "program": "runs/openai_gpt-5.6-terra/settle.py",
+ "agree": 9,
+ "of": 128,
+ "produced_output": 128,
+ "vectors": {
+  "real_cross_record_names_other_contract": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_anchor_below_checkpoint": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_anchor_missing": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_anchor_names_other_height": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_bad_contract_and_bad_view": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "real_p31_baseline": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_block_hash_trailing_newline": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_contract_bad_contractor_signature": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "real_p31_contract_bad_principal_signature": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "real_p31_copy_with_junk_signature_entry": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_proof_operand_changed": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_proof_operand_trailing_newline": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_proof_operand_trailing_newline_beside_good": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_same_record_twice": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_tip_exactly_deep_enough": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_tip_too_shallow": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_two_anchorings_one_body": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_view_missing_anchor_block": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_p31_view_without_checkpoint": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "real_r2_baseline": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_r2_batch_leg_extra_empty_append": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "real_r2_hexlify_not_leading": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_ack_names_dropped_copy": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_action_name_not_canonical": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_action_name_trailing_newline": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_action_not_authorized": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_admission_null": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_after_expiry": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_approval_label_bound": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_approval_lax_signature_beside_good_sig_b64": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_approval_nonce_trailing_newline": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_approval_signature_key_only": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_approval_signature_key_same_value": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_approval_signed_by_contractor": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_approvers_object": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "synth_approvers_string": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "synth_approvers_zero": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "synth_at_expiry_height": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_baseline": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_batch_bytes_with_nan": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_batch_leg_kind_mismatch": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_batch_leg_listed": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_batch_leg_not_listed": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_bond_amount_string": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_bond_empty_list": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_cited_walk_not_strict": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_cited_walk_orphaned_execution": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_conditional_approval_earlier_block": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_conditional_approval_expired": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_conditional_approval_reused": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_conditional_approval_same_block_other_record": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_conditional_approved_same_record": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_conditional_without_approval": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_contract_not_object": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "synth_delegated_to_object": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_delegation_empty_object": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "synth_delegation_not_allowed": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_delivery_ack_window": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_delivery_ack_without_window": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_domain_leading_tab": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_earlier_terms_record_bad_anchor": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_exec_signed_by_stranger": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_exec_unsigned": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_finality_without_depth": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_float_in_signed_body": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_floor_zero_mantissa": {
+   "exit": 0,
+   "diff": [],
+   "stderr_tail": ""
+  },
+  "synth_grant_action_name_invalid": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_infinity_in_signed_body": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_label_only_reference": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_limits_null": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_nan_in_signed_body": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_negative_infinity_in_signed_body": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_nenrin_check_reads_rejected_record": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_nenrin_required_without_ref": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_nenrin_walk_names_other_contract": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_nothing_to_settle": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_ordering_empty_object": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_outcome_error_does_not_excuse": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_approvers_child_drops": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_adds_conditional_action": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_adds_data_access": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_adds_delegate": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_allow_unscoped": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_authorizes_conditional_action": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_baseline": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_drops_conditional_action": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_drops_prohibited": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_drops_witness": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_expiry_earlier": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_expiry_later": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_finality_deeper": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_finality_shallower": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_identical": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_max_hops_equal": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_names_other_parent": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_privacy_changed": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_revocation_anchor": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_revocation_wider_window": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_without_data_access": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_without_expiry": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_without_max_hops": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_without_ordering": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_without_revocation": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_full_witness_renamed": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_not_supplied": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_supplied_narrows": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_parent_widened": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_payload_digest_mismatch": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_prohibited_action": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_record_field_outside_schema": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_revocation_by_non_principal": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_revocation_irrevocable_grant": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_revocation_signed_by_contractor": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_revoked_same_block": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_signature_s_plus_l": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_strict_signature_beside_malleated": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_tie_policy_record_sha256": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_tip_too_shallow": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_too_many_witnesses": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_unsafe_integer_in_signed_body": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_unsigned_copies_anchored_first": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_unsigned_float_beside_good": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_view_header_trailing_newline": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_view_headers_not_a_list": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_view_not_an_object": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_witness_attests_prohibited": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "deviation_codes",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_witness_key_is_principal_key": {
+   "exit": 0,
+   "diff": [
+    "underspecified_reasons"
+   ],
+   "stderr_tail": ""
+  },
+  "synth_witnesses_32": {
+   "exit": 0,
+   "diff": [
+    "verdict",
+    "status",
+    "bond_outcome",
+    "underspecified_reasons",
+    "event_set",
+    "dispositions"
+   ],
+   "stderr_tail": ""
+  }
+ }
+}
