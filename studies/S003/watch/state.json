@@ -2,9 +2,9 @@
  "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
  "harnesses": {
   "claude": {
-   "version": "2.1.312",
-   "measured": "2026-10-28",
-   "where": "GitHub Actions linux-x64, run 40693371062",
+   "version": "2.1.314",
+   "measured": "2026-10-30",
+   "where": "GitHub Actions linux-x64, run 41060260972",
    "row": {
     "arms": {
      "a": [
@@ -31,18 +31,18 @@
      }
     },
     "tools": 12,
-    "bytes_b": 47814,
+    "bytes_b": 48006,
     "s004": {
-     "total": 11704,
+     "total": 11738,
      "tools": 7336,
-     "system": 3719
+     "system": 3759
     }
    }
   },
   "codex": {
-   "version": "0.165.0",
-   "measured": "2026-10-28",
-   "where": "GitHub Actions linux-x64, run 40693371062",
+   "version": "0.166.0",
+   "measured": "2026-10-30",
+   "where": "GitHub Actions linux-x64, run 41060260972",
    "row": {
     "arms": {
      "a": [
@@ -70,9 +70,9 @@
     "tools": 9,
     "bytes_b": 39831,
     "s004": {
-     "total": 9559,
+     "total": 9560,
      "tools": 4038,
-     "system": 4572
+     "system": 4567
     }
    }
   },
@@ -103,9 +103,9 @@
    }
   },
   "qwen": {
-   "version": "0.26.3",
-   "measured": "2026-10-29",
-   "where": "GitHub Actions linux-x64, run 40879785375",
+   "version": "0.26.4",
+   "measured": "2026-10-30",
+   "where": "GitHub Actions linux-x64, run 41060260972",
    "row": {
     "arms": {
      "a": [
@@ -132,9 +132,9 @@
      }
     },
     "tools": 6,
-    "bytes_b": 54434,
+    "bytes_b": 54430,
     "s004": {
-     "total": 12446,
+     "total": 12447,
      "tools": 2182,
      "system": 7063
     }
@@ -216,9 +216,9 @@
    }
   },
   "crush": {
-   "version": "0.98.2",
-   "measured": "2026-10-24",
-   "where": "GitHub Actions linux-x64, run 40088878690",
+   "version": "0.99.0",
+   "measured": "2026-10-30",
+   "where": "GitHub Actions linux-x64, run 41060260972",
    "row": {
     "arms": {
      "a": [
@@ -251,11 +251,11 @@
      }
     },
     "tools": 26,
-    "bytes_b": 48744,
+    "bytes_b": 49556,
     "s004": {
-     "total": 11940,
-     "tools": 6344,
-     "system": 5422
+     "total": 12116,
+     "tools": 6506,
+     "system": 5436
     }
    }
   },
