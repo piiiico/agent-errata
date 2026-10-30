@@ -1,0 +1,1 @@
+The implementation has to follow the settle-core text literally, including written behaviour. I will build `settle.py` from that and check Ed25519 plus the published baseline contract digest before returning it.
