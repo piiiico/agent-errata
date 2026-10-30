@@ -9,7 +9,7 @@
 // next row the same runner files on the same claim gets it back (oldest first), so withdrawing and refiling cannot re-roll a reviewer.
 // Pool = every name with a beacon; names never leave it. Reviewer = the eligible member with the highest
 // sha256(serial, row randomness, name, name randomness); the row's runner, its implementer and the claim's author are not eligible.
-export type Beacon = { serial?: string; claim?: string; runner?: string; name?: string; round: number; randomness: string; run: string };
+export type Beacon = { serial?: string; claim?: string; runner?: string; name?: string; round: number; randomness: string; run: string; witness?: number };
 export type RunRow = { r: any; line: number; author: string; unparsed: boolean };
 export type Drawn = { serial: string; claim: string; line: number; runner: string; result: string; reviewer: string; unparsed: boolean; excluded: Set<string> };
 

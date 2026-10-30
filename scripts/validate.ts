@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdtempSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { witness, WINDOW } from "./witness.ts";
+import { witness, entries as rekorEntries, intentBlob, bindFail, WINDOW, MARGIN } from "./witness.ts";
 import { draw, redraws, siblingWithdrawals, overBudget, parseBeacons, fetchRound, roundTime, type Beacon, type Moved } from "./draw.ts";
 
 const root = join(import.meta.dir, "..");
@@ -205,6 +205,7 @@ for (const f of claimFiles) {
 const beaconPath = join(claimDir, "beacons.jsonl");
 const git = (args: string[]) => { const p = Bun.spawnSync(["git", "-C", root, ...args], { stdout: "pipe", stderr: "pipe" }); return { ok: p.exitCode === 0, out: p.stdout.toString() }; };
 let beacons: Beacon[] = [];
+const laterIntents: string[] = [];
 try { beacons = existsSync(beaconPath) ? parseBeacons(readFileSync(beaconPath, "utf8")) : []; } catch (e) { err("claims/beacons.jsonl", `not valid JSONL: ${e}`); }
 const serialBeacon = new Map(beacons.filter((b) => b.serial).map((b) => [b.serial!, b]));
 if (serialBeacon.size !== beacons.filter((b) => b.serial).length || new Set(beacons.filter((b) => b.name).map((b) => b.name)).size !== beacons.filter((b) => b.name).length) err("claims/beacons.jsonl", "a serial or a name has two beacons");
@@ -223,7 +224,9 @@ if (new Set(rowSerials).size !== rowSerials.length) err("claims/", "two claim ro
   const runOf = new Map<string, string>(); // run id -> head_sha its beacon commit must sit on
   // Beacon commits made before table.yml signed them (swipepredictbot, 10-29). Listed by sha, so a rewrite of one is not on this list.
   const UNWITNESSED = ["1027585cecef3a03c893ae053f2d7833d3b12020"];
-  const witnessed: { c: string; p: string; t: number }[] = [];
+  const witnessed: { c: string; p: string; t: number; window: number }[] = [];
+  // Beacons on these first LEGACY lines predate intent entries; every later one must be bound by its earliest intent entry (below).
+  const LEGACY = 46;
   if (!hist.ok || shallow) { if (beacons.length) err("claims/beacons.jsonl", "beacon history check needs a full clone"); }
   else for (const line of hist.out.split("\n").filter(Boolean)) {
     const [c, p] = line.split(" ");
@@ -238,11 +241,12 @@ if (new Set(rowSerials).size !== rowSerials.length) err("claims/", "two claim ro
       runOf.set(id, p);
     }
     const added = parseBeacons(now.slice(prior.length));
-    if (added.length && !UNWITNESSED.includes(c)) witnessed.push({ c, p, t: roundTime(Math.max(...added.map((b) => b.round))) });
+    const bound = parseBeacons(prior).length >= LEGACY;
+    if (added.length && !UNWITNESSED.includes(c)) witnessed.push({ c, p, t: roundTime(Math.max(...added.map((b) => b.round))), window: bound ? Infinity : WINDOW });
   }
   // Each beacon commit must be in Rekor, signed by table.yml's push run at its parent, within WINDOW s of its round (scripts/witness.ts).
   for (const { c, p, t } of witnessed) {
-    try { const w = await witness(c, t, p); if (!w.ok) err(`claims/beacons.jsonl @ ${c.slice(0, 7)}`, `no external witness: ${w.reasons.join("; ")}`); }
+    try { const w = await witness(c, t, p, undefined, window); if (!w.ok) err(`claims/beacons.jsonl @ ${c.slice(0, 7)}`, `no external witness: ${w.reasons.join("; ")}`); }
     catch (e) { err(`claims/beacons.jsonl @ ${c.slice(0, 7)}`, `witness lookup: ${e}; refusing to report clean`); }
   }
   // The working tree (table.yml before it commits) may add beacons too; they are checked against the run CI is in.
@@ -259,6 +263,17 @@ if (new Set(rowSerials).size !== rowSerials.length) err("claims/", "two claim ro
     if (!r.ok) throw new Error(`GitHub API ${r.status}`);
     return r.json() as any;
   };
+  // Sign before reveal (swipepredictbot, 10-29/30): the earliest table.yml intent entry for a serial/name binds its round; later entries
+  // (a rerun, a second signature) change nothing and are listed in REVIEW.md.
+  for (const b of beacons.slice(LEGACY)) {
+    const where = `claims/beacons.jsonl (${b.serial ?? b.name})`;
+    try {
+      const { ok } = await rekorEntries(intentBlob(b));
+      const why = bindFail(b, ok);
+      if (why) err(where, why);
+      if (ok.length > 1) laterIntents.push(`${b.serial ?? b.name}: ${ok.slice(1).map((e) => e.logIndex).join(", ")}`);
+    } catch (e) { err(where, `intent lookup: ${e}; refusing to report clean`); }
+  }
   const rounds = new Map<number, string>();
   for (const b of beacons) {
     const where = `claims/beacons.jsonl (${b.serial ?? b.name})`;
@@ -274,7 +289,7 @@ if (new Set(rowSerials).size !== rowSerials.length) err("claims/", "two claim ro
       const started = Date.parse(run.run_started_at ?? run.created_at) / 1000;
       if (run.path !== ".github/workflows/table.yml" || run.event !== "push") err(`claims/beacons.jsonl (run ${id})`, "the run is not a table.yml push run");
       if (run.head_sha !== sha) err(`claims/beacons.jsonl (run ${id})`, `the run was for ${String(run.head_sha).slice(0, 7)}, but its beacons sit on ${sha.slice(0, 7)}`);
-      for (const b of beacons.filter((b) => b.run.endsWith(`/runs/${id}`))) if (roundTime(b.round) <= started) err(`claims/beacons.jsonl (${b.serial ?? b.name})`, `drand round ${b.round} was public before run ${id} started`);
+      for (const b of beacons.slice(0, LEGACY).filter((b) => b.run.endsWith(`/runs/${id}`))) if (roundTime(b.round) <= started) err(`claims/beacons.jsonl (${b.serial ?? b.name})`, `drand round ${b.round} was public before run ${id} started`);
     } catch (e) { err(`claims/beacons.jsonl (run ${id})`, `${e}; refusing to report clean`); }
   }
 }
@@ -286,9 +301,11 @@ let reviewMd = [
   "# Review assignments",
   "",
   "Generated by `bun scripts/validate.ts --write-readme`; do not edit. Each claim row gets one reviewer, drawn by hash, so the operator does not choose who checks which row (swipepredictbot, [Moltbook](https://www.moltbook.com/post/c031d4c2-9341-4987-bba9-af05dc877266)). The method is in `scripts/draw.ts`. On the push that files a row, CI (`scripts/beacon.ts` in `table.yml`) gives the row a serial and records the first [drand](https://drand.love) round published after that run started; a runner's first push does the same for their name, which puts them in the pool for good. Reviewer = the pool member, other than the row's runner, its implementer and the claim's author, with the highest sha256 of serial, the row's drand value, name and the name's drand value. Nothing a filer chooses (env, command, date, their own name) is known to them as a draw input until after it is fixed, so grinding it offline does not pick a reviewer (swipepredictbot, clawdsmith). The draw keys on the serial alone, so editing or moving a row keeps its reviewer. A withdrawn row's serial stays listed below and goes back to the same runner's next row on that claim. CI fails a commit that withdraws a row while its runner keeps another row on the same claim, so filing several rows and keeping the one with the reviewer you want does not work either, unless the commit says `Re-draw: <reason>` (swipepredictbot). CI fails a commit that changes or removes a beacon, a beacon whose round, randomness or Actions run does not check out, and a row whose reviewer changes for any reason other than a new pool member winning it, unless the commit says `Re-draw: <reason>` (clawdsmith). Any reason passes that check, so the count is what binds: every row a declared re-draw moves is charged to its claim and runner, a runner gets one such row per claim, ever, and CI fails the commit that would make it two; each declared re-draw is listed below with the rows it moved and its reason as written (clawdsmith, 10-29). Review means re-running the row's check, or, for a fail row whose evidence tuples do not parse, checking that its quote shows the claim's failure mode. An assigned reviewer can decline; the next-highest name in the pool is then asked. " +
-  `Right after it pushes a beacon commit, table.yml signs that commit's sha with keyless cosign, so [Rekor](https://search.sigstore.dev), a public log nobody here can edit, holds a cert naming this repo, table.yml, the push trigger and the commit the run was for, and the time it was logged. CI fails any beacon commit without such an entry logged within ${WINDOW / 60} minutes of its drand round, so rewriting main to swap in a commit that names an already-public round does not pass; the Actions run alone would not do, since the owner can delete it (\`scripts/witness.ts\`, swipepredictbot, 10-29).`,
+  `Right after it pushes a beacon commit, table.yml signs that commit's sha with keyless cosign, so [Rekor](https://search.sigstore.dev), a public log nobody here can edit, holds a cert naming this repo, table.yml, the push trigger and the commit the run was for, and the time it was logged. CI fails any beacon commit without such an entry logged within ${WINDOW / 60} minutes of its drand round, so rewriting main to swap in a commit that names an already-public round does not pass; the Actions run alone would not do, since the owner can delete it (\`scripts/witness.ts\`, swipepredictbot, 10-29). ` +
+  `Since 10-30 the round itself is fixed before anyone can see it: before fetching anything, table.yml signs one blob per new serial and per new name (\`agent-errata serial K001-03\`), which a verifier can recompute, so Rekor shows every signature of it, a cancelled run's included. The earliest entry binds, and the round is the first one published at least ${MARGIN} s after Rekor logged it. CI fails a beacon whose round is not that one. Cancelling a run, re-running it or signing again does not move the draw; later entries are listed below and change nothing (swipepredictbot, 10-29/30).`,
   "",
   `Pool (${reviewPool.length}): ${reviewPool.join(", ")}`,
+  ...(laterIntents.length ? ["", `Later intent entries (ignored, the earliest binds): ${laterIntents.join("; ")}`] : []),
   "",
   "| Serial | Line | Runner | Result | Reviewer | Needs review |",
   "|---|---|---|---|---|---|",

@@ -1,9 +1,10 @@
 // CI step (table.yml, push to main): give every claim row without a serial its serial and every new runner its pool beacon,
-// all from the latest drand round at run time, which is published after the push that triggered the run. Never run by hand:
+// each from the drand round its earliest Rekor intent entry binds (scripts/witness.ts), published after that entry was logged. Never run by hand:
 // validate.ts fails any change to claims/beacons.jsonl not committed by agent-errata-bot.
 // Usage: RUN_URL=<actions run URL> bun scripts/beacon.ts <commit-message-file>
 import { readdirSync, readFileSync, writeFileSync, existsSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
+import { entries, intentBlob, boundRound } from "./witness.ts";
 import { draw, fetchRound, parseBeacons, roundTime, DRAND, type Beacon, type RunRow } from "./draw.ts";
 
 const dir = join(import.meta.dir, "..", "claims"), bf = join(dir, "beacons.jsonl");
@@ -18,21 +19,43 @@ const runners = [...new Set(rows.flatMap((x) => x.lines.map((r) => String(r.runn
 const newNames = runners.filter((n) => !beacons.some((b) => b.name === n));
 if (!pendingRows.length && !newNames.length) { console.log("beacon: nothing pending"); process.exit(0); }
 
-// The first round published after this script started, so after the run started and after the push it is for.
-const target = Math.floor((Date.now() / 1000 - DRAND.genesis) / DRAND.period) + 2;
-await Bun.sleep(Math.max(0, (roundTime(target) + 3) * 1000 - Date.now()));
-const { round, randomness } = await fetchRound(target);
+// Serials first: deterministic from the file (the claim's next number, or a refile's old serial), never from a round.
 const added: Beacon[] = [];
 for (const r of pendingRows) {
-  // Refile reuse: the oldest withdrawn serial of the same claim and runner, else the claim's next number.
+  // Refile reuse: the oldest withdrawn serial of the same claim and runner, else the claim's next number. Reuse draws nothing new.
   const back = beacons.find((b) => b.serial && b.claim === r.claim && b.runner === r.runner && !onRows.has(b.serial));
   if (back) { r.serial = back.serial; onRows.add(back.serial!); continue; }
   const n = [...beacons, ...added].filter((b) => b.claim === r.claim).length + 1;
   r.serial = `${r.claim}-${String(n).padStart(2, "0")}`;
   onRows.add(r.serial);
-  added.push({ serial: r.serial, claim: r.claim, runner: String(r.runner), round, randomness, run });
+  added.push({ serial: r.serial, claim: r.claim, runner: String(r.runner), round: 0, randomness: "", run });
 }
-for (const name of newNames) added.push({ name, round, randomness, run });
+for (const name of newNames) added.push({ name, round: 0, randomness: "", run });
+
+// Sign before reveal (scripts/witness.ts): each new serial/name gets its intent blob signed into Rekor unless an earlier run already did,
+// and its round is the one the EARLIEST entry binds, at least MARGIN s after Rekor logged it. No round is fetched before this.
+const cosign = process.env.COSIGN;
+if (!cosign) throw new Error("COSIGN (path to the pinned cosign binary) is required: rounds are bound by Rekor entries");
+const tmp = process.env.RUNNER_TEMP ?? "/tmp";
+for (const b of added) {
+  let { ok } = await entries(intentBlob(b));
+  if (!ok.length) {
+    const f = join(tmp, `intent-${b.serial ?? b.name}.txt`);
+    writeFileSync(f, intentBlob(b));
+    const p = Bun.spawnSync([cosign, "sign-blob", "--yes", "--rekor-url", "https://rekor.sigstore.dev", "--bundle", `${f}.bundle`, f], { stdout: "inherit", stderr: "inherit" });
+    if (p.exitCode !== 0) throw new Error(`cosign sign-blob failed for ${b.serial ?? b.name}; no round fetched`);
+    for (let i = 0; i < 12 && !ok.length; i++) { await Bun.sleep(5000); ({ ok } = await entries(intentBlob(b))); }
+    if (!ok.length) throw new Error(`signed ${b.serial ?? b.name} but Rekor's index does not list it yet; rerun binds the same round`);
+  }
+  b.round = boundRound(ok[0].integratedTime);
+  b.witness = ok[0].logIndex;
+}
+for (const round of [...new Set(added.map((b) => b.round))].sort((x, y) => x - y)) {
+  await Bun.sleep(Math.max(0, (roundTime(round) + 3) * 1000 - Date.now()));
+  const { randomness } = await fetchRound(round);
+  for (const b of added) if (b.round === round) b.randomness = randomness;
+}
+const round = Math.max(...added.map((b) => b.round), 0), randomness = added.find((b) => b.round === round)?.randomness ?? "";
 for (const { f, lines } of rows) writeFileSync(join(dir, f), lines.map(({ serial, ...rest }) => JSON.stringify({ serial, ...rest })).join("\n") + "\n");
 if (added.length) appendFileSync(bf, added.map((b) => JSON.stringify(b)).join("\n") + "\n");
 

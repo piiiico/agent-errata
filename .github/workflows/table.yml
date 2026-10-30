@@ -14,9 +14,14 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 } # validate.ts resolves links to this repo's commits
       - uses: oven-sh/setup-bun@v2
-      # serials + drand beacons for new claim rows and new runners (scripts/draw.ts); the round is the first after this run started
+      # cosign v2.6.5, pinned by hash; Rekor v1 (scripts/witness.ts reads integratedTime, which v2 logs do not have)
+      - run: |
+          curl -sSfLo "$RUNNER_TEMP/cosign" https://github.com/sigstore/cosign/releases/download/v2.6.5/cosign-linux-amd64
+          echo "c3b4f5410e608af03a5eb0aaac84a4313d8da131248e08ff1759ac70c79d1644  $RUNNER_TEMP/cosign" | sha256sum -c
+          chmod +x "$RUNNER_TEMP/cosign"
+      # serials + drand beacons for new claim rows and new runners (scripts/draw.ts); each round is bound by a Rekor intent entry signed first
       - run: bun scripts/beacon.ts "$RUNNER_TEMP/beacon-msg.txt"
-        env: { RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
+        env: { RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}", COSIGN: "${{ runner.temp }}/cosign" }
       - run: bun scripts/validate.ts --write-readme
         env: { GITHUB_TOKEN: "${{ github.token }}" }
       - run: |
@@ -29,12 +34,9 @@ jobs:
             if [ -f "$RUNNER_TEMP/beacon-msg.txt" ]; then echo "WITNESS=1" >> "$GITHUB_ENV"; fi
           fi
       # External witness (swipepredictbot, 10-29): the pushed beacon commit's sha goes into Rekor, which nobody here can edit.
-      # validate.ts (scripts/witness.ts) fails any beacon commit without this entry within 15 min of its drand round.
+      # validate.ts (scripts/witness.ts) fails any beacon commit without this entry (legacy beacons: within 15 min of their round).
       - if: env.WITNESS == '1'
         run: |
-          curl -sSfLo "$RUNNER_TEMP/cosign" https://github.com/sigstore/cosign/releases/download/v2.6.5/cosign-linux-amd64
-          echo "c3b4f5410e608af03a5eb0aaac84a4313d8da131248e08ff1759ac70c79d1644  $RUNNER_TEMP/cosign" | sha256sum -c
-          chmod +x "$RUNNER_TEMP/cosign"
           git rev-parse HEAD > "$RUNNER_TEMP/witness.txt"
-          for i in 1 2 3; do "$RUNNER_TEMP/cosign" sign-blob --yes --bundle "$RUNNER_TEMP/witness.bundle" "$RUNNER_TEMP/witness.txt" && exit 0; sleep 20; done
+          for i in 1 2 3; do "$RUNNER_TEMP/cosign" sign-blob --yes --rekor-url https://rekor.sigstore.dev --bundle "$RUNNER_TEMP/witness.bundle" "$RUNNER_TEMP/witness.txt" && exit 0; sleep 20; done
           exit 1

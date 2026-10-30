@@ -7,6 +7,7 @@
 // too late for its round.
 // Usage: bun scripts/witness.ts <commit-sha> <round-unix-time> <parent-sha> [identity] — prints ok or the reasons, exits 1 on fail.
 import { X509Certificate, createHash, createPublicKey, verify } from "node:crypto";
+import { DRAND } from "./draw.ts";
 
 export const WINDOW = 900;
 export const IDENTITY = "https://github.com/piiiico/agent-errata/.github/workflows/table.yml@refs/heads/main";
@@ -44,20 +45,24 @@ const fulcioCerts = async () => {
   return fulcio!;
 };
 
+export type Entry = { integratedTime: number; logIndex: number; uuid: string; at?: string };
 export type Witness = { ok: boolean; reasons: string[]; integratedTime?: number; logIndex?: number; uuid?: string };
 
-export async function witness(sha: string, roundTime: number, parent: string, identity = IDENTITY): Promise<Witness> {
-  const blob = blobOf(sha), digest = createHash("sha256").update(blob).digest("hex");
+// Every Rekor entry for this exact blob that verifies (log signature, hashedrekord, signature, Fulcio cert naming `identity`, push
+// trigger), earliest integratedTime first; `at` is the commit the signing run was at. Entries that fail are listed in `reasons`.
+export async function entries(blob: Buffer, identity = IDENTITY): Promise<{ ok: Entry[]; reasons: string[] }> {
+  const digest = createHash("sha256").update(blob).digest("hex");
   const r = await fetch(`${REKOR}/api/v1/index/retrieve`, { method: "POST", headers: UA, body: JSON.stringify({ hash: `sha256:${digest}` }), signal: AbortSignal.timeout(15000) });
   if (!r.ok) throw new Error(`Rekor search ${r.status}`);
   const uuids: string[] = (await r.json()) ?? [];
-  if (!uuids.length) return { ok: false, reasons: [`no Rekor entry for sha256(${sha.slice(0, 7)}\\n) = ${digest.slice(0, 12)}`] };
-  const reasons: string[] = [];
+  const ok: Entry[] = [], reasons: string[] = [];
   for (const uuid of uuids) {
     const e = await fetch(`${REKOR}/api/v1/log/entries/${uuid}`, { headers: UA, signal: AbortSignal.timeout(15000) });
     if (!e.ok) throw new Error(`Rekor entry ${uuid} ${e.status}`);
     const [entry]: any[] = Object.values(await e.json());
     const bad = (why: string) => reasons.push(`entry ${entry.logIndex}: ${why}`);
+    // Rekor v1 only. A v2 log has no integratedTime; its time would come from an RFC 3161 timestamp with a pinned TSA cert (not built).
+    if (typeof entry.integratedTime !== "number") { bad("no Rekor v1 integratedTime"); continue; }
     // The log's own signature over the entry and its time, so the time is Rekor's, not the API response's.
     const set = JSON.stringify({ body: entry.body, integratedTime: entry.integratedTime, logID: entry.logID, logIndex: entry.logIndex });
     if (!verify("sha256", Buffer.from(set), REKOR_KEY, Buffer.from(entry.verification?.signedEntryTimestamp ?? "", "base64"))) { bad("Rekor's signed entry timestamp does not verify"); continue; }
@@ -74,12 +79,39 @@ export async function witness(sha: string, roundTime: number, parent: string, id
     if (san !== `URI:${identity}`) { bad(`cert names ${san}, not ${identity}`); continue; }
     if (ext(der, 1) !== "https://token.actions.githubusercontent.com") { bad(`OIDC issuer ${ext(der, 1)}`); continue; }
     if (ext(der, 2) !== "push") { bad(`trigger ${ext(der, 2)}, not push`); continue; }
-    if (ext(der, 3) !== parent) { bad(`run was at ${String(ext(der, 3)).slice(0, 7)}, the commit's parent is ${parent.slice(0, 7)}`); continue; }
-    if (!(roundTime <= t && t <= roundTime + WINDOW)) { bad(`logged ${t - roundTime} s after its drand round, window is 0..${WINDOW}`); continue; }
-    return { ok: true, reasons: [], integratedTime: t, logIndex: entry.logIndex, uuid };
+    ok.push({ integratedTime: t, logIndex: entry.logIndex, uuid, at: ext(der, 3) });
+  }
+  ok.sort((a, b) => a.integratedTime - b.integratedTime || a.logIndex - b.logIndex);
+  return { ok, reasons };
+}
+
+// The beacon commit itself: an entry for its sha, signed by a run at its parent. window: seconds after the round it must be logged in
+// (legacy beacons); beacons bound by an intent entry pass Infinity, since their round was fixed before it was published.
+export async function witness(sha: string, roundTime: number, parent: string, identity = IDENTITY, window = WINDOW): Promise<Witness> {
+  const { ok, reasons } = await entries(blobOf(sha), identity);
+  if (!ok.length && !reasons.length) return { ok: false, reasons: [`no Rekor entry for sha256(${sha.slice(0, 7)}\\n)`] };
+  for (const e of ok) {
+    if (e.at !== parent) { reasons.push(`entry ${e.logIndex}: run was at ${String(e.at).slice(0, 7)}, the commit's parent is ${parent.slice(0, 7)}`); continue; }
+    const d = e.integratedTime - roundTime;
+    if (!(0 <= d && d <= window)) { reasons.push(`entry ${e.logIndex}: logged ${d} s after its drand round, window is 0..${window}`); continue; }
+    return { ok: true, reasons: [], integratedTime: e.integratedTime, logIndex: e.logIndex, uuid: e.uuid };
   }
   return { ok: false, reasons };
 }
+
+// Sign before reveal (swipepredictbot, 10-29/30). Before any round is fetched, table.yml signs one intent blob per new serial and per new
+// pool name. The blob holds nothing a verifier cannot recompute (no round, no parent), so validate.ts finds EVERY entry for it, including
+// those of runs that were cancelled. The earliest entry binds: the draw's round is the first one published at least MARGIN s after
+// Rekor logged it, so nobody, owner included, knows the randomness when the round is fixed. Re-running or cancelling cannot move it, and
+// signing again changes nothing (no veto). A run that dies after signing leaves the round bound; the next run uses the same round.
+export const MARGIN = 90;
+export const intentBlob = (b: { serial?: string; name?: string }) => Buffer.from(b.serial ? `agent-errata serial ${b.serial}\n` : `agent-errata name ${b.name}\n`);
+export const boundRound = (integratedTime: number) => Math.ceil((integratedTime + MARGIN - DRAND.genesis) / DRAND.period) + 1;
+// Why a beacon fails its intent check, or "" if its round and entry are the ones its earliest verified entry binds.
+export const bindFail = (b: { round: number; witness?: number }, ok: Entry[]) =>
+  !ok.length ? "no Rekor intent entry signed before its round"
+  : b.round !== boundRound(ok[0].integratedTime) || b.witness !== ok[0].logIndex ? `round ${b.round} (entry ${b.witness}) is not the one its earliest intent entry ${ok[0].logIndex} binds: ${boundRound(ok[0].integratedTime)}`
+  : "";
 
 if (import.meta.main) {
   const [sha, rt, parent, identity] = process.argv.slice(2);
