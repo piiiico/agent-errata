@@ -26,6 +26,7 @@ jobs:
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
+        with: { ssh-key: "${{ secrets.CI_PUSH_KEY }}" } # deploy key: pushes to main pass the ruleset (see table.yml)
       - uses: oven-sh/setup-bun@v2
       - uses: actions/setup-node@v4
         with:

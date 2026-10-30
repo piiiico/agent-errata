@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 } # validate.ts resolves links to this repo's commits
+        # fetch-depth 0: validate.ts resolves links to this repo's commits. CI_PUSH_KEY: a deploy key, the one pusher the main ruleset lets past its required PR checks
+        with: { fetch-depth: 0, ssh-key: "${{ secrets.CI_PUSH_KEY }}" }
       - uses: oven-sh/setup-bun@v2
       # cosign v2.6.5, pinned by hash; Rekor v1 (scripts/witness.ts reads integratedTime, which v2 logs do not have)
       - run: |
