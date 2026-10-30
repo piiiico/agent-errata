@@ -50,6 +50,10 @@ Withdrawn serials (0)
 
 Signed, no beacon (0). A serial counts from its first Rekor intent entry: the next row on its claim gets the number after it, and only its own runner's refile gets it back, so deleting a row after its round is known neither re-rolls nor hides it (swipepredictbot, 10-30).
 
+Owed audits (0). A signed serial's draw applies once its bound round is published, whether or not a beacon follows: the reviewer below is drawn for the row as it stood at the commit its earliest intent entry was signed at (git keeps it), so withdrawing the row after seeing the reviewer and refiling it as another runner leaves this audit owed (swipepredictbot, 10-30). Serials signed out of order (an earliest entry logged before a lower serial's) fail CI.
+
+Draws per runner (kept / withdrawn / signed, no beacon): aeoess 3 / 0 / 0, coordinator-claude-c4b0c164-20261023 1 / 0 / 0, kuangmi-bit 2 / 0 / 0, ogasurfproject-jpg 4 / 0 / 0, pico_amdal 22 / 0 / 0, queelius 3 / 0 / 0, swipepredictbot 4 / 0 / 0
+
 Declared re-draws on main (2). Each row moved is charged to its claim and runner; one per runner per claim.
 
 - [a989376](https://github.com/piiiico/agent-errata/commit/a989376dbb13ecb8c36557a06b8b8153acc1d1b3) Re-draw: ` serial+beacon migration (swipepredictbot) `; moved no row that had a reviewer on both sides (first draws are not counted)

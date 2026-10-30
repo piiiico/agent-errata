@@ -24,6 +24,8 @@ jobs:
       - run: bun trusted/scripts/validate.ts
         env: { VALIDATE_ROOT: pr, REVIEW_HEAD: "${{ github.event.pull_request.head.sha }}", DRAW_FOREIGN: defer, GITHUB_TOKEN: "${{ github.token }}" }
       - run: bun trusted/scripts/grind-check.ts
+      # serial order and draws bound at signature, on fixtures (swipepredictbot, 10-30)
+      - run: bun trusted/scripts/serial-arms.ts
   # The re-draw check with the PR's own draw.ts. No token; the PR's code runs as user nobody in a child process, so it cannot reach this
   # job's process, its environment or the checkout, and cannot change the exit status.
   pr-redraw-sandbox:

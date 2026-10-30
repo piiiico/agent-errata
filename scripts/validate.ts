@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdtempSync, chmodSync, copyFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { witness, entries as rekorEntries, intentBlob, bindFail, rowFail, treeAt, signedSerials, WINDOW, MARGIN } from "./witness.ts";
+import { witness, entries as rekorEntries, intentBlob, bindFail, rowFail, treeAt, signedSerials, orderFail, owedDraw, boundRound, WINDOW, MARGIN } from "./witness.ts";
 import { draw, redraws, siblingWithdrawals, overBudget, parseBeacons, fetchRound, roundTime, type Beacon, type Moved } from "./draw.ts";
 
 // VALIDATE_ROOT: the checkout to check, when this script is main's copy run over a PR's head (validate-pr.yml).
@@ -208,6 +208,8 @@ const git = (args: string[]) => { const p = Bun.spawnSync(["git", "-C", root, ..
 let beacons: Beacon[] = [];
 const laterIntents: string[] = [];
 const signedNoBeacon: string[] = [];
+const owedAudits: string[] = [];
+const signedNoBeaconBy = new Map<string, number>();
 try { beacons = existsSync(beaconPath) ? parseBeacons(readFileSync(beaconPath, "utf8")) : []; } catch (e) { err("claims/beacons.jsonl", `not valid JSONL: ${e}`); }
 const serialBeacon = new Map(beacons.filter((b) => b.serial).map((b) => [b.serial!, b]));
 if (serialBeacon.size !== beacons.filter((b) => b.serial).length || new Set(beacons.filter((b) => b.name).map((b) => b.name)).size !== beacons.filter((b) => b.name).length) err("claims/beacons.jsonl", "a serial or a name has two beacons");
@@ -268,14 +270,14 @@ if (!process.env.REDRAW_ONLY) {
   };
   // Sign before reveal (swipepredictbot, 10-29/30): the earliest table.yml intent entry for a serial/name binds its round; later entries
   // (a rerun, a second signature) change nothing and are listed in REVIEW.md.
-  // The replay at the earliest entry's commit counts serials signed as of that entry's time, never as of now (swipepredictbot, 10-30).
+  // The replay at the earliest entry's commit counts serials signed before that entry (by logIndex), never as of now (swipepredictbot, 10-30).
   const S = signedSerials(async (serial) => (await rekorEntries(intentBlob({ serial }))).ok, treeAt(root));
   for (const b of beacons.slice(LEGACY)) {
     const where = `claims/beacons.jsonl (${b.serial ?? b.name})`;
     try {
-      const { ok } = await rekorEntries(intentBlob(b));
+      const ok = b.serial ? await S.entries(b.serial) : (await rekorEntries(intentBlob(b))).ok;
       const t = b.serial && ok[0]?.at && /^[0-9a-f]{40}$/.test(ok[0].at) ? treeAt(root)(ok[0].at) : undefined;
-      const signed = t ? await S.pending(parseBeacons(t.beacons), [b.claim!], ok[0].integratedTime) : [];
+      const signed = t ? await S.pending(parseBeacons(t.beacons), [b.claim!], ok[0].logIndex) : [];
       const why = bindFail(b, ok) || rowFail(b, ok[0].at, treeAt(root), signed);
       if (why) err(where, why);
       if (ok.length > 1) laterIntents.push(`${b.serial ?? b.name}: ${ok.slice(1).map((e) => e.logIndex).join(", ")}`);
@@ -283,8 +285,25 @@ if (!process.env.REDRAW_ONLY) {
   }
   // Signed, no beacon: a serial in Rekor whose row is gone or whose run died. Own visible state, not red (swipepredictbot, 10-30).
   try {
-    for (const p of await S.pending(beacons, claimFiles.map((f) => f.replace(/\.md$/, ""))))
+    const claimIds = claimFiles.map((f) => f.replace(/\.md$/, ""));
+    const pend = await S.pending(beacons, claimIds);
+    for (const p of pend) {
       signedNoBeacon.push(`${p.serial} (${p.runner ?? "no row at its signing commit"}, entry ${p.entry})`);
+      if (p.runner) signedNoBeaconBy.set(p.runner, (signedNoBeaconBy.get(p.runner) ?? 0) + 1);
+      // Owed audit (swipepredictbot, 10-30): once the bound round is public, the draw stands for the row as of p.at, beacon or not.
+      // The claim's author is today's claim_by (claim files do not change author).
+      if (!p.row) continue;
+      const round = boundRound(p.integratedTime);
+      if (roundTime(round) > Date.now() / 1000) { owedAudits.push(`| ${p.serial} | ${p.runner} | round ${round} not yet published | ${String(p.at).slice(0, 7)} |`); continue; }
+      const author = allRuns.find((x) => String(x.r.claim) === p.claim)?.author ?? "";
+      const reviewer = owedDraw({ serial: p.serial!, row: p.row }, author, (await fetchRound(round)).randomness, beacons);
+      owedAudits.push(`| ${p.serial} | ${p.runner} | ${reviewer || "none (pool empty)"} | [${String(p.at).slice(0, 7)}](https://github.com/piiiico/agent-errata/blob/${p.at}/claims/${p.claim}.jsonl) |`);
+    }
+    // Serial order: committed bound beacons carry their earliest entry's logIndex as `witness`; legacy ones have none.
+    for (const claim of claimIds) for (const why of orderFail([
+      ...beacons.slice(LEGACY).filter((b) => b.claim === claim && b.serial).map((b) => ({ serial: b.serial!, entry: b.witness })),
+      ...pend.filter((p) => p.claim === claim).map((p) => ({ serial: p.serial!, entry: p.entry })),
+    ])) err(`claims/${claim}.jsonl`, why);
   } catch (e) { err("claims/", `signed-serial lookup: ${e}; refusing to report clean`); }
   const rounds = new Map<number, string>();
   for (const b of beacons) {
@@ -326,6 +345,11 @@ let reviewMd = [
   `Withdrawn serials (${withdrawn.length})${withdrawn.length ? ": " + withdrawn.map((b) => `${b.serial} (${b.runner})`).join(", ") : ""}`,
   "",
   `Signed, no beacon (${signedNoBeacon.length})${signedNoBeacon.length ? ": " + signedNoBeacon.join(", ") : ""}. A serial counts from its first Rekor intent entry: the next row on its claim gets the number after it, and only its own runner's refile gets it back, so deleting a row after its round is known neither re-rolls nor hides it (swipepredictbot, 10-30).`,
+  "",
+  `Owed audits (${owedAudits.length}). A signed serial's draw applies once its bound round is published, whether or not a beacon follows: the reviewer below is drawn for the row as it stood at the commit its earliest intent entry was signed at (git keeps it), so withdrawing the row after seeing the reviewer and refiling it as another runner leaves this audit owed (swipepredictbot, 10-30). Serials signed out of order (an earliest entry logged before a lower serial's) fail CI.`,
+  ...(owedAudits.length ? ["", "| Serial | Runner | Reviewer | Row as of |", "|---|---|---|---|", ...owedAudits] : []),
+  "",
+  `Draws per runner (kept / withdrawn / signed, no beacon): ${[...new Set([...beacons.filter((b) => b.serial).map((b) => String(b.runner)), ...signedNoBeaconBy.keys()])].sort().map((a) => `${a} ${beacons.filter((b) => b.serial && b.runner === a && rowSerials.includes(b.serial)).length} / ${withdrawn.filter((b) => b.runner === a).length} / ${signedNoBeaconBy.get(a) ?? 0}`).join(", ")}`,
   "",
 ].join("\n");
 const reviewPath = join(claimDir, "REVIEW.md");
