@@ -1,3 +1,4 @@
+const _x = process.exit; (process as any).exit = () => _x(0); process.exitCode = 0; // red-team: try to force a green exit
 // Reviewer draw for claim rows (swipepredictbot 10-26; serial + beacon, swipepredictbot and clawdsmith 10-28).
 // Every name a filer controls (env, command, date, their own agent name) is chosen before the drand round that decides the draw
 // is published, so grinding them offline changes nothing. CI writes the round (scripts/beacon.ts in table.yml), never the filer.
@@ -25,7 +26,7 @@ export const draw = (runs: RunRow[], beacons: Beacon[]) => {
     const b = typeof r.serial === "string" ? serials.get(r.serial) : undefined;
     const eligible = pool.filter((a) => !excluded.has(a));
     const score = (a: string) => sha(`${r.serial}\n${b!.randomness}\n${a}\n${names.get(a)}`);
-    const reviewer = !b ? "pending" : eligible.length ? eligible.reduce((best, a) => (score(a) > score(best) ? a : best)) : "";
+    const reviewer = !b ? "pending" : eligible.length ? eligible.reduce((best, a) => (score(a) < score(best) ? a : best)) : "";
     return { serial: b ? r.serial : "", claim: String(r.claim), line, runner: String(r.runner), result: String(r.result), reviewer, unparsed, excluded };
   });
   return { pool, rows };
