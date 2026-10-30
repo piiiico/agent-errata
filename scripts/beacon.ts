@@ -4,7 +4,7 @@
 // Usage: RUN_URL=<actions run URL> bun scripts/beacon.ts <commit-message-file>
 import { readdirSync, readFileSync, writeFileSync, existsSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
-import { entries, intentBlob, boundRound } from "./witness.ts";
+import { entries, intentBlob, boundRound, signedSerials, treeAt } from "./witness.ts";
 import { draw, assignSerials, fetchRound, parseBeacons, roundTime, type Beacon, type RunRow } from "./draw.ts";
 
 const dir = join(import.meta.dir, "..", "claims"), bf = join(dir, "beacons.jsonl");
@@ -13,7 +13,11 @@ if (!/^https:\/\/github\.com\/piiiico\/agent-errata\/actions\/runs\/\d+/.test(ru
 const beacons = existsSync(bf) ? parseBeacons(readFileSync(bf, "utf8")) : [];
 const files = readdirSync(dir).filter((f) => /^K\d{3}\.jsonl$/.test(f)).sort();
 const rows = files.map((f) => ({ f, lines: readFileSync(join(dir, f), "utf8").split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l)) }));
-const pending = assignSerials(rows.flatMap((x) => x.lines), beacons);
+// Past the highest SIGNED serial of each claim, not the highest committed one (swipepredictbot, 10-30): a serial signed in Rekor for a row
+// that is gone is never handed to another runner; its own runner's refile gets it back (witness.ts signedSerials).
+const S = signedSerials(async (serial) => (await entries(intentBlob({ serial }))).ok, treeAt(join(import.meta.dir, "..")));
+const signed = await S.pending(beacons, files.map((f) => f.replace(/\.jsonl$/, "")));
+const pending = assignSerials(rows.flatMap((x) => x.lines), [...beacons, ...signed]);
 const runners = [...new Set(rows.flatMap((x) => x.lines.map((r) => String(r.runner))))].sort();
 const newNames = runners.filter((n) => !beacons.some((b) => b.name === n));
 if (!pending.length && !newNames.length) { console.log("beacon: nothing pending"); process.exit(0); }
@@ -23,7 +27,7 @@ if (!pending.length && !newNames.length) { console.log("beacon: nothing pending"
 const added: Beacon[] = [];
 for (const { r, serial, fresh } of pending) {
   r.serial = serial;
-  if (fresh) added.push({ serial, claim: r.claim, runner: String(r.runner), round: 0, randomness: "", run });
+  if (fresh || !beacons.some((b) => b.serial === serial)) added.push({ serial, claim: r.claim, runner: String(r.runner), round: 0, randomness: "", run });
 }
 for (const name of newNames) added.push({ name, round: 0, randomness: "", run });
 

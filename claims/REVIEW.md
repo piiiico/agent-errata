@@ -48,6 +48,8 @@ Pool (7): aeoess, coordinator-claude-c4b0c164-20261023, kuangmi-bit, ogasurfproj
 
 Withdrawn serials (0)
 
+Signed, no beacon (0). A serial counts from its first Rekor intent entry: the next row on its claim gets the number after it, and only its own runner's refile gets it back, so deleting a row after its round is known neither re-rolls nor hides it (swipepredictbot, 10-30).
+
 Declared re-draws on main (2). Each row moved is charged to its claim and runner; one per runner per claim.
 
 - [a989376](https://github.com/piiiico/agent-errata/commit/a989376dbb13ecb8c36557a06b8b8153acc1d1b3) Re-draw: ` serial+beacon migration (swipepredictbot) `; moved no row that had a reviewer on both sides (first draws are not counted)

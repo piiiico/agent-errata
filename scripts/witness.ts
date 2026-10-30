@@ -7,7 +7,7 @@
 // too late for its round.
 // Usage: bun scripts/witness.ts <commit-sha> <round-unix-time> <parent-sha> [identity] — prints ok or the reasons, exits 1 on fail.
 import { X509Certificate, createHash, createPublicKey, verify } from "node:crypto";
-import { DRAND, assignSerials, parseBeacons } from "./draw.ts";
+import { DRAND, assignSerials, parseBeacons, type Beacon } from "./draw.ts";
 
 export const WINDOW = 900;
 export const IDENTITY = "https://github.com/piiiico/agent-errata/.github/workflows/table.yml@refs/heads/main";
@@ -118,19 +118,50 @@ export const bindFail = (b: { round: number; witness?: number }, ok: Entry[]) =>
 // there (claims/*.jsonl and beacons.jsonl as of that commit) must give this serial to this claim and runner. Only the earliest entry is
 // replayed; a failing one is red, never skipped for a later one. tree(at): the claim files' texts in file order and beacons.jsonl, or
 // undefined if the commit is not in the clone.
-export const rowFail = (b: { serial?: string; claim?: string; runner?: string }, at: string | undefined, tree: (at: string) => { claims: string[]; beacons: string } | undefined) => {
+// signed: the serials signed-no-beacon at that commit as of the entry's time (signedSerials below), so a later signature cannot change
+// what the old commit should have assigned.
+export type Tree = (at: string) => { claims: string[]; beacons: string } | undefined;
+export const rowFail = (b: { serial?: string; claim?: string; runner?: string }, at: string | undefined, tree: Tree, signed: Beacon[] = []) => {
   if (!b.serial) return "";
   if (!at || !/^[0-9a-f]{40}$/.test(at)) return `earliest intent entry names no commit (${at})`;
   const t = tree(at);
   if (!t) return `earliest intent entry was signed at ${at.slice(0, 7)}, which is not in this repository`;
   const rows = t.claims.flatMap((s) => s.split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l)));
-  const r = assignSerials(rows, parseBeacons(t.beacons)).find((x) => x.fresh && x.serial === b.serial)?.r;
+  const r = assignSerials(rows, [...parseBeacons(t.beacons), ...signed]).find((x) => x.fresh && x.serial === b.serial)?.r;
   if (!r) return `at ${at.slice(0, 7)}, where its earliest intent entry was signed, no row gets serial ${b.serial}`;
   if (r.claim !== b.claim || String(r.runner) !== b.runner) return `serial ${b.serial} was signed at ${at.slice(0, 7)} for ${r.runner} on ${r.claim}, but the beacon names ${b.runner} on ${b.claim}`;
   return "";
 };
+// Signed, no beacon (swipepredictbot, 10-30). Counting committed beacons let a signed serial be handed out twice: sign K001-13 for A,
+// delete A's row, and B's next row derived K001-13 again, red forever at the replay. Deleting after seeing the bound round and never
+// refiling left no trace at all. So a serial counts once its intent entry is in Rekor: beacon.ts assigns past the highest SIGNED serial
+// of the claim, and each signed serial with no beacon stands in assignSerials as a pseudo-beacon of the row it was signed for (claim and
+// runner from the replay at its earliest entry's commit), so that runner's refile gets it back and anyone else gets the next number.
+// pending(beacons, claims, before): those pseudo-beacons beyond the committed ones, counting only entries logged before `before`.
+export const signedSerials = (lookup: (serial: string) => Promise<Entry[]>, tree: Tree) => {
+  const got = new Map<string, Promise<Entry[]>>(), owners = new Map<string, Promise<string | undefined>>();
+  const ok = (s: string) => got.get(s) ?? (got.set(s, lookup(s)), got.get(s)!);
+  const owner = (serial: string, claim: string, e: Entry) => owners.get(serial) ?? (owners.set(serial, (async () => {
+    const t = e.at && /^[0-9a-f]{40}$/.test(e.at) ? tree(e.at) : undefined;
+    if (!t) return undefined;
+    const rows = t.claims.flatMap((s) => s.split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l)));
+    const bs = parseBeacons(t.beacons);
+    const x = assignSerials(rows, [...bs, ...(await pending(bs, [claim], e.integratedTime))]).find((x) => x.fresh && x.serial === serial);
+    return x && x.r.claim === claim ? String(x.r.runner) : undefined;
+  })()), owners.get(serial)!);
+  const pending = async (beacons: Beacon[], claims: string[], before = Infinity) => {
+    const out: (Beacon & { entry: number })[] = [];
+    for (const claim of claims) for (let n = beacons.filter((b) => b.claim === claim).length + 1; ; n++) {
+      const serial = `${claim}-${String(n).padStart(2, "0")}`, [e] = await ok(serial);
+      if (!e || e.integratedTime >= before) break;
+      out.push({ serial, claim, runner: await owner(serial, claim, e), round: 0, randomness: "", run: "", entry: e.logIndex });
+    }
+    return out;
+  };
+  return { pending, entries: ok };
+};
 // tree for rowFail from a git clone at root.
-export const treeAt = (root: string) => (at: string) => {
+export const treeAt = (root: string): Tree => (at: string) => {
   const git = (...a: string[]) => { const p = Bun.spawnSync(["git", "-C", root, ...a], { stdout: "pipe", stderr: "pipe" }); return { ok: p.exitCode === 0, out: p.stdout.toString() }; };
   const ls = git("ls-tree", "--name-only", at, "claims/");
   if (!ls.ok) return undefined;

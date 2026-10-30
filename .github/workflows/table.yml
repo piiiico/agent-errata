@@ -7,6 +7,10 @@ permissions:
   contents: write
   actions: read
   id-token: write # keyless cosign below: GitHub OIDC token -> Fulcio cert naming this workflow and commit
+# One run at a time (swipepredictbot, 10-30): two concurrent runs would both read the same highest signed serial and sign the same next one.
+concurrency:
+  group: table
+  cancel-in-progress: false
 jobs:
   table:
     runs-on: ubuntu-latest

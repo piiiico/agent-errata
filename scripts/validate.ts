@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdtempSync, chmodSync, copyFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { witness, entries as rekorEntries, intentBlob, bindFail, rowFail, treeAt, WINDOW, MARGIN } from "./witness.ts";
+import { witness, entries as rekorEntries, intentBlob, bindFail, rowFail, treeAt, signedSerials, WINDOW, MARGIN } from "./witness.ts";
 import { draw, redraws, siblingWithdrawals, overBudget, parseBeacons, fetchRound, roundTime, type Beacon, type Moved } from "./draw.ts";
 
 // VALIDATE_ROOT: the checkout to check, when this script is main's copy run over a PR's head (validate-pr.yml).
@@ -207,6 +207,7 @@ const beaconPath = join(claimDir, "beacons.jsonl");
 const git = (args: string[]) => { const p = Bun.spawnSync(["git", "-C", root, ...args], { stdout: "pipe", stderr: "pipe" }); return { ok: p.exitCode === 0, out: p.stdout.toString() }; };
 let beacons: Beacon[] = [];
 const laterIntents: string[] = [];
+const signedNoBeacon: string[] = [];
 try { beacons = existsSync(beaconPath) ? parseBeacons(readFileSync(beaconPath, "utf8")) : []; } catch (e) { err("claims/beacons.jsonl", `not valid JSONL: ${e}`); }
 const serialBeacon = new Map(beacons.filter((b) => b.serial).map((b) => [b.serial!, b]));
 if (serialBeacon.size !== beacons.filter((b) => b.serial).length || new Set(beacons.filter((b) => b.name).map((b) => b.name)).size !== beacons.filter((b) => b.name).length) err("claims/beacons.jsonl", "a serial or a name has two beacons");
@@ -267,15 +268,24 @@ if (!process.env.REDRAW_ONLY) {
   };
   // Sign before reveal (swipepredictbot, 10-29/30): the earliest table.yml intent entry for a serial/name binds its round; later entries
   // (a rerun, a second signature) change nothing and are listed in REVIEW.md.
+  // The replay at the earliest entry's commit counts serials signed as of that entry's time, never as of now (swipepredictbot, 10-30).
+  const S = signedSerials(async (serial) => (await rekorEntries(intentBlob({ serial }))).ok, treeAt(root));
   for (const b of beacons.slice(LEGACY)) {
     const where = `claims/beacons.jsonl (${b.serial ?? b.name})`;
     try {
       const { ok } = await rekorEntries(intentBlob(b));
-      const why = bindFail(b, ok) || rowFail(b, ok[0].at, treeAt(root));
+      const t = b.serial && ok[0]?.at && /^[0-9a-f]{40}$/.test(ok[0].at) ? treeAt(root)(ok[0].at) : undefined;
+      const signed = t ? await S.pending(parseBeacons(t.beacons), [b.claim!], ok[0].integratedTime) : [];
+      const why = bindFail(b, ok) || rowFail(b, ok[0].at, treeAt(root), signed);
       if (why) err(where, why);
       if (ok.length > 1) laterIntents.push(`${b.serial ?? b.name}: ${ok.slice(1).map((e) => e.logIndex).join(", ")}`);
     } catch (e) { err(where, `intent lookup: ${e}; refusing to report clean`); }
   }
+  // Signed, no beacon: a serial in Rekor whose row is gone or whose run died. Own visible state, not red (swipepredictbot, 10-30).
+  try {
+    for (const p of await S.pending(beacons, claimFiles.map((f) => f.replace(/\.md$/, ""))))
+      signedNoBeacon.push(`${p.serial} (${p.runner ?? "no row at its signing commit"}, entry ${p.entry})`);
+  } catch (e) { err("claims/", `signed-serial lookup: ${e}; refusing to report clean`); }
   const rounds = new Map<number, string>();
   for (const b of beacons) {
     const where = `claims/beacons.jsonl (${b.serial ?? b.name})`;
@@ -314,6 +324,8 @@ let reviewMd = [
   ...reviewRows.map((x) => `| ${x.serial || "pending"} | [${x.claim}.jsonl:${x.line}](${x.claim}.jsonl#L${x.line}) | ${x.runner} | ${x.result} | ${x.reviewer || "none (pool empty)"} | ${x.unparsed ? "yes: evidence does not parse" : ""} |`),
   "",
   `Withdrawn serials (${withdrawn.length})${withdrawn.length ? ": " + withdrawn.map((b) => `${b.serial} (${b.runner})`).join(", ") : ""}`,
+  "",
+  `Signed, no beacon (${signedNoBeacon.length})${signedNoBeacon.length ? ": " + signedNoBeacon.join(", ") : ""}. A serial counts from its first Rekor intent entry: the next row on its claim gets the number after it, and only its own runner's refile gets it back, so deleting a row after its round is known neither re-rolls nor hides it (swipepredictbot, 10-30).`,
   "",
 ].join("\n");
 const reviewPath = join(claimDir, "REVIEW.md");
