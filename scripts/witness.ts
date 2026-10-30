@@ -7,7 +7,7 @@
 // too late for its round.
 // Usage: bun scripts/witness.ts <commit-sha> <round-unix-time> <parent-sha> [identity] — prints ok or the reasons, exits 1 on fail.
 import { X509Certificate, createHash, createPublicKey, verify } from "node:crypto";
-import { DRAND, assignSerials, parseBeacons, type Beacon } from "./draw.ts";
+import { DRAND, assignSerials, draw, parseBeacons, type Beacon } from "./draw.ts";
 
 export const WINDOW = 900;
 export const IDENTITY = "https://github.com/piiiico/agent-errata/.github/workflows/table.yml@refs/heads/main";
@@ -49,7 +49,7 @@ export type Entry = { integratedTime: number; logIndex: number; uuid: string; at
 export type Witness = { ok: boolean; reasons: string[]; integratedTime?: number; logIndex?: number; uuid?: string };
 
 // Every Rekor entry for this exact blob that verifies (log signature, hashedrekord, signature, Fulcio cert naming `identity`, push
-// trigger), earliest integratedTime first; `at` is the commit the signing run was at. Entries that fail are listed in `reasons`.
+// trigger), lowest logIndex first; `at` is the commit the signing run was at. Entries that fail are listed in `reasons`.
 export async function entries(blob: Buffer, identity = IDENTITY): Promise<{ ok: Entry[]; reasons: string[] }> {
   const digest = createHash("sha256").update(blob).digest("hex");
   const r = await fetch(`${REKOR}/api/v1/index/retrieve`, { method: "POST", headers: UA, body: JSON.stringify({ hash: `sha256:${digest}` }), signal: AbortSignal.timeout(15000) });
@@ -81,7 +81,10 @@ export async function entries(blob: Buffer, identity = IDENTITY): Promise<{ ok: 
     if (ext(der, 2) !== "push") { bad(`trigger ${ext(der, 2)}, not push`); continue; }
     ok.push({ integratedTime: t, logIndex: entry.logIndex, uuid, at: ext(der, 3) });
   }
-  ok.sort((a, b) => a.integratedTime - b.integratedTime || a.logIndex - b.logIndex);
+  // logIndex alone (swipepredictbot, 10-30): integratedTime has 1 s resolution, so two entries in one second tie on it. Rekor v1's
+  // logIndex is the virtual index (rekor pkg/sharding/log_index.go VirtualLogIndex: inactive shards' lengths + the leaf index in the
+  // active tree), and Trillian assigns leaf indices in the order it integrates them, so a lower logIndex was logged no later.
+  ok.sort((a, b) => a.logIndex - b.logIndex);
   return { ok, reasons };
 }
 
@@ -118,7 +121,7 @@ export const bindFail = (b: { round: number; witness?: number }, ok: Entry[]) =>
 // there (claims/*.jsonl and beacons.jsonl as of that commit) must give this serial to this claim and runner. Only the earliest entry is
 // replayed; a failing one is red, never skipped for a later one. tree(at): the claim files' texts in file order and beacons.jsonl, or
 // undefined if the commit is not in the clone.
-// signed: the serials signed-no-beacon at that commit as of the entry's time (signedSerials below), so a later signature cannot change
+// signed: the serials signed-no-beacon at that commit, logged before the entry by logIndex (signedSerials below), so a later signature cannot change
 // what the old commit should have assigned.
 export type Tree = (at: string) => { claims: string[]; beacons: string } | undefined;
 export const rowFail = (b: { serial?: string; claim?: string; runner?: string }, at: string | undefined, tree: Tree, signed: Beacon[] = []) => {
@@ -139,27 +142,50 @@ export const rowFail = (b: { serial?: string; claim?: string; runner?: string },
 // runner from the replay at its earliest entry's commit), so that runner's refile gets it back and anyone else gets the next number.
 // pending(beacons, claims, before): those pseudo-beacons beyond the committed ones, counting only entries logged before `before`.
 export const signedSerials = (lookup: (serial: string) => Promise<Entry[]>, tree: Tree) => {
-  const got = new Map<string, Promise<Entry[]>>(), owners = new Map<string, Promise<string | undefined>>();
+  const got = new Map<string, Promise<Entry[]>>(), owners = new Map<string, Promise<any>>();
   const ok = (s: string) => got.get(s) ?? (got.set(s, lookup(s)), got.get(s)!);
+  // The row the serial was signed for, replayed at its earliest entry's commit; undefined if that commit gave it to no row of the claim.
   const owner = (serial: string, claim: string, e: Entry) => owners.get(serial) ?? (owners.set(serial, (async () => {
     const t = e.at && /^[0-9a-f]{40}$/.test(e.at) ? tree(e.at) : undefined;
     if (!t) return undefined;
     const rows = t.claims.flatMap((s) => s.split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l)));
     const bs = parseBeacons(t.beacons);
-    const x = assignSerials(rows, [...bs, ...(await pending(bs, [claim], e.integratedTime))]).find((x) => x.fresh && x.serial === serial);
-    return x && x.r.claim === claim ? String(x.r.runner) : undefined;
+    const x = assignSerials(rows, [...bs, ...(await pending(bs, [claim], e.logIndex))]).find((x) => x.fresh && x.serial === serial);
+    return x && x.r.claim === claim ? x.r : undefined;
   })()), owners.get(serial)!);
+  // before: a Rekor logIndex; only entries logged ahead of it count (swipepredictbot, 10-30: the old integratedTime cutoff dropped an
+  // entry logged in the same second as `before`).
   const pending = async (beacons: Beacon[], claims: string[], before = Infinity) => {
-    const out: (Beacon & { entry: number })[] = [];
+    const out: (Beacon & { entry: number; integratedTime: number; at?: string; row?: any })[] = [];
     for (const claim of claims) for (let n = beacons.filter((b) => b.claim === claim).length + 1; ; n++) {
       const serial = `${claim}-${String(n).padStart(2, "0")}`, [e] = await ok(serial);
-      if (!e || e.integratedTime >= before) break;
-      out.push({ serial, claim, runner: await owner(serial, claim, e), round: 0, randomness: "", run: "", entry: e.logIndex });
+      if (!e || e.logIndex >= before) break;
+      const row = await owner(serial, claim, e);
+      out.push({ serial, claim, runner: row ? String(row.runner) : undefined, round: 0, randomness: "", run: "", entry: e.logIndex, integratedTime: e.integratedTime, at: e.at, row });
     }
     return out;
   };
   return { pending, entries: ok };
 };
+// Serial order (swipepredictbot, 10-30): each serial's earliest intent entry must come after the earliest entry of every lower serial of
+// its claim, since beacon.ts signs N only once N-1 is signed. One logged before a lower serial's was signed out of turn (pre-signed, or a
+// number skipped and filled later). seq: one claim's serials with their earliest entry's logIndex (undefined: legacy, no intent entry).
+export const orderFail = (seq: { serial: string; entry?: number }[]) => {
+  const out: string[] = [];
+  let hi: { serial: string; entry: number } | undefined;
+  for (const x of [...seq].sort((a, b) => Number(a.serial.split("-").pop()) - Number(b.serial.split("-").pop()))) {
+    if (x.entry === undefined) continue;
+    if (hi && x.entry < hi.entry) out.push(`${x.serial}'s earliest intent entry ${x.entry} was logged before ${hi.serial}'s (${hi.entry}): signed out of turn`);
+    if (!hi || x.entry > hi.entry) hi = { serial: x.serial, entry: x.entry };
+  }
+  return out;
+};
+// Draw binds at signature (swipepredictbot, 10-30). Listing a signed serial with no beacon still let it re-roll: sign 13 for runner A, see
+// the bound round (public), delete the row if the reviewer is unwelcome, refile as runner B, who gets 14 and a new draw. So once a signed
+// serial's bound round is published, its draw applies whether or not a beacon follows: the reviewer is drawn exactly as draw.ts would
+// for the row as it stood at the earliest entry's commit, with the bound round's randomness, and REVIEW.md lists it as an owed audit.
+export const owedDraw = (p: { serial: string; row: any }, author: string, randomness: string, beacons: Beacon[]) =>
+  draw([{ r: { ...p.row, serial: p.serial }, line: 0, author, unparsed: false }], [...beacons.filter((b) => b.name), { serial: p.serial, claim: p.row.claim, runner: String(p.row.runner), round: 0, randomness, run: "" }]).rows[0].reviewer;
 // tree for rowFail from a git clone at root.
 export const treeAt = (root: string): Tree => (at: string) => {
   const git = (...a: string[]) => { const p = Bun.spawnSync(["git", "-C", root, ...a], { stdout: "pipe", stderr: "pipe" }); return { ok: p.exitCode === 0, out: p.stdout.toString() }; };

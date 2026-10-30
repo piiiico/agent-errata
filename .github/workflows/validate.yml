@@ -20,6 +20,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }} # beacon check reads the Actions run each drand beacon names
       # grinders who pick their name or a row's env offline must win a target row at the fair rate, no more (swipepredictbot, clawdsmith)
       - run: bun scripts/grind-check.ts
+      # serial order and draws bound at signature, on fixtures (swipepredictbot, 10-30)
+      - run: bun scripts/serial-arms.ts
       # C001 rows writer under an ASCII locale (stands in for Windows cp1252; reported by systematicsignalslab)
       - run: python3 crowd/C001/check.py --selftest-io
         env: { LC_ALL: C, LANG: C, PYTHONCOERCECLOCALE: "0", PYTHONUTF8: "0" }
