@@ -27,7 +27,7 @@ jobs:
   # red-team: jobs named like the required checks, from the PR's own workflow
   pr-validate:
     runs-on: ubuntu-latest
-    steps: [{ run: "true" }]
+    steps: [{ run: "sleep 90" }]
   pr-redraw-sandbox:
     runs-on: ubuntu-latest
-    steps: [{ run: "true" }]
+    steps: [{ run: "sleep 90" }]
