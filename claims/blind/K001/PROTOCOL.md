@@ -17,3 +17,5 @@ Rules:
 5. Rows carry `method: independent-implementation`, `read: claim-and-vectors`, `shared_with: orchestrator and prompt (Pico)`, and the model id. Together they count as at most one independent implementation.
 
 What it can show: whether the text pins the output (128/128 from the text alone), and whether programs from different labs miss the same vectors (a shared miss points at the text).
+
+Harness: `compare.py`, committed before any program ran. Its controls, run on the inputs-only copy: a stand-in that prints each vector's expected.json gives 128/128, exit 0; the same with `status` changed on `real_p31_baseline` gives `DIFF real_p31_baseline status`, 127/128, exit 1; an empty program gives 0/128, exit 2.
