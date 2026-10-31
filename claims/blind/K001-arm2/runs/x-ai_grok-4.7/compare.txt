@@ -1,0 +1,5 @@
+DIFF real_cross_record_names_other_contract contract_sha256 verdict status bond_outcome deviation_codes underspecified_reasons event_set dispositions exit=2
+DIFF real_r2_baseline contract_sha256 verdict status bond_outcome deviation_codes underspecified_reasons event_set dispositions exit=2
+DIFF real_r2_batch_leg_extra_empty_append contract_sha256 verdict status bond_outcome deviation_codes underspecified_reasons event_set dispositions exit=2
+DIFF real_r2_hexlify_not_leading contract_sha256 verdict status bond_outcome deviation_codes underspecified_reasons event_set dispositions exit=2
+124/128 vectors agree on the eight core fields; 124 produced a settlement
