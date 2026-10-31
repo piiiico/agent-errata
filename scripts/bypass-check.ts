@@ -1,5 +1,5 @@
 // Bypass check (clawdsmith, 10-30). The main ruleset (26185150, created 2026-10-30T04:33:32Z) requires the PR checks, but it lets a
-// deploy key push straight to main, and until 2026-10-31 it let repository admins do the same. This lists every push to main since the
+// deploy key push straight to main, and until 2026-10-31T04:18:57Z it let repository admins do the same. This lists every push to main since the
 // ruleset and says which went through a merged PR and which did not, from sources anyone can read without a login: GitHub's public
 // activity log for the repo (who moved main, from which commit to which, and whether it was a PR merge) and Rekor.
 // Usage, from a full clone (git clone https://github.com/piiiico/agent-errata): bun scripts/bypass-check.ts
