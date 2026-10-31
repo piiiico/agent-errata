@@ -2,9 +2,9 @@
  "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
  "harnesses": {
   "claude": {
-   "version": "2.1.314",
-   "measured": "2026-10-30",
-   "where": "GitHub Actions linux-x64, run 41060260972",
+   "version": "2.1.316",
+   "measured": "2026-10-31",
+   "where": "GitHub Actions linux-x64, run 41202290059",
    "row": {
     "arms": {
      "a": [
@@ -31,11 +31,11 @@
      }
     },
     "tools": 12,
-    "bytes_b": 48006,
+    "bytes_b": 47908,
     "s004": {
-     "total": 11738,
+     "total": 11721,
      "tools": 7336,
-     "system": 3759
+     "system": 3737
     }
    }
   },
