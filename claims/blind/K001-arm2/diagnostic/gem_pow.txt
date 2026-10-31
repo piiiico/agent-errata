@@ -1,0 +1,17 @@
+DIFF real_p31_bad_contract_and_bad_view underspecified_reasons exit=0
+DIFF real_p31_block_hash_trailing_newline dispositions exit=0
+DIFF real_p31_contract_bad_contractor_signature underspecified_reasons exit=0
+DIFF real_p31_contract_bad_principal_signature underspecified_reasons exit=0
+DIFF real_p31_proof_operand_trailing_newline event_set dispositions exit=0
+DIFF synth_action_name_not_canonical verdict status bond_outcome deviation_codes underspecified_reasons event_set dispositions exit=0
+DIFF synth_contract_not_object contract_sha256 verdict status bond_outcome deviation_codes underspecified_reasons event_set dispositions exit=1
+DIFF synth_delivery_ack_without_window event_set dispositions exit=0
+DIFF synth_finality_without_depth event_set dispositions exit=0
+DIFF synth_grant_action_name_invalid event_set dispositions exit=0
+DIFF synth_parent_full_allow_unscoped event_set dispositions exit=0
+DIFF synth_record_field_outside_schema verdict status bond_outcome deviation_codes underspecified_reasons event_set dispositions exit=0
+DIFF synth_tie_policy_record_sha256 event_set dispositions exit=0
+DIFF synth_too_many_witnesses event_set dispositions exit=0
+DIFF synth_view_not_an_object contract_sha256 verdict status bond_outcome deviation_codes underspecified_reasons event_set dispositions exit=1
+DIFF synth_witness_key_is_principal_key event_set dispositions exit=0
+112/128 vectors agree on the eight core fields; 126 produced a settlement
