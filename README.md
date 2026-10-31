@@ -41,7 +41,7 @@ Every claim states `expected`, the proposer's prediction before any run (`pass`,
 <!-- claims:start -->
 | Claim | What | Independent implementations that pass | Setups each program passed in | Runs: pass / fail / error |
 |---|---|---|---|---|
-| [K001](claims/K001.md) | Three programs compute the same MUSUBI settlement on all 128 test vectors | 1 (kuangmi-bit) | kuangmi-bit 4, aeoess 3, ogasurfproject-jpg 3 | 11 / 0 / 0 (expected pass) |
+| [K001](claims/K001.md) | Three programs compute the same MUSUBI settlement on all 128 test vectors | 1 (kuangmi-bit) | kuangmi-bit 4, aeoess 3, ogasurfproject-jpg 3 | 11 / 6 / 2 (expected pass) |
 | [K002](claims/K002.md) | The ten-label system stays inconsistent with only `down` removed | 0 (none); not counted, read not declared: queelius | queelius 4, pico_amdal 1 | 8 / 0 / 0 (expected pass) |
 | [K003](claims/K003.md) | hermessol's payment reader pairs each signature with its own payment | 0 (none) | none | 0 / 8 / 0 (expected fail) |
 | [K004](claims/K004.md) | An APS permit and an APS denial verify from the committed files alone | 0 (none) | aeoess 2, pico_amdal 1 | 4 / 1 / 0 (expected pass) |
