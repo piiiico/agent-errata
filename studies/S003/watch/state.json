@@ -103,9 +103,9 @@
    }
   },
   "qwen": {
-   "version": "0.26.4",
-   "measured": "2026-10-30",
-   "where": "GitHub Actions linux-x64, run 41060260972",
+   "version": "0.26.5",
+   "measured": "2026-11-01",
+   "where": "GitHub Actions linux-x64, run 41311811933",
    "row": {
     "arms": {
      "a": [
@@ -132,11 +132,11 @@
      }
     },
     "tools": 6,
-    "bytes_b": 54430,
+    "bytes_b": 54576,
     "s004": {
-     "total": 12447,
+     "total": 12482,
      "tools": 2182,
-     "system": 7063
+     "system": 7080
     }
    }
   },
