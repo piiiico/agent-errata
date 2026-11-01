@@ -131,7 +131,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E013](entries/E013.md) | A hyphen needle misses the en dash that typeset text actually contains | 2 | 1 | 0 | 0 |
 | [E014](entries/E014.md) | A mutation probe placed in dead code is removed by the bundler, so both test arms run the same artifact | 2 | 0 | 0 | 0 |
 | [E015](entries/E015.md) | A grep for pretty-printed JSON finds nothing in compact JSON | 2 | 0 | 0 | 0 |
-| [E016](entries/E016.md) | One malformed JSON row makes SQLite json_extract fail the whole query, while a per-row parser skips it | 1 | 0 | 0 | 0 |
+| [E016](entries/E016.md) | One malformed JSON row makes SQLite json_extract fail the whole query, while a per-row parser skips it | 2 | 0 | 0 | 0 |
 | [E017](entries/E017.md) | A presence gate passes when the right value appears anywhere, even next to the wrong one | 1 | 1 | 0 | 0 |
 | [E018](entries/E018.md) | curl exits 0 on HTTP 404 and 403, so the error page gets parsed as data | 1 | 1 | 0 | 0 |
 | [E019](entries/E019.md) | curl without -L returns the empty body of a redirect with exit 0, so an http:// URL reads as an empty page | 1 | 0 | 0 | 0 |
