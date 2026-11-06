@@ -121,18 +121,18 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E003](entries/E003.md) | A shell function is invisible to timeout, xargs, env and nohup, and 2>/dev/null turns that into an empty result | 1 | 0 | 0 | 1 |
 | [E004](entries/E004.md) | bun mock.module in one test file replaces the module for every later file in the same run | 1 | 0 | 0 | 0 |
 | [E005](entries/E005.md) | Bun runs TypeScript without type-checking, so a wrong-type argument in a threshold slot silently disarms the gate | 1 | 0 | 0 | 0 |
-| [E006](entries/E006.md) | wc -c counts bytes, not characters, so any text with æøå, accents or emoji is over-counted | 2 | 1 | 0 | 0 |
+| [E006](entries/E006.md) | wc -c counts bytes, not characters, so any text with æøå, accents or emoji is over-counted | 3 | 1 | 0 | 0 |
 | [E007](entries/E007.md) | A module-level process.exit(0) in one test file makes bun test exit 0 with no summary, even with failing tests | 2 | 0 | 0 | 0 |
-| [E008](entries/E008.md) | A substring containment check stays green when the member that is a prefix of the others is deleted | 2 | 1 | 0 | 0 |
+| [E008](entries/E008.md) | A substring containment check stays green when the member that is a prefix of the others is deleted | 3 | 1 | 0 | 0 |
 | [E009](entries/E009.md) | A list API returning exactly its default page size is truncated, with no error | 2 | 0 | 0 | 0 |
 | [E010](entries/E010.md) | jq length on an API error object returns its key count, so an error reads as a small list | 2 | 1 | 0 | 0 |
-| [E011](entries/E011.md) | A parse loop that skips malformed rows reports on fewer rows than exist, and says nothing | 2 | 0 | 0 | 0 |
-| [E012](entries/E012.md) | The same accented word in NFC and NFD form does not match, so a search finds nothing and exits cleanly | 2 | 0 | 0 | 0 |
-| [E013](entries/E013.md) | A hyphen needle misses the en dash that typeset text actually contains | 2 | 1 | 0 | 0 |
+| [E011](entries/E011.md) | A parse loop that skips malformed rows reports on fewer rows than exist, and says nothing | 3 | 0 | 0 | 0 |
+| [E012](entries/E012.md) | The same accented word in NFC and NFD form does not match, so a search finds nothing and exits cleanly | 3 | 0 | 0 | 0 |
+| [E013](entries/E013.md) | A hyphen needle misses the en dash that typeset text actually contains | 3 | 1 | 0 | 0 |
 | [E014](entries/E014.md) | A mutation probe placed in dead code is removed by the bundler, so both test arms run the same artifact | 2 | 0 | 0 | 0 |
-| [E015](entries/E015.md) | A grep for pretty-printed JSON finds nothing in compact JSON | 2 | 0 | 0 | 0 |
+| [E015](entries/E015.md) | A grep for pretty-printed JSON finds nothing in compact JSON | 3 | 0 | 0 | 0 |
 | [E016](entries/E016.md) | One malformed JSON row makes SQLite json_extract fail the whole query, while a per-row parser skips it | 2 | 0 | 0 | 0 |
-| [E017](entries/E017.md) | A presence gate passes when the right value appears anywhere, even next to the wrong one | 2 | 1 | 0 | 0 |
+| [E017](entries/E017.md) | A presence gate passes when the right value appears anywhere, even next to the wrong one | 3 | 1 | 0 | 0 |
 | [E018](entries/E018.md) | curl exits 0 on HTTP 404 and 403, so the error page gets parsed as data | 2 | 1 | 0 | 0 |
 | [E019](entries/E019.md) | curl without -L returns the empty body of a redirect with exit 0, so an http:// URL reads as an empty page | 1 | 0 | 0 | 0 |
 | [E020](entries/E020.md) | ripgrep skips hidden and gitignored files by default, so a clean sweep can miss the files that matter | 1 | 0 | 0 | 0 |
@@ -140,17 +140,18 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E022](entries/E022.md) | A paginated list can be honest about the page and silent about the depth, so has_more=false and a full page still miss nodes | 1 | 1 | 0 | 0 |
 | [E023](entries/E023.md) | A builder call that replaces instead of accumulating drops content with exit 0, so a render check passes on a lossy image | 1 | 0 | 0 | 0 |
 | [E024](entries/E024.md) | A pagination parameter the API does not know is ignored, so every "next page" is page 1 again with HTTP 200 | 1 | 1 | 0 | 0 |
-| [E025](entries/E025.md) | A guard behind an earlier gate counts zero refusals, because the earlier gate refuses its traffic first | 2 | 1 | 0 | 0 |
+| [E025](entries/E025.md) | A guard behind an earlier gate counts zero refusals, because the earlier gate refuses its traffic first | 3 | 1 | 0 | 0 |
 | [E026](entries/E026.md) | Reading a long working file by section returns the section's old status, while a newer decision sits at the top | 1 | 1 | 0 | 0 |
 | [E027](entries/E027.md) | A regex pattern built from an ordinary string turns \b into a backspace, so the guard matches nothing and looks like it has nothing to block | 2 | 0 | 0 | 0 |
 | [E028](entries/E028.md) | A deleted comment stays in the thread as a tombstone, so a check that asks "is this id in the tree?" reads it as served | 0 | 0 | 0 | 0 |
 | [E029](entries/E029.md) | An empty file list piped to xargs gives the sweep zero hits, the same as a clean run, and on BSD xargs the command never runs at all | 1 | 1 | 0 | 0 |
-| [E030](entries/E030.md) | A wrapper script with set -u but not set -e keeps going after a failed step and prints PASS with exit 0 | 1 | 0 | 0 | 0 |
-| [E031](entries/E031.md) | A brake that correctly ignores unmeasured readings never fires while nothing produces a measured one, and its silence looks like health | 1 | 1 | 0 | 0 |
+| [E030](entries/E030.md) | A wrapper script with set -u but not set -e keeps going after a failed step and prints PASS with exit 0 | 2 | 0 | 0 | 0 |
+| [E031](entries/E031.md) | A brake that correctly ignores unmeasured readings never fires while nothing produces a measured one, and its silence looks like health | 2 | 1 | 0 | 0 |
 | [E032](entries/E032.md) | A per-run dollar cap is checked after each model call returns, so the call that crosses it is billed in full and the cap is not a ceiling | 0 | 0 | 0 | 0 |
 | [E033](entries/E033.md) | A cursor page can start with the row the previous page ended on, so a walk that sums page lengths overcounts by pages minus one | 2 | 2 | 0 | 0 |
 | [E034](entries/E034.md) | A score that averages only the sub-probes that returned goes up when a sub-probe fails, so the failure reads as a better result | 1 | 1 | 0 | 0 |
 | [E035](entries/E035.md) | A comment its author's index lists and no sort of the thread serves looks deleted to every read a client tries first, and the direct GET that should settle it 404s on live comments too | 0 | 0 | 0 | 0 |
+| [E036](entries/E036.md) | In zsh, a bare $var followed by a colon and a modifier letter inside a string is a modifier, so "key:$x:tail" silently loses text | 0 | 0 | 0 | 0 |
 <!-- table:end -->
 
 ## Who can skip the checks
