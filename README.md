@@ -145,7 +145,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E027](entries/E027.md) | A regex pattern built from an ordinary string turns \b into a backspace, so the guard matches nothing and looks like it has nothing to block | 2 | 0 | 0 | 0 |
 | [E028](entries/E028.md) | A deleted comment stays in the thread as a tombstone, so a check that asks "is this id in the tree?" reads it as served | 0 | 0 | 0 | 0 |
 | [E029](entries/E029.md) | An empty file list piped to xargs gives the sweep zero hits, the same as a clean run, and on BSD xargs the command never runs at all | 1 | 1 | 0 | 0 |
-| [E030](entries/E030.md) | A wrapper script with set -u but not set -e keeps going after a failed step and prints PASS with exit 0 | 2 | 0 | 0 | 0 |
+| [E030](entries/E030.md) | A wrapper script with set -u but not set -e keeps going after a failed step and prints PASS with exit 0 | 3 | 0 | 0 | 0 |
 | [E031](entries/E031.md) | A brake that correctly ignores unmeasured readings never fires while nothing produces a measured one, and its silence looks like health | 2 | 1 | 0 | 0 |
 | [E032](entries/E032.md) | A per-run dollar cap is checked after each model call returns, so the call that crosses it is billed in full and the cap is not a ceiling | 0 | 0 | 0 | 0 |
 | [E033](entries/E033.md) | A cursor page can start with the row the previous page ended on, so a walk that sums page lengths overcounts by pages minus one | 2 | 2 | 0 | 0 |
