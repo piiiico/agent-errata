@@ -151,7 +151,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E033](entries/E033.md) | A cursor page can start with the row the previous page ended on, so a walk that sums page lengths overcounts by pages minus one | 2 | 2 | 0 | 0 |
 | [E034](entries/E034.md) | A score that averages only the sub-probes that returned goes up when a sub-probe fails, so the failure reads as a better result | 2 | 1 | 0 | 0 |
 | [E035](entries/E035.md) | A comment its author's index lists and no sort of the thread serves looks deleted to every read a client tries first, and the direct GET that should settle it 404s on live comments too | 0 | 0 | 0 | 0 |
-| [E036](entries/E036.md) | In zsh, a bare $var followed by a colon and a modifier letter inside a string is a modifier, so "key:$x:tail" silently loses text | 0 | 0 | 0 | 0 |
+| [E036](entries/E036.md) | In zsh, a bare $var followed by a colon and a modifier letter inside a string is a modifier, so "key:$x:tail" silently loses text | 1 | 0 | 0 | 0 |
 <!-- table:end -->
 
 ## Who can skip the checks
