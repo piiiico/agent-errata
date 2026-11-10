@@ -1,0 +1,50 @@
+{
+ "harness": "claude",
+ "label": "Claude Code",
+ "version": "2.1.322",
+ "previous_version": "2.1.319",
+ "previous_measured": "2026-11-07",
+ "date": "2026-11-10",
+ "where": "GitHub Actions linux-x64, run 42839625575",
+ "run": "https://github.com/piiiico/agent-errata/actions/runs/42839625575",
+ "forced": false,
+ "changed": false,
+ "changes": [],
+ "minor": [
+  "S004 total 11,740 → 11,855 tokens, +1.0%"
+ ],
+ "row": {
+  "arms": {
+   "a": [
+    "S003C-A-CLAUDELOCALMD",
+    "S003C-A-CLAUDEMD"
+   ],
+   "b": [
+    "S003C-B-CLAUDEMD"
+   ],
+   "c": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+   ],
+   "d": [
+    "S003C-D-ANCESTOR_CLAUDEMD"
+   ]
+  },
+  "sym": {
+   "e": {
+    "S003C-E-AGENTSMD": 1
+   },
+   "f": {
+    "S003C-F-CLAUDEMD": 1
+   }
+  },
+  "tools": 12,
+  "bytes_b": 48543,
+  "s004": {
+   "total": 11855,
+   "tools": 7336,
+   "system": 3873
+  }
+ },
+ "note": "Tokens found in the main request per arm (S003 arms a-f, sweep/README.md), occurrence counts for the symlink arms, S004 o200k split of arm b. No model, dummy keys, empty HOME."
+}
