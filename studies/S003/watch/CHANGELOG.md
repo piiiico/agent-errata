@@ -2,6 +2,7 @@
 
 Re-measured on every release of the 10 harnesses in [S003](../../S003.md) and [S004](../../S004.md). Newest first. Daily run logs: https://github.com/piiiico/agent-errata/actions/workflows/harness-watch.yml
 
+- **2026-11-12** · Codex CLI 0.167.1 → 0.167.2: re-measured, unchanged (S004 total 9,602 → 9,603 tokens, +0.0%). [row](runs/2026-11-12-codex-0.167.2.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/43247204252)
 - **2026-11-11** · Qwen Code 0.27.1 → 0.27.2: re-measured, unchanged (S004 total 10,089 → 9,963 tokens, -1.2%). [row](runs/2026-11-11-qwen-0.27.2.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/43039025528)
 - **2026-11-11** · goose 1.58.1 → 1.59.0: re-measured, unchanged (S004 total 4,437 → 4,457 tokens, +0.5%). [row](runs/2026-11-11-goose-1.59.0.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/43039025528)
 - **2026-11-11** · Gemini CLI 0.67.0 → 0.68.0: re-measured, unchanged (S004 total 8,862 → 8,862 tokens, +0.0%). [row](runs/2026-11-11-gemini-0.68.0.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/43039025528)

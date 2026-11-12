@@ -40,9 +40,9 @@
    }
   },
   "codex": {
-   "version": "0.167.1",
-   "measured": "2026-11-11",
-   "where": "GitHub Actions linux-x64, run 43039025528",
+   "version": "0.167.2",
+   "measured": "2026-11-12",
+   "where": "GitHub Actions linux-x64, run 43247204252",
    "row": {
     "arms": {
      "a": [
@@ -70,9 +70,9 @@
     "tools": 9,
     "bytes_b": 39831,
     "s004": {
-     "total": 9602,
+     "total": 9603,
      "tools": 4038,
-     "system": 4578
+     "system": 4579
     }
    }
   },
