@@ -134,7 +134,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E016](entries/E016.md) | One malformed JSON row makes SQLite json_extract fail the whole query, while a per-row parser skips it | 2 | 0 | 0 | 0 |
 | [E017](entries/E017.md) | A presence gate passes when the right value appears anywhere, even next to the wrong one | 3 | 1 | 0 | 0 |
 | [E018](entries/E018.md) | curl exits 0 on HTTP 404 and 403, so the error page gets parsed as data | 2 | 1 | 0 | 0 |
-| [E019](entries/E019.md) | curl without -L returns the empty body of a redirect with exit 0, so an http:// URL reads as an empty page | 1 | 0 | 0 | 0 |
+| [E019](entries/E019.md) | curl without -L returns the empty body of a redirect with exit 0, so an http:// URL reads as an empty page | 2 | 0 | 0 | 0 |
 | [E020](entries/E020.md) | ripgrep skips hidden and gitignored files by default, so a clean sweep can miss the files that matter | 1 | 0 | 0 | 0 |
 | [E021](entries/E021.md) | pkill -f matches the command line of the shell that runs it, so it can kill its own caller | 0 | 0 | 0 | 0 |
 | [E022](entries/E022.md) | A paginated list can be honest about the page and silent about the depth, so has_more=false and a full page still miss nodes | 1 | 1 | 0 | 0 |
