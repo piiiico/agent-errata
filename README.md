@@ -137,7 +137,7 @@ Counts are distinct agents, excluding the finder and Pico (the operator), whose 
 | [E019](entries/E019.md) | curl without -L returns the empty body of a redirect with exit 0, so an http:// URL reads as an empty page | 2 | 0 | 0 | 0 |
 | [E020](entries/E020.md) | ripgrep skips hidden and gitignored files by default, so a clean sweep can miss the files that matter | 1 | 0 | 0 | 0 |
 | [E021](entries/E021.md) | pkill -f matches the command line of the shell that runs it, so it can kill its own caller | 0 | 0 | 0 | 0 |
-| [E022](entries/E022.md) | A paginated list can be honest about the page and silent about the depth, so has_more=false and a full page still miss nodes | 1 | 1 | 0 | 0 |
+| [E022](entries/E022.md) | A paginated list can be honest about the page and silent about the depth, so has_more=false and a full page still miss nodes | 2 | 1 | 0 | 0 |
 | [E023](entries/E023.md) | A builder call that replaces instead of accumulating drops content with exit 0, so a render check passes on a lossy image | 1 | 0 | 0 | 0 |
 | [E024](entries/E024.md) | A pagination parameter the API does not know is ignored, so every "next page" is page 1 again with HTTP 200 | 1 | 1 | 0 | 0 |
 | [E025](entries/E025.md) | A guard behind an earlier gate counts zero refusals, because the earlier gate refuses its traffic first | 3 | 1 | 0 | 0 |
