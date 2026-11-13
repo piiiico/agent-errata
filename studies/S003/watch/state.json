@@ -2,9 +2,9 @@
  "note": "Last-measured row per harness. Baseline = the 2026-10-02 sweep (container, Linux aarch64; S004 tokens counted 10-03). Written by watch.ts after each re-measure.",
  "harnesses": {
   "claude": {
-   "version": "2.1.322",
-   "measured": "2026-11-10",
-   "where": "GitHub Actions linux-x64, run 42839625575",
+   "version": "2.1.323",
+   "measured": "2026-11-13",
+   "where": "GitHub Actions linux-x64, run 43444994553",
    "row": {
     "arms": {
      "a": [
@@ -31,18 +31,18 @@
      }
     },
     "tools": 12,
-    "bytes_b": 48543,
+    "bytes_b": 48556,
     "s004": {
-     "total": 11855,
-     "tools": 7336,
+     "total": 11858,
+     "tools": 7335,
      "system": 3873
     }
    }
   },
   "codex": {
-   "version": "0.167.2",
-   "measured": "2026-11-12",
-   "where": "GitHub Actions linux-x64, run 43247204252",
+   "version": "0.169.0",
+   "measured": "2026-11-13",
+   "where": "GitHub Actions linux-x64, run 43444994553",
    "row": {
     "arms": {
      "a": [
@@ -68,11 +68,11 @@
      }
     },
     "tools": 9,
-    "bytes_b": 39831,
+    "bytes_b": 39992,
     "s004": {
-     "total": 9603,
+     "total": 9570,
      "tools": 4038,
-     "system": 4579
+     "system": 4586
     }
    }
   },
@@ -103,9 +103,9 @@
    }
   },
   "qwen": {
-   "version": "0.27.2",
-   "measured": "2026-11-11",
-   "where": "GitHub Actions linux-x64, run 43039025528",
+   "version": "0.27.3",
+   "measured": "2026-11-13",
+   "where": "GitHub Actions linux-x64, run 43444994553",
    "row": {
     "arms": {
      "a": [
@@ -132,9 +132,9 @@
      }
     },
     "tools": 6,
-    "bytes_b": 42849,
+    "bytes_b": 42846,
     "s004": {
-     "total": 9963,
+     "total": 9961,
      "tools": 2182,
      "system": 4600
     }
@@ -216,9 +216,9 @@
    }
   },
   "crush": {
-   "version": "0.100.0",
-   "measured": "2026-11-06",
-   "where": "GitHub Actions linux-x64, run 42233394079",
+   "version": "0.101.0",
+   "measured": "2026-11-13",
+   "where": "GitHub Actions linux-x64, run 43444994553",
    "row": {
     "arms": {
      "a": [
@@ -251,11 +251,11 @@
      }
     },
     "tools": 26,
-    "bytes_b": 51784,
+    "bytes_b": 51814,
     "s004": {
-     "total": 12616,
-     "tools": 6948,
-     "system": 5494
+     "total": 12622,
+     "tools": 6953,
+     "system": 5495
     }
    }
   },
