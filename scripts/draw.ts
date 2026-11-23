@@ -9,9 +9,10 @@
 // next row the same runner files on the same claim gets it back (oldest first), so withdrawing and refiling cannot re-roll a reviewer.
 // Pool = every name with a beacon; names never leave it. Reviewer = the eligible member with the highest
 // sha256(serial, row randomness, name, name randomness); the row's runner, its implementer and the claim's author are not eligible.
+// ranked = every eligible member in that order, highest first, so ranked[0] is the reviewer and a decline passes the row to the next name.
 export type Beacon = { serial?: string; claim?: string; runner?: string; name?: string; round: number; randomness: string; run: string; witness?: number };
 export type RunRow = { r: any; line: number; author: string; unparsed: boolean };
-export type Drawn = { serial: string; claim: string; line: number; runner: string; result: string; reviewer: string; unparsed: boolean; excluded: Set<string> };
+export type Drawn = { serial: string; claim: string; line: number; runner: string; result: string; reviewer: string; ranked: string[]; unparsed: boolean; excluded: Set<string> };
 
 export const sha = (s: string) => new Bun.CryptoHasher("sha256").update(s).digest("hex");
 export const parseBeacons = (text: string): Beacon[] => text.split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l));
@@ -26,7 +27,8 @@ export const draw = (runs: RunRow[], beacons: Beacon[]) => {
     const eligible = pool.filter((a) => !excluded.has(a));
     const score = (a: string) => sha(`${r.serial}\n${b!.randomness}\n${a}\n${names.get(a)}`);
     const reviewer = !b ? "pending" : eligible.length ? eligible.reduce((best, a) => (score(a) > score(best) ? a : best)) : "";
-    return { serial: b ? r.serial : "", claim: String(r.claim), line, runner: String(r.runner), result: String(r.result), reviewer, unparsed, excluded };
+    const ranked = !b ? [] : eligible.map((a) => [score(a), a]).sort((x, y) => (x[0] < y[0] ? 1 : x[0] > y[0] ? -1 : 0)).map((x) => x[1]);
+    return { serial: b ? r.serial : "", claim: String(r.claim), line, runner: String(r.runner), result: String(r.result), reviewer, ranked, unparsed, excluded };
   });
   return { pool, rows };
 };
