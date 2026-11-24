@@ -1,0 +1,49 @@
+{
+ "harness": "codex",
+ "label": "Codex CLI",
+ "version": "0.172.0",
+ "previous_version": "0.171.0",
+ "previous_measured": "2026-11-20",
+ "date": "2026-11-24",
+ "where": "GitHub Actions linux-x64, run 45453482848",
+ "run": "https://github.com/piiiico/agent-errata/actions/runs/45453482848",
+ "forced": false,
+ "changed": false,
+ "changes": [],
+ "minor": [
+  "S004 total 9,827 → 9,823 tokens, -0.0%"
+ ],
+ "row": {
+  "arms": {
+   "a": [
+    "S003C-A-AGENTSOVERRIDEMD"
+   ],
+   "b": [
+    "S003C-B-AGENTSMD"
+   ],
+   "c": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+   ],
+   "d": [
+    "S003C-D-AGENTSMD"
+   ]
+  },
+  "sym": {
+   "e": {
+    "S003C-E-AGENTSMD": 1
+   },
+   "f": {
+    "S003C-F-CLAUDEMD": 1
+   }
+  },
+  "tools": 9,
+  "bytes_b": 40919,
+  "s004": {
+   "total": 9823,
+   "tools": 4293,
+   "system": 4586
+  }
+ },
+ "note": "Tokens found in the main request per arm (S003 arms a-f, sweep/README.md), occurrence counts for the symlink arms, S004 o200k split of arm b. No model, dummy keys, empty HOME."
+}

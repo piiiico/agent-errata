@@ -17,7 +17,7 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 </head>
 <body>
 <h1>Which instruction file does each coding agent actually load? Measured with canaries</h1>
-<p class="sub">Part of <a href="https://piiiico.github.io/agent-errata/S003/">study S003</a> of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · 10 harnesses · last measured 2026-11-22 · re-measured automatically on every release</p>
+<p class="sub">Part of <a href="https://piiiico.github.io/agent-errata/S003/">study S003</a> of <a href="https://github.com/piiiico/agent-errata">Agent Errata</a> · 10 harnesses · last measured 2026-11-24 · re-measured automatically on every release</p>
 
 <p class="big"><strong>With <code>AGENTS.md</code> and <code>CLAUDE.md</code> in the same repo, Claude Code reads only <code>CLAUDE.md</code>; Codex CLI, Qwen Code, opencode, Kilo CLI, goose and pi read only <code>AGENTS.md</code>; Crush reads both; Gemini CLI and aider read neither.</strong></p>
 
@@ -25,9 +25,9 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 
 <h2>Per harness</h2>
 <ul>
-<li><strong>Claude Code 2.1.330</strong> (measured 2026-11-21): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>CLAUDE.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is read and the repo's <code>AGENTS.md</code> is dropped. With all 17 files present it loads 2: <code>CLAUDE.local.md</code>, <code>CLAUDE.md</code>.</li>
-<li><strong>Codex CLI 0.171.0</strong> (measured 2026-11-20): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 1: <code>AGENTS.override.md</code>.</li>
-<li><strong>Gemini CLI 0.70.0</strong> (measured 2026-11-20): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads neither. In a monorepo, started in a child package, it reads neither the root nor the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored, and so is the repo's <code>AGENTS.md</code>. With all 17 files present it loads 1: <code>GEMINI.md</code>.</li>
+<li><strong>Claude Code 2.1.331</strong> (measured 2026-11-24): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>CLAUDE.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is read and the repo's <code>AGENTS.md</code> is dropped. With all 17 files present it loads 2: <code>CLAUDE.local.md</code>, <code>CLAUDE.md</code>.</li>
+<li><strong>Codex CLI 0.172.0</strong> (measured 2026-11-24): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 1: <code>AGENTS.override.md</code>.</li>
+<li><strong>Gemini CLI 0.71.1</strong> (measured 2026-11-24): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads neither. In a monorepo, started in a child package, it reads neither the root nor the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored, and so is the repo's <code>AGENTS.md</code>. With all 17 files present it loads 1: <code>GEMINI.md</code>.</li>
 <li><strong>Qwen Code 0.28.4</strong> (measured 2026-11-22): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 2: <code>AGENTS.md</code>, <code>QWEN.md</code>.</li>
 <li><strong>opencode 1.19.6</strong> (measured 2026-11-17): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 1: <code>AGENTS.md</code>.</li>
 <li><strong>Kilo CLI 7.8.32</strong> (measured 2026-11-20): with <code>AGENTS.md</code> and <code>CLAUDE.md</code> side by side it reads only <code>AGENTS.md</code>. In a monorepo, started in a child package, it reads both the root and the child <code>AGENTS.md</code>. A <code>CLAUDE.md</code> above the git root is ignored; the repo's <code>AGENTS.md</code> loads. With all 17 files present it loads 2: <code>AGENTS.md</code>, <code>.kilocode/rules/s003.md</code>.</li>
@@ -40,9 +40,9 @@ a{color:#1a4d8f}.big{font-size:1.25em}footer{margin-top:3em;color:#666;font-size
 
 <table>
 <tr><th>Harness</th><th>Version</th><th>AGENTS.md + CLAUDE.md</th><th>Files loaded (of 17)</th><th>Measured</th></tr>
-<tr><td>Claude Code</td><td>2.1.330</td><td>only <code>CLAUDE.md</code></td><td>2</td><td>2026-11-21</td></tr>
-<tr><td>Codex CLI</td><td>0.171.0</td><td>only <code>AGENTS.md</code></td><td>1</td><td>2026-11-20</td></tr>
-<tr><td>Gemini CLI</td><td>0.70.0</td><td>neither</td><td>1</td><td>2026-11-20</td></tr>
+<tr><td>Claude Code</td><td>2.1.331</td><td>only <code>CLAUDE.md</code></td><td>2</td><td>2026-11-24</td></tr>
+<tr><td>Codex CLI</td><td>0.172.0</td><td>only <code>AGENTS.md</code></td><td>1</td><td>2026-11-24</td></tr>
+<tr><td>Gemini CLI</td><td>0.71.1</td><td>neither</td><td>1</td><td>2026-11-24</td></tr>
 <tr><td>Qwen Code</td><td>0.28.4</td><td>only <code>AGENTS.md</code></td><td>2</td><td>2026-11-22</td></tr>
 <tr><td>opencode</td><td>1.19.6</td><td>only <code>AGENTS.md</code></td><td>1</td><td>2026-11-17</td></tr>
 <tr><td>Kilo CLI</td><td>7.8.32</td><td>only <code>AGENTS.md</code></td><td>2</td><td>2026-11-20</td></tr>
