@@ -2,6 +2,9 @@
 
 Re-measured on every release of the 10 harnesses in [S003](../../S003.md) and [S004](../../S004.md). Newest first. Daily run logs: https://github.com/piiiico/agent-errata/actions/workflows/harness-watch.yml
 
+- **2026-11-27** · Qwen Code 0.28.6 → 0.28.7: re-measured, unchanged (S004 total 8,975 → 9,097 tokens, +1.4%). [row](runs/2026-11-27-qwen-0.28.7.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/46036408894)
+- **2026-11-27** · Kilo CLI 7.8.32 → 7.8.40: re-measured, unchanged (S004 total 15,465 → 15,465 tokens, +0.0%). [row](runs/2026-11-27-kilo-7.8.40.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/46036408894)
+- **2026-11-27** · Crush 0.103.0 → 0.104.0: re-measured, unchanged (S004 total 15,402 → 15,401 tokens, -0.0%). [row](runs/2026-11-27-crush-0.104.0.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/46036408894)
 - **2026-11-26** · Qwen Code 0.28.4 → 0.28.6: re-measured, unchanged (S004 total 9,964 → 8,975 tokens, -9.9%). [row](runs/2026-11-26-qwen-0.28.6.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/45863994939)
 - **2026-11-26** · goose 1.61.0 → 1.61.1: re-measured, unchanged (S004 total 4,498 → 4,498 tokens, +0.0%). [row](runs/2026-11-26-goose-1.61.1.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/45863994939)
 - **2026-11-26** · Crush 0.102.0 → 0.103.0: re-measured, unchanged (S004 total 15,403 → 15,402 tokens, -0.0%). [row](runs/2026-11-26-crush-0.103.0.json) · [run log](https://github.com/piiiico/agent-errata/actions/runs/45863994939)

@@ -1,0 +1,50 @@
+{
+ "harness": "qwen",
+ "label": "Qwen Code",
+ "version": "0.28.7",
+ "previous_version": "0.28.6",
+ "previous_measured": "2026-11-26",
+ "date": "2026-11-27",
+ "where": "GitHub Actions linux-x64, run 46036408894",
+ "run": "https://github.com/piiiico/agent-errata/actions/runs/46036408894",
+ "forced": false,
+ "changed": false,
+ "changes": [],
+ "minor": [
+  "S004 total 8,975 → 9,097 tokens, +1.4%"
+ ],
+ "row": {
+  "arms": {
+   "a": [
+    "S003C-A-AGENTSMD",
+    "S003C-A-QWENMD"
+   ],
+   "b": [
+    "S003C-B-AGENTSMD"
+   ],
+   "c": [
+    "S003C-C-CHILD_AGENTSMD",
+    "S003C-C-ROOT_AGENTSMD"
+   ],
+   "d": [
+    "S003C-D-AGENTSMD"
+   ]
+  },
+  "sym": {
+   "e": {
+    "S003C-E-AGENTSMD": 1
+   },
+   "f": {
+    "S003C-F-CLAUDEMD": 1
+   }
+  },
+  "tools": 6,
+  "bytes_b": 39164,
+  "s004": {
+   "total": 9097,
+   "tools": 2182,
+   "system": 3754
+  }
+ },
+ "note": "Tokens found in the main request per arm (S003 arms a-f, sweep/README.md), occurrence counts for the symlink arms, S004 o200k split of arm b. No model, dummy keys, empty HOME."
+}
